@@ -5,7 +5,7 @@ namespace Pis.Projekt.Business
 {
     public class SalesEvaluatorService
     {
-        private EvaluationResult EvaluateSales(IEnumerable<SalesAggregate> allProducts)
+        public EvaluationResult EvaluateSales(IEnumerable<SalesAggregate> allProducts)
         {
             var decreasedSales = new List<PricedProduct>();
             var increasedSales = new List<PricedProduct>();

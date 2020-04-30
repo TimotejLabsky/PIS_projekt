@@ -18,7 +18,8 @@ namespace Pis.Projekt.Business
             TaskSchedulerService taskScheduler,
             ProductPersistenceService productPersistence,
             SalesAggregateRepository aggregateRepository,
-            IMapper mapper)
+            IMapper mapper,
+            SalesEvaluatorService evaluator)
         {
             _notificationService = notificationService;
             _waiter = waiter;
@@ -27,14 +28,14 @@ namespace Pis.Projekt.Business
             _productPersistence = productPersistence;
             _aggregateRepository = aggregateRepository;
             _mapper = mapper;
+            _evaluator = evaluator;
         }
 
         public async Task OptimizeSalesAsync()
         {
             var products = await FetchSalesAggregatesAsync()
                 .ConfigureAwait(false);
-            var evaluationResult = await EvaluateSalesAsync(products)
-                .ConfigureAwait(false);
+            var evaluationResult = _evaluator.EvaluateSales(products);
 
             var tasks = new List<Task>();
             // Split -> send to hosted service
@@ -79,6 +80,7 @@ namespace Pis.Projekt.Business
         private readonly NotificationService _notificationService;
         private readonly CronSchedulerService _cronScheduler;
         private readonly TaskSchedulerService _taskScheduler;
+        private readonly SalesEvaluatorService _evaluator;
         private readonly WaiterService _waiter;
         private readonly IMapper _mapper;
     }

@@ -1,25 +1,23 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Pis.Projekt.Business.Notifications;
 using Pis.Projekt.Business.Scheduling;
-using Pis.Projekt.Domain.Database.Contexts;
 using Pis.Projekt.Domain.DTOs;
-using Pis.Projekt.Domain.Repositories;
+using Pis.Projekt.Domain.Repositories.Impl;
 
 namespace Pis.Projekt.Business
 {
     public class SalesOptimalizationService
     {
         public SalesOptimalizationService(NotificationService notificationService,
-            SalesDbContext dbContext,
             WaiterService waiter,
             CronSchedulerService cronScheduler,
             TaskSchedulerService taskScheduler,
             ProductPersistenceService productPersistence,
             SalesAggregateRepository aggregateRepository,
-            WeekCounter counter,
             IMapper mapper)
         {
             _notificationService = notificationService;
@@ -28,14 +26,15 @@ namespace Pis.Projekt.Business
             _taskScheduler = taskScheduler;
             _productPersistence = productPersistence;
             _aggregateRepository = aggregateRepository;
-            _counter = counter;
             _mapper = mapper;
         }
 
         public async Task OptimizeSalesAsync()
         {
-            var products = await FetchSalesAggregatesAsync().ConfigureAwait(false);
-            var evaluationResult = await EvaluateSalesAsync(products).ConfigureAwait(false);
+            var products = await FetchSalesAggregatesAsync()
+                .ConfigureAwait(false);
+            var evaluationResult = await EvaluateSalesAsync(products)
+                .ConfigureAwait(false);
 
             var tasks = new List<Task>();
             // Split -> send to hosted service
@@ -54,7 +53,8 @@ namespace Pis.Projekt.Business
             var decreasedList = decreasedSalesTask.Result;
             var newPriceList = increasedList.Concat(decreasedList).ToList();
             await _productPersistence.PersistProductsAsync(newPriceList);
-            await _notificationService.NotifyAsync(OptimalizationFinishedStoreNotification.Create(newPriceList));
+            await _notificationService.NotifyAsync(
+                OptimalizationFinishedStoreNotification.Create(newPriceList));
             await _cronScheduler.PlanNextOptimalization();
         }
 
@@ -65,9 +65,12 @@ namespace Pis.Projekt.Business
         /// Aggregovany udaj je cena, predajnost etc...
         /// </remarks>
         /// <returns></returns>
-        private async Task<IEnumerable<SalesAggregate>> FetchSalesAggregatesAsync()
+        private async Task<IEnumerable<SalesAggregate>> FetchSalesAggregatesAsync(
+            CancellationToken token = default)
         {
-            var sales = await _aggregateRepository.FetchFromLastWeek().ConfigureAwait(false);
+            var sales = await _aggregateRepository
+                .FetchFromLastWeekAsync(token)
+                .ConfigureAwait(false);
             return _mapper.Map<IEnumerable<SalesAggregate>>(sales);
         }
 

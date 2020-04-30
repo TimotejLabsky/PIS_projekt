@@ -22,11 +22,11 @@ namespace Pis.Projekt.Domain.Database.Contexts
             modelBuilder.Entity<PricedProductEntity>()
                 .HasKey(p => p.SalesWeek);
             modelBuilder.Entity<SalesAggregateEntity>()
-                .HasKey(p => p.Guid);
+                .HasKey(p => p.Id);
             modelBuilder.Entity<ProductEntity>()
-                .HasKey(p => p.Guid);
+                .HasKey(p => p.Id);
             modelBuilder.Entity<UserTaskEntity>()
-                .HasKey(p => p.Guid);
+                .HasKey(p => p.Id);
         }
         private void ConfigureForeignKeys(ModelBuilder modelBuilder)
         {

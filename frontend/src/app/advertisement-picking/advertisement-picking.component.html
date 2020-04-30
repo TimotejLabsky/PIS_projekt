@@ -1,0 +1,52 @@
+<div class="login_wrapper">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Zaradenie do reklamného letáku</mat-card-title>
+    </mat-card-header>
+
+    <mat-table [dataSource]="dataSource" class="content-table">
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef> Názov </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+      </ng-container>
+
+      <!-- old_price Column -->
+      <ng-container matColumnDef="old_price">
+        <mat-header-cell *matHeaderCellDef> Predchádzajúca cena </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.old_price}} </mat-cell>
+      </ng-container>
+
+      <!-- sales Column -->
+      <ng-container matColumnDef="sales">
+        <mat-header-cell *matHeaderCellDef> Predajnosť </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.sales}} </mat-cell>
+      </ng-container>
+
+      <!-- delta_sales Column -->
+      <ng-container matColumnDef="delta_sales">
+        <mat-header-cell *matHeaderCellDef>  Δ Predajnosť </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.delta_sales}} </mat-cell>
+      </ng-container>
+
+      <!-- new_price Column -->
+      <ng-container matColumnDef="include">
+        <mat-header-cell *matHeaderCellDef> Zaradiť </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <mat-checkbox></mat-checkbox>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Header and Row Declarations -->
+      <mat-header-row *matHeaderRowDef="columns; sticky: true"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columns;"></mat-row>
+
+    </mat-table>
+
+    <mat-card-actions align="end">
+      <button mat-raised-button color="primary">Potvrdiť</button>
+    </mat-card-actions>
+
+  </mat-card>
+</div>

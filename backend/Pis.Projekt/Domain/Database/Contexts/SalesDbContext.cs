@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Pis.Projekt.Business.Scheduling;
 
 namespace Pis.Projekt.Domain.Database.Contexts
 {
@@ -46,5 +47,6 @@ namespace Pis.Projekt.Domain.Database.Contexts
         public DbSet<SalesAggregateEntity> SaleAggregates { get; set; }
         public DbSet<ProductEntity> Products { get; set; }
         public DbSet<UserTaskEntity> UserTasks { get; set; }
+        public DbSet<ScheduledTask> ScheduledTasks { get; set; }
     }
 }

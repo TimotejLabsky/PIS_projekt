@@ -6,6 +6,7 @@ using Quartz.Spi;
 
 namespace Pis.Projekt.Business.Scheduling
 {
+    // Done
     public class WeeklyJobFactory : IJobFactory
     {
         public WeeklyJobFactory(IServiceScopeFactory scopeFactory)

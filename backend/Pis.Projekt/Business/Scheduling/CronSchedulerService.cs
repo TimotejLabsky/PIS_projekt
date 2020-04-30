@@ -3,6 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using Pis.Projekt.Business.Scheduling.Impl;
 using Quartz;
 using Quartz.Spi;
 
@@ -38,8 +39,15 @@ namespace Pis.Projekt.Business.Scheduling
         public async Task PlanNextOptimalization()
         {
             var job = _jobFactory.NewJob(, );
-            await _scheduler.ScheduleJob(CreateJob(new JobSchedule(typeof(), _configuration.Expression)))
+            await _scheduler.ScheduleJob(job)
             return Task.CompletedTask;
+        }
+        
+        public void ScheduleUserEvaluationTask(ProductSalesDecreasedTask task)
+        {
+            // create job from scheduled task
+            var job = _jobFactory.NewJob(, );
+            _scheduler.ScheduleJob(job);
         }
         
         private static IJobDetail CreateJob<TJob>(CronSchedulerConfiguration schedule)

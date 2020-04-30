@@ -4,7 +4,7 @@
       <mat-card-title>Vyhodnotenie zníženia ceny</mat-card-title>
     </mat-card-header>
 
-    <mat-table [dataSource]="dataSource">
+    <mat-table [dataSource]="dataSource" class="content-table">
 
       <!-- Name Column -->
       <ng-container matColumnDef="name">
@@ -39,13 +39,14 @@
       </ng-container>
 
       <!-- Header and Row Declarations -->
-      <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+      <mat-header-row *matHeaderRowDef="columns; sticky: true"></mat-header-row>
       <mat-row *matRowDef="let row; columns: columns;"></mat-row>
-
 
     </mat-table>
 
-    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+    <mat-card-actions align="end">
+      <button mat-raised-button color="primary">Potvrdiť</button>
+    </mat-card-actions>
 
   </mat-card>
 </div>

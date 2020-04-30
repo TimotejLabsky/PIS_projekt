@@ -25,3 +25,8 @@
   border-color: lightgray;
   border-radius: 5px;
 }
+
+.content-table{
+  max-height: 800px;
+  overflow: auto;
+}

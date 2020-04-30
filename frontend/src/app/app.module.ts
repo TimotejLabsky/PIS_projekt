@@ -16,13 +16,18 @@ import {MatToolbarModule} from "@angular/material/toolbar";
 import { PriceUpdateComponent } from './price-update/price-update.component';
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {MatTableModule} from "@angular/material/table";
+import { AdvertisementPickingComponent } from './advertisement-picking/advertisement-picking.component';
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import { OrderingCancelationComponent } from './ordering-cancelation/ordering-cancelation.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    PriceUpdateComponent
+    PriceUpdateComponent,
+    AdvertisementPickingComponent,
+    OrderingCancelationComponent
   ],
   imports: [
     BrowserModule,
@@ -38,7 +43,8 @@ import {MatTableModule} from "@angular/material/table";
     MatIconModule,
     MatToolbarModule,
     MatPaginatorModule,
-    MatTableModule
+    MatTableModule,
+    MatCheckboxModule
 
   ],
   providers: [],

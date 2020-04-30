@@ -2,6 +2,16 @@
   width: 100%;
 }
 
+.mat-card-title{
+  display:inline-block
+}
+.mat-card-subtitle{
+  display:inline-block;
+  position: absolute;
+  right: 0px;
+  margin: 10px
+}
+
 .mat-card{
   width: 80%;
   display: block;

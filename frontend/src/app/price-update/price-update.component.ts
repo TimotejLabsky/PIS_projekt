@@ -45,6 +45,9 @@ export class PriceUpdateComponent implements OnInit {
     {name: 'te2', old_price: 25, sales: 800, delta_sales: 25, new_price:5},
   ];
 
+  //TODO date from to
+  actual_season: any = "20.20.2020-25.20.2020";
+
   constructor() {
     console.log(this.dataSource);
   }

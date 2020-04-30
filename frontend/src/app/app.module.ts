@@ -12,12 +12,17 @@ import {ReactiveFormsModule, FormsModule} from "@angular/forms";
 import { MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
+import {MatToolbarModule} from "@angular/material/toolbar";
+import { PriceUpdateComponent } from './price-update/price-update.component';
+import {MatPaginatorModule} from "@angular/material/paginator";
+import {MatTableModule} from "@angular/material/table";
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    PriceUpdateComponent
   ],
   imports: [
     BrowserModule,
@@ -30,7 +35,10 @@ import {MatIconModule} from "@angular/material/icon";
     FormsModule,
     MatInputModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatToolbarModule,
+    MatPaginatorModule,
+    MatTableModule
 
   ],
   providers: [],

@@ -50,7 +50,7 @@ namespace Pis.Projekt.Business
                             SalesWeek = 0,
                             Price = modified.Price,
                             Product = productEntity,
-                            ProductGuid = productEntity.Guid
+                            ProductGuid = productEntity.Id
                         };
 
                         await _pricedRepository.CreateAsync(existingPricedProduct, token)
@@ -82,8 +82,8 @@ namespace Pis.Projekt.Business
                 _logger.LogError(
                     $"Database Transaction failed on operation {nameof(PersistProductsAsync)}", e);
                 await transaction.RollbackAsync(token).ConfigureAwait(false);
-                _logger.LogError(
-                    $"Transaction rollback of {nameof(PersistProductsAsync)} was successful");
+                _logger.LogError($"Transaction rollback of {nameof(PersistProductsAsync)} " +
+                                 "was successful");
             }
             finally
             {

@@ -75,7 +75,7 @@ namespace Pis.Projekt.Business
         }
 
         //TODO: Business question: maybe move to class evaluator
-        private Task<EvaluationResult> EvaluateSalesAsync(IEnumerable<Product> allProducts)
+        private Task<EvaluationResult> EvaluateSalesAsync(IEnumerable<SalesAggregate> allProducts)
         {
             return Task.Run(() => new EvaluationResult());
         }

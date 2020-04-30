@@ -7,6 +7,8 @@ namespace Pis.Projekt.Business.Notifications
         public Task SendNotification<TContent>(INotification<TContent> notification)
         {
             // Serialize and send
+            var res = new FiitEmailService.EmailPortTypeClient().notifyAsync("","","","","");
+
             return Task.CompletedTask;
         }
         

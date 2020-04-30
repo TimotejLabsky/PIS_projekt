@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace Pis.Projekt.Business
 {
+    // Done
     public class WaiterService
     {
         public async Task WaitAsync()

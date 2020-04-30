@@ -3,6 +3,7 @@ using Pis.Projekt.Domain.DTOs;
 
 namespace Pis.Projekt.Business
 {
+    // Done
     public class SalesEvaluatorService
     {
         public EvaluationResult EvaluateSales(IEnumerable<SalesAggregate> allProducts)

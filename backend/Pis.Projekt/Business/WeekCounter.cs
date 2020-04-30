@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Pis.Projekt.Business
 {
+    // Done
     public class WeekCounter
     {
         public WeekCounter(IConfiguration configuration)

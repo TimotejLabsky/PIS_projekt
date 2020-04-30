@@ -10,6 +10,7 @@ using Pis.Projekt.Domain.Repositories.Impl;
 
 namespace Pis.Projekt.Business
 {
+    // Done
     public class SalesOptimalizationService
     {
         public SalesOptimalizationService(NotificationService notificationService,

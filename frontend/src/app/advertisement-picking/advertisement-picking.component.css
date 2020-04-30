@@ -12,12 +12,16 @@
   align-items: center;
 }
 
-.login_wrapper{
-  height: 90vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.mat-card-title{
+  display:inline-block
 }
+.mat-card-subtitle{
+  display:inline-block;
+  position: absolute;
+  right: 0px;
+  margin: 10px
+}
+
 
 .table_input{
   border-style: solid;
@@ -32,5 +36,5 @@
 }
 
 .mat-checkbox{
-  margin: 10px;
+  margin-left: 25px;
 }

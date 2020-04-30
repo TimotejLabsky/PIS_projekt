@@ -74,12 +74,6 @@ namespace Pis.Projekt.Business
             return _mapper.Map<IEnumerable<SalesAggregate>>(sales);
         }
 
-        //TODO: Business question: maybe move to class evaluator
-        private Task<EvaluationResult> EvaluateSalesAsync(IEnumerable<SalesAggregate> allProducts)
-        {
-            return Task.Run(() => new EvaluationResult());
-        }
-
         private readonly SalesAggregateRepository _aggregateRepository;
         private readonly ProductPersistenceService _productPersistence;
         private readonly NotificationService _notificationService;

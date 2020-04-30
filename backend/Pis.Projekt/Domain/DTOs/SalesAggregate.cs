@@ -7,7 +7,7 @@ namespace Pis.Projekt.Domain.DTOs
     {
         public Guid Guid { get; set; }
         public Guid PricedProductGuid { get; set; }
-        public PricedProductEntity Product { get; set; }
+        public PricedProduct PricedProduct { get; set; }
         public decimal SaleCoefficient { get; set; }
     }
 }

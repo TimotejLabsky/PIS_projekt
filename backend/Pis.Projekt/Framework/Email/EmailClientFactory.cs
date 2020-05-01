@@ -1,23 +1,42 @@
+using System;
 using Pis.Projekt.Framework.Email.Impl;
 
 namespace Pis.Projekt.Framework.Email
 {
     public class EmailClientFactory
     {
-        public IEmailClient Get<TEmailClient>() where TEmailClient : IEmailClient
+        public EmailClientFactory(EmailClientFactoryConfiguration configuration)
         {
-            var clientType = typeof(TEmailClient);
-            if (clientType == typeof(WsdlEmailClient))
+            _configuration = configuration;
+        }
+
+        public IEmailClient Get()
+        {
+            switch (_configuration.ClientType)
             {
-                return new WsdlEmailClient();
-            }
-            
-            if (clientType == typeof(SmtpClient))
-            {
-                return new SmtpClient();
+                case EmailClientFactoryConfiguration.EmailClientType.Wsdl:
+                    return new WsdlEmailClient(_configuration.WsdlEmailClientConfiguration);
+                case EmailClientFactoryConfiguration.EmailClientType.Smtp:
+                    return new SmtpClient(_configuration.SmtpClientConfiguration);
+                default:
+                    throw new ArgumentOutOfRangeException(
+                        $"Unknown type of Email Client: {_configuration.ClientType}");
             }
         }
 
-        private readonly SmtpClientConfiguration _smtpClientConfiguration;
+        private readonly EmailClientFactoryConfiguration _configuration;
+    }
+
+    public class EmailClientFactoryConfiguration
+    {
+        public EmailClientType ClientType { get; set; }
+        public SmtpClientConfiguration SmtpClientConfiguration { get; set; }
+        public WsdlEmailClientConfiguration WsdlEmailClientConfiguration { get; set; }
+
+        public enum EmailClientType
+        {
+            Wsdl,
+            Smtp
+        }
     }
 }

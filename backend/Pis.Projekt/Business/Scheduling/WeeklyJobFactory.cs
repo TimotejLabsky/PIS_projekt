@@ -9,29 +9,23 @@ namespace Pis.Projekt.Business.Scheduling
     // Done
     public class WeeklyJobFactory : IJobFactory
     {
-        public WeeklyJobFactory(IServiceScopeFactory scopeFactory)
+        public WeeklyJobFactory(IServiceProvider provider)
         {
-            _scopeFactory = scopeFactory;
-            _scopeRegistry = new Dictionary<IJob, IServiceScope>();
+            _provider = provider;
         }
 
         public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
         {
-            var scope = _scopeFactory.CreateScope();
-            var serviceProvider = scope.ServiceProvider;
-            var job =  serviceProvider.GetRequiredService<WeeklyOptimizationJob>();
-            _scopeRegistry[job] = scope;
+            var job =  _provider.GetRequiredService<WeeklyOptimizationJob>();
             return job;
         }
 
         public void ReturnJob(IJob job)
         {
-            _scopeRegistry.Remove(job);
             var disposable = job as IDisposable;
             disposable?.Dispose();
         }
 
-        private readonly IServiceScopeFactory _scopeFactory;
-        private readonly IDictionary<IJob, IServiceScope> _scopeRegistry;
+        private readonly IServiceProvider _provider;
     }
 }

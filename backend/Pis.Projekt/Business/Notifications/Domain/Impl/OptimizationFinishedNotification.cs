@@ -3,15 +3,15 @@ using System.Net.Mail;
 
 namespace Pis.Projekt.Business.Notifications.Domain.Impl
 {
-    public class OptimalizationFinishedNotification: IEmailNotification<OptimalizationFinishedState>
+    public class OptimizationFinishedNotification: IEmailNotification<OptimizationFinishedState>
     {
-        public OptimalizationFinishedNotification(NotificationConfiguration configuration)
+        public OptimizationFinishedNotification(NotificationConfiguration configuration)
         {
             _configuration = configuration;
         }
         
         public Type Type { get; set; }
-        public OptimalizationFinishedState Content { get; set; }
+        public OptimizationFinishedState Content { get; set; }
         public MailAddress ToMailAddress => 
         public string Subject { get; }
         public string Message { get; }
@@ -19,7 +19,7 @@ namespace Pis.Projekt.Business.Notifications.Domain.Impl
         private readonly NotificationConfiguration _configuration;
     }
 
-    public class OptimalizationFinishedState
+    public class OptimizationFinishedState
     {
         
     }

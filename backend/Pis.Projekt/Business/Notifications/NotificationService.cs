@@ -1,46 +1,33 @@
 using System.Threading.Tasks;
-using Pis.Projekt.Framework.Email;
+using Pis.Projekt.Business.Notifications.Domain.Impl;
 
 namespace Pis.Projekt.Business.Notifications
 {
-    public class NotificationService
+    public class NotificationService: IOptimizationNotificationService
     {
-        public NotificationService(IEmailClient emailClient)
+        public NotificationService(INotificationClient client, NotificationConfiguration configuration)
         {
-            _emailClient = emailClient;
+            _client = client;
+            _configuration = configuration;
         }
         
-        public Task SendNotification<TContent>(INotification<TContent> notification)
+        public async Task Notify<TContent>(INotification<TContent> notification)
         {
-            // Serialize and send
-            var client = new FiitEmailService
-                    .EmailPortTypeClient();
+            await _client.NotifyAsync(notification);
+        }
+        
+        public async Task NotifyEvaluationFinishedAsync()
+        {
+            await Notify(new OptimizationFinishedNotification(_configuration));
+        }
+        
+        public async Task SendEvaluationBegunNotificationAsync()
+        {
+            await Notify(new OptimizationFinishedNotification(_configuration));
+        }
+        
 
-            client.notifyAsync("017", "FMLCCJ", "kikprofik@gmail.com", "Hello World", "Bigpp");
-            return Task.CompletedTask;
-        }
-        
-        public Task SendEvaluationFinishedNotificationAsync()
-        {
-            await _emailClient.notifyAsync("017", "FMLCCJ", "kikprofik@gmail.com", 
-                "Hello World", "Bigpp").ConfigureAwait(false);
-        }
-        
-        public Task SendEvaluationBegunNotificationAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task NotifyAsync(OptimalizationFinishedStoreNotification notification)
-        {
-            return Task.CompletedTask;
-        }
-        
-        public Task NotifyAsync(UserTaskRequiredNotification notification)
-        {
-            return Task.CompletedTask;
-        }
-
-        private readonly IEmailClient _emailClient;
+        private readonly NotificationConfiguration _configuration;
+        private readonly INotificationClient _client;
     }
 }

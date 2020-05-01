@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {Product} from "../model/product-model";
-import {Observable, of} from "rxjs";
-
+import {Observable, of, interval} from "rxjs";
+import {debounce} from "rxjs/operators";
 
 
 
@@ -49,6 +49,6 @@ export class ProductService {
 
   getAllProducts(): Observable<Product[]>{
     //TODO backend call
-    return of(this.mockData);
+    return of(this.mockData).pipe(debounce(() => interval(100000)));
   }
 }

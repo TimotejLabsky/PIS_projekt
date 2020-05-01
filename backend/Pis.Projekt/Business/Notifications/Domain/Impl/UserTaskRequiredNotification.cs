@@ -1,25 +1,24 @@
 using System;
 using System.Net.Mail;
+using Newtonsoft.Json;
 using Pis.Projekt.Domain.DTOs;
 
-namespace Pis.Projekt.Business.Notifications
+namespace Pis.Projekt.Business.Notifications.Domain.Impl
 {
-    public class UserTaskRequiredNotification : IEmailNotification<UserTask>
+    public class UserTaskRequiredNotification : IEmailNotification
     {
-        public Type Type { get; set; }
-        public UserTask Content { get; set; }
-
-        public static UserTaskRequiredNotification Create(UserTask userTask)
+        public UserTaskRequiredNotification(IEmail content, string to)
         {
-            return new UserTaskRequiredNotification
-            {
-                Type = typeof(UserTaskRequiredNotification),
-                Content = userTask
-            };
+            Content = content;
+            To = to;
         }
 
-        public MailAddress ToMailAddress { get; }
-        public string Subject { get; }
-        public string Message { get; }
+        public string NotificationType { get; set; }
+        public string To { get; }
+        public UserTask UserTask { get; set; }
+        public MailAddress ToMailAddress => new MailAddress(To);
+        public string Subject => $"{typeof(Type)}: User Task Required";
+        public string Message => JsonConvert.SerializeObject(UserTask);
+        public IEmail Content { get; }
     }
 }

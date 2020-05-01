@@ -1,14 +1,11 @@
 using System;
-using System.Net.Mail;
 
-namespace Pis.Projekt.Business.Notifications
+namespace Pis.Projekt.Business.Notifications.Domain
 {
-    
-    
-    public interface INotification<TContent>
+    public interface INotification<out TContent>
     {
-        public Type Type { get; set; }
+        public string NotificationType { get; set; }
 
-        public TContent Content { get; set; }
+        public TContent Content { get; }
     }
 }

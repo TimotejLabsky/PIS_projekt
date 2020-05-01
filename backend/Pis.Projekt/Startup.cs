@@ -21,7 +21,7 @@ namespace Pis.Projekt
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<SalesDbContext>(c => c.UseInMemoryDatabase("sales"));
-            services.AddScoped<NotificationService>();
+            services.AddScoped<EmailNotificationService>();
             services.AddScoped<SalesOptimalizationService>();
             services.AddControllers();
         }

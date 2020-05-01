@@ -2,10 +2,12 @@ using System;
 using System.Threading.Tasks;
 using FiitEmailService;
 using Pis.Projekt.Business.Notifications;
+using Pis.Projekt.Business.Notifications.Domain;
 
 namespace Pis.Projekt.Framework.Email.Impl
 {
-    public class WsdlEmailClient : IEmailClient
+    public class WsdlEmailClient : IEmailClient,
+        INotificationClient<IEmailNotification, IEmail>
     {
         public WsdlEmailClient(WsdlEmailClientConfiguration configuration,
             WsdlConfiguration<WsdlEmailClient> wsdlConfiguration)
@@ -15,9 +17,12 @@ namespace Pis.Projekt.Framework.Email.Impl
             _client = new EmailPortTypeClient();
         }
 
-        public Task NotifyAsync<TContent>(INotification<TContent> request)
+        public async Task NotifyAsync<TContent>(IEmailNotification request)
+            where TContent : IEmail
         {
-            await 
+            var email = request.Content;
+            await SendMailAsync(email.Subject, email.Message, email.ToMailAddress.Address)
+                .ConfigureAwait(false);
         }
 
         public async Task SendMailAsync(string subject, string message, string email = null)

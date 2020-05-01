@@ -1,6 +1,6 @@
-namespace Pis.Projekt.Business.Notifications
+namespace Pis.Projekt.Business.Notifications.Domain
 {
-    public interface IEmailNotification<TContent> : INotification<TContent>, IEmail
+    public interface IEmailNotification : INotification<IEmail>, IEmail
     {
         // empty
     }

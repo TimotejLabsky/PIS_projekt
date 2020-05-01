@@ -13,16 +13,15 @@ namespace Pis.Projekt.Business
     // Done
     public class SalesOptimalizationService
     {
-        public SalesOptimalizationService(NotificationService notificationService,
-            WaiterService waiter,
+        public SalesOptimalizationService(WaiterService waiter,
             CronSchedulerService cronScheduler,
             TaskSchedulerService taskScheduler,
             ProductPersistenceService productPersistence,
             SalesAggregateRepository aggregateRepository,
             IMapper mapper,
-            SalesEvaluatorService evaluator)
+            SalesEvaluatorService evaluator,
+            IOptimizationNotificationService notificationService)
         {
-            _notificationService = notificationService;
             _waiter = waiter;
             _cronScheduler = cronScheduler;
             _taskScheduler = taskScheduler;
@@ -30,10 +29,12 @@ namespace Pis.Projekt.Business
             _aggregateRepository = aggregateRepository;
             _mapper = mapper;
             _evaluator = evaluator;
+            _notificationService = notificationService;
         }
 
         public async Task OptimizeSalesAsync()
         {
+            await _notificationService.NotifyOptimizationBegunAsync().ConfigureAwait(false);
             var products = await FetchSalesAggregatesAsync()
                 .ConfigureAwait(false);
             var evaluationResult = _evaluator.EvaluateSales(products);
@@ -55,9 +56,8 @@ namespace Pis.Projekt.Business
             var decreasedList = decreasedSalesTask.Result;
             var newPriceList = increasedList.Concat(decreasedList).ToList();
             await _productPersistence.PersistProductsAsync(newPriceList);
-            await _notificationService.NotifyAsync(
-                OptimalizationFinishedStoreNotification.Create(newPriceList));
-            await _cronScheduler.PlanNextOptimalization();
+            var nextOptimalizationOn = await _cronScheduler.PlanNextOptimalization();
+            await _notificationService.NotifyOptimizationFinishedAsync(nextOptimalizationOn).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace Pis.Projekt.Business
 
         private readonly SalesAggregateRepository _aggregateRepository;
         private readonly ProductPersistenceService _productPersistence;
-        private readonly NotificationService _notificationService;
+        private readonly IOptimizationNotificationService _notificationService;
         private readonly CronSchedulerService _cronScheduler;
         private readonly TaskSchedulerService _taskScheduler;
         private readonly SalesEvaluatorService _evaluator;

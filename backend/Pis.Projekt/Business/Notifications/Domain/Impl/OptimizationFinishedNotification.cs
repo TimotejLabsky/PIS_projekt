@@ -3,24 +3,29 @@ using System.Net.Mail;
 
 namespace Pis.Projekt.Business.Notifications.Domain.Impl
 {
-    public class OptimizationFinishedNotification: IEmailNotification<OptimizationFinishedState>
+    public class OptimizationFinishedNotification : IEmailNotification
     {
-        public OptimizationFinishedNotification(NotificationConfiguration configuration)
+        public OptimizationFinishedNotification(DateTime nextOn,
+            NotificationConfiguration configuration)
         {
             _configuration = configuration;
+            FinishedOn = DateTime.Now;
+            NextOn = nextOn;
+            NotificationType = "optimalization.finished";
         }
-        
-        public Type Type { get; set; }
-        public OptimizationFinishedState Content { get; set; }
-        public MailAddress ToMailAddress => 
-        public string Subject { get; }
-        public string Message { get; }
+
+        public string NotificationType { get; set; }
+        public IEmail Content { get; set; }
+        public DateTime FinishedOn { get; }
+        public DateTime NextOn { get; }
+
+        public MailAddress ToMailAddress =>
+            new MailAddress(_configuration.OptimizationFinishedToAddress);
+
+        public string Subject => NotificationType;
+        public string Message => $"Price Optimalization Finished on {FinishedOn}. \n" +
+                                 $"Next Optimalization is planned on {NextOn}";
 
         private readonly NotificationConfiguration _configuration;
-    }
-
-    public class OptimizationFinishedState
-    {
-        
     }
 }

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Pis.Projekt.Business.Scheduling.Impl;
 using Quartz;
-using Quartz.Spi;
 
 namespace Pis.Projekt.Business.Scheduling
 {
@@ -36,11 +35,11 @@ namespace Pis.Projekt.Business.Scheduling
             await _scheduler?.Shutdown(cancellationToken);
         }
 
-        public async Task PlanNextOptimalization()
+        public async Task<DateTime> PlanNextOptimalization()
         {
             var job = _jobFactory.NewJob(, );
             await _scheduler.ScheduleJob(job)
-            return Task.CompletedTask;
+            return DateTime.Now;
         }
         
         public void ScheduleUserEvaluationTask(ProductSalesDecreasedTask task)

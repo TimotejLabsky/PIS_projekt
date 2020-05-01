@@ -1,6 +1,7 @@
 using System;
 using System.Net.Mail;
 using Microsoft.Extensions.DependencyInjection;
+using Pis.Projekt.Business.Notifications.Domain;
 
 namespace Pis.Projekt.Business.Notifications
 {

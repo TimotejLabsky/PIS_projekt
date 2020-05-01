@@ -6,7 +6,7 @@ namespace Pis.Projekt.Business
     {
         public decimal CalculatePrice(PricedProduct product)
         {
-            return product.Price * new decimal(0.5);
+            return product.Price * new decimal(0.9);
         }
     }
 }

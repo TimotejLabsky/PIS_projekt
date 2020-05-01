@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Pis.Projekt.Business;
+using Pis.Projekt.Business.Authorization;
 using Pis.Projekt.Business.Notifications;
 using Pis.Projekt.Domain.Database.Contexts;
 
@@ -34,8 +35,9 @@ namespace Pis.Projekt
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseMiddleware<AuthorizationMiddleWare>();
             app.UseRouting();
-
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet("/",

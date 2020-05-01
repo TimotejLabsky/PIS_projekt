@@ -13,10 +13,11 @@ namespace Pis.Projekt.Api.Controllers
         public async Task<IActionResult> ConfirmTaskAsync(Guid taskGuid, IEnumerable<PricedProduct> pricedProducts, CancellationToken token = default)
         {
             var task = _service.GetProductSalesDecreasedTask();
+            
             task.Fulfill();
             return Ok();
         }
-
+        
         private readonly Service _service;
     }
 }

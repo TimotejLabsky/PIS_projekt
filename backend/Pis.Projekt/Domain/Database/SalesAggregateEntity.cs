@@ -21,7 +21,7 @@ namespace Pis.Projekt.Domain.Database
         
         [Column("priced_product_guid")]
         public Guid PricedProductGuid { get; set; }
-        public PricedProductEntity Product { get; set; }
+        public PricedProductEntity PricedProduct { get; set; }
         
         [Column("sale_coefficient")]
         public decimal SaleCoefficient { get; set; }

@@ -3,7 +3,7 @@ using Pis.Projekt.Business.Scheduling;
 
 namespace Pis.Projekt.Domain.Database.Contexts
 {
-    public class SalesDbContext: DbContext
+    public class SalesDbContext : DbContext
     {
         public SalesDbContext(DbContextOptions options) : base(options)
         {
@@ -26,18 +26,20 @@ namespace Pis.Projekt.Domain.Database.Contexts
                 .HasKey(p => p.Id);
             modelBuilder.Entity<ProductEntity>()
                 .HasKey(p => p.Id);
-            modelBuilder.Entity<UserTaskEntity>()
-                .HasKey(p => p.Id);
         }
+
         private void ConfigureForeignKeys(ModelBuilder modelBuilder)
         {
-            // TODO
             modelBuilder.Entity<PricedProductEntity>()
-                .Property(p => p.Product);
-            modelBuilder.Entity<SalesAggregateEntity>();
-            modelBuilder.Entity<ProductEntity>();
-            modelBuilder.Entity<UserTaskEntity>();
+                .HasOne(o => o.Product)
+                .WithMany()
+                .HasForeignKey(k => k.ProductGuid);
+            modelBuilder.Entity<SalesAggregateEntity>()
+                .HasOne(o => o.PricedProduct)
+                .WithMany()
+                .HasForeignKey(k => k.PricedProductGuid);
         }
+
         private void ConfigureConsistency(ModelBuilder modelBuilder)
         {
             // TODO
@@ -46,6 +48,5 @@ namespace Pis.Projekt.Domain.Database.Contexts
         public DbSet<PricedProductEntity> PricedProducts { get; set; }
         public DbSet<SalesAggregateEntity> SaleAggregates { get; set; }
         public DbSet<ProductEntity> Products { get; set; }
-        public DbSet<UserTaskEntity> UserTasks { get; set; }
     }
 }

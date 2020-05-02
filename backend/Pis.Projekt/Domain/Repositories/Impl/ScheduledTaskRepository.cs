@@ -10,6 +10,7 @@ using Pis.Projekt.Framework.Repositories;
 
 namespace Pis.Projekt.Domain.Repositories.Impl
 {
+    // TODO probably will not be used, TaskWsdl Service provides this functionality
     public class ScheduledTaskRepository :
         AbstractEFRepository<SalesDbContext, int, ScheduledTask>, IScheduledTaskRepository,
         IDisposable

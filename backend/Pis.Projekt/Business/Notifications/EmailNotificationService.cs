@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+
+using Microsoft.Extensions.Options;
 using Pis.Projekt.Business.Notifications.Domain;
 using Pis.Projekt.Business.Notifications.Domain.Impl;
 using Pis.Projekt.Business.Validation;
@@ -10,11 +12,12 @@ namespace Pis.Projekt.Business.Notifications
     public class EmailNotificationService : IOptimizationNotificationService
     {
         public EmailNotificationService(INotificationClient<IEmailNotification, IEmail> client,
-            NotificationConfiguration configuration, ILogger<EmailValidationService> logger)
+            IOptions<NotificationConfiguration> configuration, ILogger<EmailValidationService> logger)
+
         {
             _client = client;
-            _configuration = configuration;
-            _logger = logger;
+            _configuration = configuration.Value;
+              _logger = logger;
         }
 
         public async Task NotifyAsync<TContent>(IEmailNotification notification)

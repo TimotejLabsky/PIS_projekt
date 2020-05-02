@@ -1,8 +1,7 @@
-using AutoMapper.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Pis.Projekt.Business.Scheduling;
 using Pis.Projekt.Business.Scheduling.Impl;
-using Quartz;
 
 namespace Pis.Projekt.System
 {
@@ -18,6 +17,7 @@ namespace Pis.Projekt.System
         // public static CronExpression ReadCron(this IConfiguration configuration, string section)
         // {
         //     return configuration.
+
         // }
     }
 }

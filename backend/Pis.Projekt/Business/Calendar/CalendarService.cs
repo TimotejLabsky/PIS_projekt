@@ -20,7 +20,7 @@ namespace Pis.Projekt.Business.Calendar
             DateTime outDate;
             var currentDate = await _calendarPortTypeClient.getCurrentDateAsync().ConfigureAwait(false);
             if (!DateTime.TryParseExact(currentDate.date, "YYYY-MM-DD",
-               CultureInfo.InvariantCulture, 
+                CultureInfo.InvariantCulture, 
                 DateTimeStyles.None, out outDate))
             {
                 throw new InvalidDataException($"Unable to parse date {currentDate.date}");

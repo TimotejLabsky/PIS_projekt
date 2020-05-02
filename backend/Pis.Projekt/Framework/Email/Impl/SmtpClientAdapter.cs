@@ -9,8 +9,8 @@ namespace Pis.Projekt.Framework.Email.Impl
     public class SmtpClientAdapter : IEmailClient,
         INotificationClient<IEmailNotification, IEmail>
     {
-        public SmtpClientAdapter(IOptions<SmtpClientConfiguration> configuration,
-            SmtpClient client)
+
+        public SmtpClientAdapter(IOptions<SmtpClientConfiguration> configuration,            SmtpClient client)
         {
             _configuration = configuration.Value;
             _client = client;

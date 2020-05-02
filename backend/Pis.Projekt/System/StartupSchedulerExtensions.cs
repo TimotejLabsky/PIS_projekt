@@ -13,10 +13,11 @@ namespace Pis.Projekt.System
             services.AddSingleton<OptimizationJob>();
             services.AddSingleton(new JobSchedule<OptimizationJob>("0/60 * * * * ?"));
         }
-        //
+
         // public static CronExpression ReadCron(this IConfiguration configuration, string section)
         // {
-        //     return ;
+        //     return configuration.
+
         // }
     }
 }

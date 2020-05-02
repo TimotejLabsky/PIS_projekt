@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Pis.Projekt.Business.Notifications;
 using Pis.Projekt.Domain.DTOs;
 using Pis.Projekt.Domain.Repositories;
@@ -19,7 +20,7 @@ namespace Pis.Projekt.Business
             ISalesAggregateRepository aggregateRepository,
             IMapper mapper,
             SalesEvaluatorService evaluator,
-            IOptimizationNotificationService notificationService)
+            IOptimizationNotificationService notificationService, ILogger<SalesOptimalizationService> logger)
         {
             _waiter = waiter;
             // _cronScheduler = cronScheduler;
@@ -29,13 +30,17 @@ namespace Pis.Projekt.Business
             _mapper = mapper;
             _evaluator = evaluator;
             _notificationService = notificationService;
+            _logger = logger;
         }
 
         public async Task OptimizeSalesAsync(CancellationToken token = default)
         {
             await _notificationService.NotifyOptimizationBegunAsync().ConfigureAwait(false);
+            _logger.LogInformation("Fetching sales from last week");
             var products = await FetchSalesAggregatesAsync(token)
                 .ConfigureAwait(false);
+            
+            _logger.LogInformation("Evaluating sales of products");
             var evaluationResult = _evaluator.EvaluateSales(products);
 
             /*
@@ -75,6 +80,7 @@ namespace Pis.Projekt.Business
             var sales = await _aggregateRepository
                 .FetchFromLastWeekAsync(token)
                 .ConfigureAwait(false);
+            _logger.LogTrace($"Fetched sales: {sales}");
             return _mapper.Map<IEnumerable<SalesAggregate>>(sales);
         }
 
@@ -86,5 +92,6 @@ namespace Pis.Projekt.Business
         private readonly SalesEvaluatorService _evaluator;
         private readonly WaiterService _waiter;
         private readonly IMapper _mapper;
+        private readonly ILogger<SalesOptimalizationService> _logger;
     }
 }

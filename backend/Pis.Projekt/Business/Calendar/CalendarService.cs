@@ -3,14 +3,16 @@ using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using FiitCalendarService;
+using Microsoft.Extensions.Logging;
 
 namespace Pis.Projekt.Business.Calendar
 {
     public class CalendarService
     {
-        public CalendarService(CalendarPortTypeClient calendarPortTypeClient)
+        public CalendarService(CalendarPortTypeClient calendarPortTypeClient, ILogger<CalendarService> logger)
         {
             _calendarPortTypeClient = calendarPortTypeClient;
+            _logger = logger;
         }
         
         public async Task<DateTime> GetCurrentDate()
@@ -23,12 +25,13 @@ namespace Pis.Projekt.Business.Calendar
             {
                 throw new InvalidDataException($"Unable to parse date {currentDate.date}");
             }
-
+            _logger.LogDebug($"Successfully got today's date {outDate}");
             return outDate;
         }
 
         private readonly FiitCalendarService.CalendarPortTypeClient _calendarPortTypeClient;
+        private readonly ILogger<CalendarService> _logger;
 
-     
+
     }
 }

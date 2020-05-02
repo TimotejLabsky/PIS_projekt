@@ -548,3 +548,5 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 # End of https://www.gitignore.io/api/rider,csharp,aspnetcore
+/backend/Pis.Projekt/appsettings.json
+/backend/Pis.Projekt/appsettings.Development.json

@@ -14,7 +14,7 @@ using Pis.Projekt.Framework.Repositories;
 namespace Pis.Projekt.Domain.Repositories.Impl
 {
     public class PricedProductRepository :
-        AbstractEFRepository<SalesDbContext, uint, PricedProductEntity>, IPricedProductRepository,
+        AbstractEFRepository<SalesDbContext, Guid, PricedProductEntity>, IPricedProductRepository,
         IDisposable
     {
         public PricedProductRepository(IServiceScopeFactory scopeFactory, WeekCounter counter) : base(scopeFactory)
@@ -62,7 +62,7 @@ namespace Pis.Projekt.Domain.Repositories.Impl
 
         private readonly WeekCounter _counter;
 
-        public override Task<PricedProductEntity> FindAsync(uint id, CancellationToken token = default)
+        public override Task<PricedProductEntity> FindAsync(Guid id, CancellationToken token = default)
         {
             return base.FindAsync(id,  token);
         }

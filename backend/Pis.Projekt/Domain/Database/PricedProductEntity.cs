@@ -1,15 +1,14 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Pis.Projekt.Framework.Repositories;
 
 namespace Pis.Projekt.Domain.Database
 {
     [Table("priced_products")]
-    public class PricedProductEntity: IEntity<uint>
+    public class PricedProductEntity: IEntity<Guid>
     {
-        [NotMapped]
-        public uint Id => SalesWeek;
+        [Column("id")]
+        public Guid Id { get; set; }
 
         [Column("sales_week")]
         public uint SalesWeek { get; set; }

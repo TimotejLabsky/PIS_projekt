@@ -9,7 +9,7 @@ using Pis.Projekt.Framework.Repositories;
 
 namespace Pis.Projekt.Domain.Repositories
 {
-    public interface IPricedProductRepository : IRepository<uint, PricedProductEntity>,
+    public interface IPricedProductRepository : IRepository<Guid, PricedProductEntity>,
         ITransactionalRepository
     {
         Task<PricedProductEntity> RequireAsync(

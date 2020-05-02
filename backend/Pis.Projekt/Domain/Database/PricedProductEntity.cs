@@ -6,11 +6,11 @@ using Pis.Projekt.Framework.Repositories;
 namespace Pis.Projekt.Domain.Database
 {
     [Table("priced_products")]
-    public class PricedProductEntity: IEntity<Guid>
+    public class PricedProductEntity: IEntity<uint>
     {
-        [Column("id")]
-        public Guid Id { get; }
-        
+        [NotMapped]
+        public uint Id => SalesWeek;
+
         [Column("sales_week")]
         public uint SalesWeek { get; set; }
         
@@ -23,5 +23,6 @@ namespace Pis.Projekt.Domain.Database
         
         [Column("currency")] 
         public string Currency => "EUR";
+
     }
 }

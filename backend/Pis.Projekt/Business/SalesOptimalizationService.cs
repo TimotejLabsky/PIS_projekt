@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Pis.Projekt.Business.Notifications;
 using Pis.Projekt.Domain.DTOs;
+using Pis.Projekt.Domain.Repositories;
 using Pis.Projekt.Domain.Repositories.Impl;
 
 namespace Pis.Projekt.Business
@@ -15,7 +16,7 @@ namespace Pis.Projekt.Business
             // CronSchedulerService cronScheduler,
             // TaskSchedulerService taskScheduler,
             ProductPersistenceService productPersistence,
-            SalesAggregateRepository aggregateRepository,
+            ISalesAggregateRepository aggregateRepository,
             IMapper mapper,
             SalesEvaluatorService evaluator,
             IOptimizationNotificationService notificationService)
@@ -77,7 +78,7 @@ namespace Pis.Projekt.Business
             return _mapper.Map<IEnumerable<SalesAggregate>>(sales);
         }
 
-        private readonly SalesAggregateRepository _aggregateRepository;
+        private readonly ISalesAggregateRepository _aggregateRepository;
         private readonly ProductPersistenceService _productPersistence;
         private readonly IOptimizationNotificationService _notificationService;
         // private readonly CronSchedulerService _cronScheduler;

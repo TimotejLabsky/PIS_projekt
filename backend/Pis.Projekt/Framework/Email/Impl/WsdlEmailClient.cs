@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using FiitEmailService;
+using Microsoft.Extensions.Options;
 using Pis.Projekt.Business.Notifications;
 using Pis.Projekt.Business.Notifications.Domain;
 
@@ -9,11 +10,11 @@ namespace Pis.Projekt.Framework.Email.Impl
     public class WsdlEmailClient : IEmailClient,
         INotificationClient<IEmailNotification, IEmail>
     {
-        public WsdlEmailClient(WsdlEmailClientConfiguration configuration,
-            WsdlConfiguration<WsdlEmailClient> wsdlConfiguration)
+        public WsdlEmailClient(IOptions<WsdlEmailClientConfiguration> configuration,
+            IOptions<WsdlConfiguration<WsdlEmailClient>> wsdlConfiguration)
         {
-            _configuration = configuration;
-            _wsdlConfiguration = wsdlConfiguration;
+            _configuration = configuration.Value;
+            _wsdlConfiguration = wsdlConfiguration.Value;
             _client = new EmailPortTypeClient();
         }
 

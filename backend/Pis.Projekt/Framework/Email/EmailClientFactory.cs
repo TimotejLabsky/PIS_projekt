@@ -1,14 +1,15 @@
 using System;
 using System.Net.Mail;
+using Microsoft.Extensions.Options;
 using Pis.Projekt.Framework.Email.Impl;
 
 namespace Pis.Projekt.Framework.Email
 {
     public class EmailClientFactory
     {
-        public EmailClientFactory(EmailClientFactoryConfiguration configuration, SmtpClient smtpClient)
+        public EmailClientFactory(IOptions<EmailClientFactoryConfiguration> configuration, SmtpClient smtpClient)
         {
-            _configuration = configuration;
+            _configuration = configuration.Value;
             _smtpClient = smtpClient;
         }
 
@@ -34,9 +35,9 @@ namespace Pis.Projekt.Framework.Email
     public class EmailClientFactoryConfiguration
     {
         public EmailClientType ClientType { get; set; }
-        public SmtpClientConfiguration SmtpClientConfiguration { get; set; }
-        public WsdlEmailClientConfiguration WsdlEmailClientConfiguration { get; set; }
-        public WsdlConfiguration<WsdlEmailClient> WsdlConfiguration { get; set; }
+        public IOptions<SmtpClientConfiguration> SmtpClientConfiguration { get; set; }
+        public IOptions<WsdlEmailClientConfiguration> WsdlEmailClientConfiguration { get; set; }
+        public IOptions<WsdlConfiguration<WsdlEmailClient>> WsdlConfiguration { get; set; }
 
         public enum EmailClientType
         {

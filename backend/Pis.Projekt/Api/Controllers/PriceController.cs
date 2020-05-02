@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Pis.Projekt.Api.Responses;
 using Pis.Projekt.Business;
-using Pis.Projekt.Domain.Database.Contexts;
 using Pis.Projekt.Domain.Repositories;
 
 namespace Pis.Projekt.Api.Controllers
@@ -15,14 +14,14 @@ namespace Pis.Projekt.Api.Controllers
     public class PriceController : Controller
     {
         public PriceController(SalesOptimalizationService optimizer,
-            SalesDbContext dbContext,
             IPricedProductRepository pricedProductRepository,
-            IMapper mapper)
+            IMapper mapper,
+            ILogger<PriceController> logger)
         {
             _optimizer = optimizer;
-            _dbContext = dbContext;
             _pricedProductRepository = pricedProductRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet("{week}")]
@@ -34,17 +33,18 @@ namespace Pis.Projekt.Api.Controllers
             return Ok(pricedEntities.Select(p => _mapper.Map<PricedProductResponse>(p)));
         }
 
-        [HttpGet("evaluate")]
-        public async Task<IActionResult> Evaluate()
+        [HttpGet("optimize")]
+        public async Task<IActionResult> Optimize()
         {
+            _logger.LogDebug("Manual Optimization process has started via Restful API call");
             await _optimizer.OptimizeSalesAsync().ConfigureAwait(false);
+            _logger.LogDebug("Manual Optimization process started via Restful API call has ended");
             return Ok();
         }
 
         private readonly IPricedProductRepository _pricedProductRepository;
         private readonly SalesOptimalizationService _optimizer;
-        private readonly ILogger<PriceController> _logger
-        private readonly SalesDbContext _dbContext;
+        private readonly ILogger<PriceController> _logger;
         private readonly IMapper _mapper;
     }
 }

@@ -1,14 +1,16 @@
 using FiitTaskList;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Pis.Projekt.Framework;
 using Task = System.Threading.Tasks.Task;
 
 namespace Pis.Projekt.Business.Scheduling
 {
     public class WsdlTaskClient : ITaskClient
     {
-        public WsdlTaskClient(WsdlTaskClientConfiguration configuration)
+        public WsdlTaskClient(IOptions<WsdlConfiguration<WsdlTaskClient>> configuration)
         {
-            _configuration = configuration;
+            _configuration = configuration.Value;
             _client = new TaskListPortTypeClient();
         }
 
@@ -23,7 +25,7 @@ namespace Pis.Projekt.Business.Scheduling
         }
 
 
-        private readonly WsdlTaskClientConfiguration _configuration;
+        private readonly WsdlConfiguration<WsdlTaskClient> _configuration;
         private readonly TaskListPortTypeClient _client;
     }
 }

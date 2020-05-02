@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Pis.Projekt.Business.Notifications.Domain;
 using Pis.Projekt.Business.Notifications.Domain.Impl;
 
@@ -8,10 +9,10 @@ namespace Pis.Projekt.Business.Notifications
     public class EmailNotificationService : IOptimizationNotificationService
     {
         public EmailNotificationService(INotificationClient<IEmailNotification, IEmail> client,
-            NotificationConfiguration configuration)
+            IOptions<NotificationConfiguration> configuration)
         {
             _client = client;
-            _configuration = configuration;
+            _configuration = configuration.Value;
         }
 
         public async Task NotifyAsync<TContent>(IEmailNotification notification)

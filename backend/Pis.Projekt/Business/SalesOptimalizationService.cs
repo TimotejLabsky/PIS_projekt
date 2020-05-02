@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Pis.Projekt.Business.Notifications;
 using Pis.Projekt.Domain.DTOs;
 using Pis.Projekt.Domain.Repositories;
-using Pis.Projekt.Domain.Repositories.Impl;
 
 namespace Pis.Projekt.Business
 {
@@ -43,39 +42,39 @@ namespace Pis.Projekt.Business
             
             _logger.LogInformation("Evaluating sales of products");
             var evaluationResult = _evaluator.EvaluateSales(products);
-
-            
-            var tasks = new List<Task>();
-            // Split -> send to hosted service
-            // Branch increased
-            _logger.LogInformation("Getting products with increased sales");
-            var increasedSalesTask =
-                _taskScheduler.RegisterIncreasedSalesTask(evaluationResult.IncreasedSales);
-            tasks.Add(increasedSalesTask);
-            // Branch B save to Db
-            _logger.LogInformation("Getting products with decreased sales");
-            var decreasedSalesTask =
-                _taskScheduler.RegisterDecreasedSalesTask(evaluationResult.DecreasedSales);
-            tasks.Add(decreasedSalesTask);
-
-            await Task.WhenAll(tasks);
-            await _waiter.WaitAsync();
-            var increasedList = increasedSalesTask.Result;
-            var decreasedList = decreasedSalesTask.Result;
-            _logger.LogDebug($"Products with increased sales: {increasedList}");
-            _logger.LogDebug($"Products with decreased sales: {decreasedList}");
-            var newPriceList = increasedList.Concat(decreasedList).ToList();
-            
-            _logger.LogInformation("Persisting new data to storage");
-            await _productPersistence.PersistProductsAsync(newPriceList, token).ConfigureAwait(false);
-            
-            _logger.LogInformation("Scheduling next optimization task");
-            var nextOptimalizationOn = await _cronScheduler.ScheduleNextOptimalizationTask(token)
-                .ConfigureAwait(false);
-            
-            _logger.LogInformation("Sending notification about finished optimization");
-            await _notificationService.NotifyOptimizationFinishedAsync(nextOptimalizationOn)
-                .ConfigureAwait(false);
+            //
+            //
+            // var tasks = new List<Task>();
+            // // Split -> send to hosted service
+            // // Branch increased
+            // _logger.LogInformation("Getting products with increased sales");
+            // var increasedSalesTask =
+            //     _taskScheduler.RegisterIncreasedSalesTask(evaluationResult.IncreasedSales);
+            // tasks.Add(increasedSalesTask);
+            // // Branch B save to Db
+            // _logger.LogInformation("Getting products with decreased sales");
+            // var decreasedSalesTask =
+            //     _taskScheduler.RegisterDecreasedSalesTask(evaluationResult.DecreasedSales);
+            // tasks.Add(decreasedSalesTask);
+            //
+            // await Task.WhenAll(tasks);
+            // await _waiter.WaitAsync();
+            // var increasedList = increasedSalesTask.Result;
+            // var decreasedList = decreasedSalesTask.Result;
+            // _logger.LogDebug($"Products with increased sales: {increasedList}");
+            // _logger.LogDebug($"Products with decreased sales: {decreasedList}");
+            // var newPriceList = increasedList.Concat(decreasedList).ToList();
+            //
+            // _logger.LogInformation("Persisting new data to storage");
+            // await _productPersistence.PersistProductsAsync(newPriceList, token).ConfigureAwait(false);
+            //
+            // _logger.LogInformation("Scheduling next optimization task");
+            // var nextOptimalizationOn = await _cronScheduler.ScheduleNextOptimalizationTask(token)
+            //     .ConfigureAwait(false);
+            //
+            // _logger.LogInformation("Sending notification about finished optimization");
+            // await _notificationService.NotifyOptimizationFinishedAsync(nextOptimalizationOn)
+            //     .ConfigureAwait(false);
         }
 
         /// <summary>

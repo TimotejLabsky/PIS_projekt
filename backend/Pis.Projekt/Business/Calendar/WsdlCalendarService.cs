@@ -7,21 +7,20 @@ using Microsoft.Extensions.Logging;
 
 namespace Pis.Projekt.Business.Calendar
 {
-    public class CalendarService
+    public class WsdlCalendarService
     {
-        public CalendarService(CalendarPortTypeClient calendarPortTypeClient, ILogger<CalendarService> logger)
+        public WsdlCalendarService(CalendarPortTypeClient client, ILogger<WsdlCalendarService> logger)
         {
-            _calendarPortTypeClient = calendarPortTypeClient;
+            _client = client;
             _logger = logger;
         }
         
         public async Task<DateTime> GetCurrentDate()
         {
-            DateTime outDate;
-            var currentDate = await _calendarPortTypeClient.getCurrentDateAsync().ConfigureAwait(false);
+            var currentDate = await _client.getCurrentDateAsync().ConfigureAwait(false);
             if (!DateTime.TryParseExact(currentDate.date, "YYYY-MM-DD",
                 CultureInfo.InvariantCulture, 
-                DateTimeStyles.None, out outDate))
+                DateTimeStyles.None, out var outDate))
             {
                 throw new InvalidDataException($"Unable to parse date {currentDate.date}");
             }
@@ -29,8 +28,8 @@ namespace Pis.Projekt.Business.Calendar
             return outDate;
         }
 
-        private readonly FiitCalendarService.CalendarPortTypeClient _calendarPortTypeClient;
-        private readonly ILogger<CalendarService> _logger;
+        private readonly CalendarPortTypeClient _client;
+        private readonly ILogger<WsdlCalendarService> _logger;
 
 
     }

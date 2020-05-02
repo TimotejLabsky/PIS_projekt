@@ -21,7 +21,7 @@ namespace Pis.Projekt.Domain.Database.Contexts
         private void ConfigurePrimaryKeys(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PricedProductEntity>()
-                .HasKey(p => p.SalesWeek);
+                .HasKey(p => p.Id);
             modelBuilder.Entity<SalesAggregateEntity>()
                 .HasKey(p => p.Id);
             modelBuilder.Entity<ProductEntity>()

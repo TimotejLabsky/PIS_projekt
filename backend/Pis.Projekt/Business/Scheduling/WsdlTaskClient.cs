@@ -23,22 +23,26 @@ namespace Pis.Projekt.Business.Scheduling
         {
             var serializedTask = JsonConvert.SerializeObject(scheduledTask);
             _logger.LogDebug($"Sending scheduled task {serializedTask}");
+#if DEBUG
+
             _logger.LogDevelopment("Task sent to WsdlTaskService. " +
                                    $"Id: {scheduledTask.Id}, " +
                                    $"Name: {scheduledTask.Name}, " +
                                    $"ScheduledOn: {scheduledTask.ScheduledOn}", scheduledTask);
             await Task.CompletedTask;
 
-            // TODO: !!PRODUCTION - uncomment lines below in production to used wsdl
-            // await _client.createTaskAsync(_configuration.TeamId, _configuration.Password,
-            //     nameof(WsdlTaskClient), true, scheduledTask.Name, serializedTask,
-            //     // TODO: this probably should be due date
-            //     scheduledTask.ScheduledOn);
+#else
+            await _client.createTaskAsync(_configuration.TeamId, _configuration.Password,
+                nameof(WsdlTaskClient), true, scheduledTask.Name, serializedTask,
+                // TODO: this probably should be due date
+                scheduledTask.ScheduledOn);
+#endif
         }
 
 
         // ReSharper disable once NotAccessedField.Local - Used for production
         private readonly WsdlConfiguration<WsdlTaskClient> _configuration;
+
         // ReSharper disable once NotAccessedField.Local - Used for production
         private readonly TaskListPortTypeClient _client;
         private readonly ILogger<WsdlTaskClient> _logger;

@@ -108,16 +108,13 @@ namespace Pis.Projekt
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.RoutePrefix = string.Empty;  // Set Swagger UI at apps root
             });
 
             app.UseMiddleware<AuthorizationMiddleWare>();
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGet("/",
-                    async context => { await context.Response.WriteAsync("Hello World!"); });
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
 
         private readonly IConfiguration _configuration;

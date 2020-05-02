@@ -47,6 +47,5 @@ namespace Pis.Projekt.Domain.Database.Contexts
         public DbSet<SalesAggregateEntity> SaleAggregates { get; set; }
         public DbSet<ProductEntity> Products { get; set; }
         public DbSet<UserTaskEntity> UserTasks { get; set; }
-        public DbSet<ScheduledTask> ScheduledTasks { get; set; }
     }
 }

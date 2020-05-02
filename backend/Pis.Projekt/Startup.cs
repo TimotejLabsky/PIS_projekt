@@ -7,7 +7,6 @@ using FiitTaskList;
 using FiitValidatorService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +24,7 @@ using Pis.Projekt.Domain.Repositories;
 using Pis.Projekt.Domain.Repositories.Impl;
 using Pis.Projekt.Framework;
 using Pis.Projekt.Framework.Email.Impl;
+using Pis.Projekt.System;
 
 namespace Pis.Projekt
 {
@@ -81,11 +81,13 @@ namespace Pis.Projekt
             }, typeof(Startup));
             services.AddLogging(c => c.AddConsole().AddConfiguration(_configuration));
             services.AddControllers();
-            
+
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Sales Optimization API", Version = "v1" });
+                c.SwaggerDoc("v1",
+                    new OpenApiInfo {Title = "Sales Optimization API", Version = "v1"});
+                c.OperationFilter<AuthorizationParameters>();
             });
 
             // private readonly CronSchedulerService _cronScheduler;
@@ -99,7 +101,7 @@ namespace Pis.Projekt
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
@@ -108,10 +110,10 @@ namespace Pis.Projekt
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                c.RoutePrefix = string.Empty;  // Set Swagger UI at apps root
+                c.RoutePrefix = string.Empty; // Set Swagger UI at apps root
             });
 
-            app.UseMiddleware<AuthorizationMiddleWare>();
+            app.UseMiddleware<AuthorizationMiddleware>();
             app.UseRouting();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });

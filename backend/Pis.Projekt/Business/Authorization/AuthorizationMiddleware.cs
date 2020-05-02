@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Http;
 
 namespace Pis.Projekt.Business.Authorization
 {
-    public class AuthorizationMiddleWare
+    // ReSharper disable once ClassNeverInstantiated.Global USed by DI
+    public class AuthorizationMiddleware
     {
         private readonly RequestDelegate _next;
 
-        public AuthorizationMiddleWare(RequestDelegate next, AuthorizationService service)
+        public AuthorizationMiddleware(RequestDelegate next, AuthorizationService service)
         {
             _next = next;
             _service = service;

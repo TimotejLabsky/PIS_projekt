@@ -3,6 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Pis.Projekt.Business.Scheduling.Impl;
 using Quartz;
 
@@ -12,11 +13,12 @@ namespace Pis.Projekt.Business.Scheduling
     {
         public CronSchedulerService(CronSchedulerConfiguration configuration,
             ISchedulerFactory factory,
-            OptimizationJobFactory jobFactory)
+            OptimizationJobFactory jobFactory, ILogger<CronSchedulerService> logger)
         {
             _configuration = configuration;
             _factory = factory;
             _jobFactory = jobFactory;
+            _logger = logger;
         }
 
 
@@ -24,7 +26,7 @@ namespace Pis.Projekt.Business.Scheduling
         {
             _scheduler = await _factory.GetScheduler(cancellationToken);
             _scheduler.JobFactory = _jobFactory;
-
+            _logger.LogDebug("Starting scheduler");
             await _scheduler.Start(cancellationToken);
         }
 
@@ -32,6 +34,7 @@ namespace Pis.Projekt.Business.Scheduling
         {
             if (_scheduler != null)
             {
+                _logger.LogDebug("Stopping scheduler");
                 await _scheduler.Shutdown(cancellationToken).ConfigureAwait(false);
             }
         }
@@ -80,7 +83,7 @@ namespace Pis.Projekt.Business.Scheduling
         private readonly ISchedulerFactory _factory;
         private readonly OptimizationJobFactory _jobFactory;
         private readonly CronSchedulerConfiguration _configuration;
-
+        private readonly ILogger<CronSchedulerService> _logger;
         public class CronSchedulerConfiguration
         {
             public string Name { get; set; }

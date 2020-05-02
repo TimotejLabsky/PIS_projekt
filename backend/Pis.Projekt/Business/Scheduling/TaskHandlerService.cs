@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Pis.Projekt.Business.Scheduling.Impl;
 using Pis.Projekt.Domain.DTOs;
 using Pis.Projekt.Domain.Repositories;
+using Pis.Projekt.Framework;
 
 namespace Pis.Projekt.Business.Scheduling
 {
@@ -15,12 +17,14 @@ namespace Pis.Projekt.Business.Scheduling
         public TaskSchedulerService(PriceCalculatorService priceCalculator,
             CronSchedulerService cronScheduler,
             IScheduledTaskRepository taskRepository,
-            ITaskClient taskClient)
+            ITaskClient taskClient, ILogger<TaskSchedulerService> logger, WsdlConfiguration<TaskScheduler> wsdlConfiguration)
         {
             _priceCalculator = priceCalculator;
             _cronScheduler = cronScheduler;
             _taskRepository = taskRepository;
             _taskClient = taskClient;
+            _logger = logger;
+            _wsdlConfiguration = wsdlConfiguration;
         }
 
         public async Task<IEnumerable<PricedProduct>> RegisterDecreasedSalesTask(
@@ -45,12 +49,14 @@ namespace Pis.Projekt.Business.Scheduling
         {
             if (type == typeof(ProductSalesIncreasedTask))
             {
+                _logger.LogInformation("Handling products with increased sales");
                 task.Result =
                     await HandleProductSalesIncreasedTask((ProductSalesIncreasedTask) task)
                         .ConfigureAwait(false);
             }
-            else if (type == typeof(ProductSalesIncreasedTask))
+            else if (type == typeof(ProductSalesDecreasedTask))
             {
+                _logger.LogInformation("Handling products with decreased sales");
                 task.Result =
                     await HandleProductSalesDecreasedTask((ProductSalesDecreasedTask) task, token)
                         .ConfigureAwait(false);
@@ -94,7 +100,8 @@ namespace Pis.Projekt.Business.Scheduling
 
             var client = new FiitTaskList.TaskListPortTypeClient();
             // TODO: team_id, psw and creater_name => Take from configuration
-            var response = await client.createTaskAsync("017", "root",
+            _logger.LogTrace($"Creating task with {typeof(FiitTaskList.TaskListPortTypeClient)}");
+            var response = await client.createTaskAsync(_wsdlConfiguration.TeamId, _wsdlConfiguration.Password,
                 "", true,
                 nameof(ProductSalesDecreasedTask), "descr", DateTime.Now);
             task.OnTaskFulfilled += TaskFulfilled;
@@ -112,6 +119,7 @@ namespace Pis.Projekt.Business.Scheduling
 
         public async Task StartAsync(CancellationToken token)
         {
+            _logger.LogTrace("Starting Task scheduler");
             if (_task != null)
             {
                 await ProcessAsync(_task, _task.GetType(), token).ConfigureAwait(false);
@@ -120,6 +128,7 @@ namespace Pis.Projekt.Business.Scheduling
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            _logger.LogTrace("Stoping Task scheduler");
             return Task.Run(() => _task = null, cancellationToken);
         }
 
@@ -130,6 +139,8 @@ namespace Pis.Projekt.Business.Scheduling
         private ITask<IEnumerable<PricedProduct>> _task;
         private readonly CronSchedulerService _cronScheduler;
         private readonly IScheduledTaskRepository _taskRepository;
+        private readonly ILogger<TaskSchedulerService> _logger;
+        private readonly WsdlConfiguration<TaskScheduler> _wsdlConfiguration;
     }
 
     public class UserTaskNotFulfilledException : Exception

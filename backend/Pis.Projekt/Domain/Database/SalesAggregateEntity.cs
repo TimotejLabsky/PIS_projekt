@@ -24,11 +24,15 @@ namespace Pis.Projekt.Domain.Database
         
         [Column("priced_product_guid")]
         [Required]
-        public Guid PricedProductGuid { get; set; }
-        public PricedProductEntity PricedProduct { get; set; }
+        public Guid ProductGuid { get; set; }
+        public ProductEntity Product { get; set; }
         
         [Column("sale_coefficient")]
         [Required]
         public decimal SaleCoefficient { get; set; }
+        
+        [Column("price")]
+        [Required]
+        public decimal Price { get; set; }
     }
 }

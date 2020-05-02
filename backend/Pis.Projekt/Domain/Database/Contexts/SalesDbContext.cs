@@ -35,9 +35,9 @@ namespace Pis.Projekt.Domain.Database.Contexts
                 .WithMany()
                 .HasForeignKey(k => k.ProductGuid);
             modelBuilder.Entity<SalesAggregateEntity>()
-                .HasOne(o => o.PricedProduct)
+                .HasOne(o => o.Product)
                 .WithMany()
-                .HasForeignKey(k => k.PricedProductGuid);
+                .HasForeignKey(k => k.ProductGuid);
         }
 
         private void ConfigureConsistency(ModelBuilder modelBuilder)

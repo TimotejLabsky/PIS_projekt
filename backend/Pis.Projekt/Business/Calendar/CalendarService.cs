@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using FiitCalendarService;
@@ -17,8 +18,8 @@ namespace Pis.Projekt.Business.Calendar
             DateTime outDate;
             var currentDate = await _calendarPortTypeClient.getCurrentDateAsync().ConfigureAwait(false);
             if (!DateTime.TryParseExact(currentDate.date, "YYYY-MM-DD",
-                System.Globalization.CultureInfo.InvariantCulture,
-                System.Globalization.DateTimeStyles.None, out outDate))
+                CultureInfo.InvariantCulture, 
+                DateTimeStyles.None, out outDate))
             {
                 throw new InvalidDataException($"Unable to parse date {currentDate.date}");
             }

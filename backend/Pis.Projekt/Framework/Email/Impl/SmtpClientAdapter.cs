@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Threading.Tasks;
 using Pis.Projekt.Business.Notifications;
 using Pis.Projekt.Business.Notifications.Domain;
@@ -8,7 +9,7 @@ namespace Pis.Projekt.Framework.Email.Impl
         INotificationClient<IEmailNotification, IEmail>
     {
         public SmtpClientAdapter(SmtpClientConfiguration configuration,
-            System.Net.Mail.SmtpClient client)
+            SmtpClient client)
         {
             _configuration = configuration;
             _client = client;
@@ -28,7 +29,7 @@ namespace Pis.Projekt.Framework.Email.Impl
                 .ConfigureAwait(false);
         }
 
-        private readonly System.Net.Mail.SmtpClient _client;
+        private readonly SmtpClient _client;
         private readonly SmtpClientConfiguration _configuration;
     }
 }

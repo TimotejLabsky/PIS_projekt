@@ -7,7 +7,7 @@ namespace Pis.Projekt.Business.Scheduling.Impl
 {
     public class UserEvaluationJob : IJob
     {
-        public UserEvaluationJob(ISchedulabletask<UserTask> task)
+        public UserEvaluationJob(ScheduledTask task)
         {
             _task = task;
         }
@@ -19,6 +19,6 @@ namespace Pis.Projekt.Business.Scheduling.Impl
             return Task.CompletedTask;
         }
 
-        private readonly ISchedulabletask<UserTask> _task;
+        private readonly ScheduledTask _task;
     }
 }

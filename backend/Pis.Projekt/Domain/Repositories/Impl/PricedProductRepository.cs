@@ -17,8 +17,9 @@ namespace Pis.Projekt.Domain.Repositories.Impl
         AbstractEFRepository<SalesDbContext, Guid, PricedProductEntity>, IPricedProductRepository,
         IDisposable
     {
-        public PricedProductRepository(IServiceScopeFactory scopeFactory) : base(scopeFactory)
+        public PricedProductRepository(IServiceScopeFactory scopeFactory, WeekCounter counter) : base(scopeFactory)
         {
+            _counter = counter;
             _scope = scopeFactory.CreateScope();
         }
 
@@ -51,11 +52,19 @@ namespace Pis.Projekt.Domain.Repositories.Impl
             return found.First();
         }
 
+        public async Task<IEnumerable<PricedProductEntity>> FetchFromWeekAsync(
+            uint weekNumber,
+            CancellationToken token)
+        {
+            return await ListAsync(s => s.SalesWeek == weekNumber, null, true, token)
+                .ConfigureAwait(false);
+        }
+
         private readonly WeekCounter _counter;
 
         #region __ Disposable Pattern __
 
-        public void Dispose()
+        public new void Dispose()
         {
             // Dispose of unmanaged resources.
             Dispose(true);
@@ -64,9 +73,9 @@ namespace Pis.Projekt.Domain.Repositories.Impl
         }
 
         // Protected implementation of Dispose pattern.
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
-            if (disposed)
+            if (_disposed)
                 return;
 
             if (disposing)
@@ -74,11 +83,11 @@ namespace Pis.Projekt.Domain.Repositories.Impl
                 _scope.Dispose();
             }
 
-            disposed = true;
+            _disposed = true;
         }
 
         // Flag: Has Dispose already been called?
-        bool disposed = false;
+        private bool _disposed;
 
         #endregion
 

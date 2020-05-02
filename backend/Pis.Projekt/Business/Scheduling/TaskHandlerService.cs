@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.Extensions.Hosting;
 using Pis.Projekt.Business.Scheduling.Impl;
-using Pis.Projekt.Domain.Database;
 using Pis.Projekt.Domain.DTOs;
 using Pis.Projekt.Domain.Repositories;
 
@@ -18,13 +15,11 @@ namespace Pis.Projekt.Business.Scheduling
         public TaskSchedulerService(PriceCalculatorService priceCalculator,
             CronSchedulerService cronScheduler,
             IScheduledTaskRepository taskRepository,
-            IMapper mapper,
             ITaskClient taskClient)
         {
             _priceCalculator = priceCalculator;
             _cronScheduler = cronScheduler;
             _taskRepository = taskRepository;
-            _mapper = mapper;
             _taskClient = taskClient;
         }
 
@@ -44,7 +39,9 @@ namespace Pis.Projekt.Business.Scheduling
             return _task.Result;
         }
 
-        public async Task ProcessAsync(ITask<IEnumerable<PricedProduct>> task, Type type)
+        public async Task ProcessAsync(ITask<IEnumerable<PricedProduct>> task,
+            Type type,
+            CancellationToken token)
         {
             if (type == typeof(ProductSalesIncreasedTask))
             {
@@ -55,7 +52,7 @@ namespace Pis.Projekt.Business.Scheduling
             else if (type == typeof(ProductSalesIncreasedTask))
             {
                 task.Result =
-                    await HandleProductSalesDecreasedTask((ProductSalesDecreasedTask) task)
+                    await HandleProductSalesDecreasedTask((ProductSalesDecreasedTask) task, token)
                         .ConfigureAwait(false);
             }
             else
@@ -78,7 +75,8 @@ namespace Pis.Projekt.Business.Scheduling
         }
 
         public async Task<IEnumerable<PricedProduct>> HandleProductSalesDecreasedTask(
-            ProductSalesDecreasedTask task)
+            ProductSalesDecreasedTask task,
+            CancellationToken token)
         {
             var awaiter = new TaskCompletionSource<IEnumerable<PricedProduct>>();
 
@@ -95,26 +93,28 @@ namespace Pis.Projekt.Business.Scheduling
             }
 
             var client = new FiitTaskList.TaskListPortTypeClient();
+            // TODO: team_id, psw and creater_name => Take from configuration
             var response = await client.createTaskAsync("017", "root",
                 "", true,
                 nameof(ProductSalesDecreasedTask), "descr", DateTime.Now);
             task.OnTaskFulfilled += TaskFulfilled;
             task.OnTaskFailed += TaskFailed;
-            _cronScheduler.ScheduleUserEvaluationTask(task);
-            
+            await _cronScheduler.ScheduleUserEvaluationTask(task, token).ConfigureAwait(false);
+
             var scheduledTask = task.Schedule(response.task_id);
             // TODO missing transaction
-            await _taskRepository.CreateAsync(scheduledTask).ConfigureAwait(false);
+            await _taskRepository.CreateAsync(scheduledTask, token)
+                .ConfigureAwait(false);
             await _taskClient.SendAsync(scheduledTask);
             return await awaiter.Task.ConfigureAwait(false);
         }
 
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken token)
         {
             if (_task != null)
             {
-                await ProcessAsync(_task, _task.GetType()).ConfigureAwait(false);
+                await ProcessAsync(_task, _task.GetType(), token).ConfigureAwait(false);
             }
         }
 
@@ -126,7 +126,6 @@ namespace Pis.Projekt.Business.Scheduling
         private readonly PriceCalculatorService _priceCalculator;
 
 
-        private readonly IMapper _mapper;
         private readonly ITaskClient _taskClient;
         private ITask<IEnumerable<PricedProduct>> _task;
         private readonly CronSchedulerService _cronScheduler;
@@ -137,13 +136,13 @@ namespace Pis.Projekt.Business.Scheduling
     {
         public UserTaskNotFulfilledException(ScheduledTask task)
         {
-            this.task = task;
+            Task = task;
         }
 
         public override string Message =>
-            $"Task {task.Id}:{task.Name} has not been resolved by user in given time";
+            $"Task {Task.Id}:{Task.Name} has not been resolved by user in given time";
 
 
-        public ScheduledTask task { get; }
+        public ScheduledTask Task { get; }
     }
 }

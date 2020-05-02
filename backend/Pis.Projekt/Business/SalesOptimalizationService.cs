@@ -32,10 +32,10 @@ namespace Pis.Projekt.Business
             _notificationService = notificationService;
         }
 
-        public async Task OptimizeSalesAsync()
+        public async Task OptimizeSalesAsync(CancellationToken token = default)
         {
             await _notificationService.NotifyOptimizationBegunAsync().ConfigureAwait(false);
-            var products = await FetchSalesAggregatesAsync()
+            var products = await FetchSalesAggregatesAsync(token)
                 .ConfigureAwait(false);
             var evaluationResult = _evaluator.EvaluateSales(products);
 
@@ -55,9 +55,11 @@ namespace Pis.Projekt.Business
             var increasedList = increasedSalesTask.Result;
             var decreasedList = decreasedSalesTask.Result;
             var newPriceList = increasedList.Concat(decreasedList).ToList();
-            await _productPersistence.PersistProductsAsync(newPriceList);
-            var nextOptimalizationOn = await _cronScheduler.PlanNextOptimalization();
-            await _notificationService.NotifyOptimizationFinishedAsync(nextOptimalizationOn).ConfigureAwait(false);
+            await _productPersistence.PersistProductsAsync(newPriceList, token).ConfigureAwait(false);
+            var nextOptimalizationOn = await _cronScheduler.ScheduleNextOptimalizationTask(token)
+                .ConfigureAwait(false);
+            await _notificationService.NotifyOptimizationFinishedAsync(nextOptimalizationOn)
+                .ConfigureAwait(false);
         }
 
         /// <summary>

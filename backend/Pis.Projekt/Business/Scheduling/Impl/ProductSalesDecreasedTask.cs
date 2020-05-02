@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Pis.Projekt.Domain.DTOs;
 
 namespace Pis.Projekt.Business.Scheduling.Impl
 {
-    public class ProductSalesDecreasedTask : ISchedulableTask<IEnumerable<PricedProduct>>
+    public class ProductSalesDecreasedTask : ISchedulabletask<IEnumerable<PricedProduct>>
     {
         public ProductSalesDecreasedTask(string name, IEnumerable<PricedProduct> products)
         {
@@ -17,7 +16,7 @@ namespace Pis.Projekt.Business.Scheduling.Impl
         {
             if (Result == null)
             {
-                OnTaskFailed?.Invoke(this);
+                OnTaskFailed?.Invoke();
             }
         }
 
@@ -40,10 +39,10 @@ namespace Pis.Projekt.Business.Scheduling.Impl
             };
         }
 
-        public event ISchedulableTask<IEnumerable<PricedProduct>>.TaskFulfilledHandler
+        public event ISchedulabletask<IEnumerable<PricedProduct>>.TaskFulfilledHandler
             OnTaskFulfilled;
 
-        public event ISchedulableTask<IEnumerable<PricedProduct>>.TaskFailedHandler OnTaskFailed;
+        public event ISchedulabletask<IEnumerable<PricedProduct>>.TaskFailedHandler OnTaskFailed;
         public IEnumerable<PricedProduct> Products { get; }
     }
 }

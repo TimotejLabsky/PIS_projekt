@@ -12,7 +12,7 @@ namespace Pis.Projekt.Business.Scheduling
     {
         public CronSchedulerService(CronSchedulerConfiguration configuration,
             ISchedulerFactory factory,
-            WeeklyJobFactory jobFactory)
+            OptimizationJobFactory jobFactory)
         {
             _configuration = configuration;
             _factory = factory;
@@ -23,63 +23,68 @@ namespace Pis.Projekt.Business.Scheduling
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             _scheduler = await _factory.GetScheduler(cancellationToken);
-            _scheduler.JobFactory = _fac;
+            _scheduler.JobFactory = _jobFactory;
 
-            await _scheduler.ScheduleJob(job, trigger, cancellationToken);
-            
             await _scheduler.Start(cancellationToken);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            await _scheduler?.Shutdown(cancellationToken);
+            if (_scheduler != null)
+            {
+                await _scheduler.Shutdown(cancellationToken).ConfigureAwait(false);
+            }
         }
 
-        public async Task<DateTime> PlanNextOptimalization()
+        public async Task<DateTime> ScheduleNextOptimalizationTask(CancellationToken token)
         {
-            var job = _jobFactory.NewJob(, );
-            await _scheduler.ScheduleJob(job)
-            return DateTime.Now;
+            var job = _jobFactory.CreateOptimizationJob();
+            var trigger = CreateTrigger<OptimizationJob>(_configuration);
+            await _scheduler.ScheduleJob(job, trigger, token);
+            return DateTime.Now; // TODO return correct datetime of next optimization
         }
-        
-        public void ScheduleUserEvaluationTask(ProductSalesDecreasedTask task)
+
+        public async Task ScheduleUserEvaluationTask(ProductSalesDecreasedTask task,
+            CancellationToken token)
         {
             // create job from scheduled task
-            var job = _jobFactory.NewJob(, );
-            _scheduler.ScheduleJob(job);
+            var job = _jobFactory.CreateProductSalesDecreasedTimeoutJob(task);
+            var trigger = CreateTrigger<UserEvaluationJob>(_configuration);
+            await _scheduler.ScheduleJob(job, trigger, token
+            ).ConfigureAwait(false);
         }
-        
+
         private static IJobDetail CreateJob<TJob>(CronSchedulerConfiguration schedule)
+            where TJob : IJob
         {
             var jobType = typeof(TJob);
             return JobBuilder
-                .Create(jobType)
+                .Create<TJob>()
                 .WithIdentity(jobType.FullName)
                 .WithDescription(jobType.Name)
                 .Build();
         }
 
         private static ITrigger CreateTrigger<TJob>(CronSchedulerConfiguration schedule)
+            where TJob : IJob
         {
             return TriggerBuilder
                 .Create()
                 .WithIdentity($"{schedule.Name}.trigger")
-                .WithCronSchedule(schedule.Expression)
-                .WithDescription(schedule.Expression)
+                .WithCronSchedule(schedule.CronExpression.ToString())
+                .WithDescription(schedule.CronExpression.ToString())
                 .Build();
         }
 
         private IScheduler? _scheduler;
         private readonly ISchedulerFactory _factory;
-        private readonly WeeklyJobFactory _jobFactory;
+        private readonly OptimizationJobFactory _jobFactory;
         private readonly CronSchedulerConfiguration _configuration;
 
         public class CronSchedulerConfiguration
         {
             public string Name { get; set; }
-            public string Expression { get; set; }
-
-            public IJob RepeatedAction { get; set; }
+            public CronExpression CronExpression { get; set; }
         }
     }
 }

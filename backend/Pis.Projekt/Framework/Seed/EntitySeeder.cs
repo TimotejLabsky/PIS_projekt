@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pis.Projekt.Domain.Database;
@@ -10,18 +11,20 @@ namespace Pis.Projekt.Framework.Seed
 {
     public class EntitySeeder
     {
-        public EntitySeeder(IOptions<EntitySeederConfiguration> configuration, IProductRepository productRepository,
-            ISalesAggregateRepository salesAggregateRepository,
-            ILogger<EntitySeeder> logger)
+        public EntitySeeder(IOptions<EntitySeederConfiguration> configuration,
+            ILogger<EntitySeeder> logger,
+            IServiceScopeFactory scopeFactory)
         {
-            _productRepository = productRepository;
-            _salesAggregateRepository = salesAggregateRepository;
             _logger = logger;
+            _scopeFactory = scopeFactory;
             _configuration = configuration.Value;
         }
         
         public async Task Seed()
         {
+            using var scope = _scopeFactory.CreateScope();
+            var productRepository = scope.ServiceProvider.GetRequiredService<IProductRepository>();
+            var salesAggregateRepository = scope.ServiceProvider.GetRequiredService<ISalesAggregateRepository>();
             if (_configuration.SeedAtStart)
             {
                 _logger.LogDebug($"Seeding of entities by {nameof(EntitySeeder)} has started");
@@ -37,9 +40,9 @@ namespace Pis.Projekt.Framework.Seed
                     var salesAggregate = saleAggregateEnumerator.Current;
                     if (salesAggregate != null)
                     {
-                        await _productRepository.CreateAsync(salesAggregate.Product)
+                        await productRepository.CreateAsync(salesAggregate.Product)
                             .ConfigureAwait(false);
-                        await _salesAggregateRepository.CreateAsync(salesAggregate)
+                        await salesAggregateRepository.CreateAsync(salesAggregate)
                             .ConfigureAwait(false);
                     }
                 }
@@ -99,8 +102,7 @@ namespace Pis.Projekt.Framework.Seed
         }
 
         private readonly ILogger<EntitySeeder> _logger;
-        private readonly IProductRepository _productRepository;
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly EntitySeederConfiguration _configuration;
-        private readonly ISalesAggregateRepository _salesAggregateRepository;
     }
 }

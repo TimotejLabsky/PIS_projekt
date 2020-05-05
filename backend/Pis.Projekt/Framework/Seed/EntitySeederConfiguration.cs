@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Pis.Projekt.Framework.Seed
 {
@@ -6,8 +8,9 @@ namespace Pis.Projekt.Framework.Seed
     {
         public bool SeedAtStart { get; set; }
         public uint WeekAmount { get; set; }
-        public IEnumerable<string> ProductNames => ProductNamesRaw.Split(";");
-        public string ProductNamesRaw { get; set; }
+        public string ProductsCSV { get; set; }
+
+        public IEnumerable<string> ProductNames => ProductsCSV.Split(";");
         public double MinPrice { get; set; }
         public double MaxPrice { get; set; }
     }

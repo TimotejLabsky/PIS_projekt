@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Pis.Projekt.Business.Scheduling.Impl;
 using Pis.Projekt.Domain.DTOs;
 using Pis.Projekt.Framework;
@@ -16,19 +17,22 @@ namespace Pis.Projekt.Business.Scheduling
     {
         public TaskHandlerService(PriceCalculatorService priceCalculator,
             // CronSchedulerService cronScheduler,
-            ITaskClient taskClient, ILogger<TaskHandlerService> logger, WsdlConfiguration<TaskScheduler> wsdlConfiguration)
+            ITaskClient taskClient,
+            ILogger<TaskHandlerService> logger,
+            IOptions<WsdlConfiguration<TaskHandlerService>> wsdlConfiguration)
         {
             _priceCalculator = priceCalculator;
             // _cronScheduler = cronScheduler;
             _taskClient = taskClient;
             _logger = logger;
-            _wsdlConfiguration = wsdlConfiguration;
+            _wsdlConfiguration = wsdlConfiguration.Value;
         }
 
         public async Task<IEnumerable<PricedProduct>> StartDecreasedSalesTask(
             IEnumerable<PricedProduct> products)
         {
-            _task = new ProductSalesDecreasedTask("product-sales-decreased", products, DateTime.Now);
+            _task = new ProductSalesDecreasedTask("product-sales-decreased", products,
+                DateTime.Now);
             await StartAsync(default).ConfigureAwait(false);
             return _task.Result;
         }
@@ -100,17 +104,18 @@ namespace Pis.Projekt.Business.Scheduling
 
             var client = new FiitTaskList.TaskListPortTypeClient();
             _logger.LogTrace($"Creating task with {typeof(FiitTaskList.TaskListPortTypeClient)}");
-            var response = await client.createTaskAsync(_wsdlConfiguration.TeamId, _wsdlConfiguration.Password,
+            var response = await client.createTaskAsync(_wsdlConfiguration.TeamId,
+                _wsdlConfiguration.Password,
                 "", true,
                 nameof(ProductSalesDecreasedTask), "descr", DateTime.Now);
             task.OnTaskFulfilled += TaskFulfilled;
             task.OnTaskFailed += TaskFailed;
             // await _cronScheduler.ScheduleUserEvaluationTask(task, token).ConfigureAwait(false);
-            
+
             var scheduledTask = task;
             // TODO missing transaction
             // await _taskRepository.CreateAsync(scheduledTask, token)
-                // .ConfigureAwait(false);
+            // .ConfigureAwait(false);
             await _taskClient.SendAsync(scheduledTask);
             return await awaiter.Task.ConfigureAwait(false);
         }
@@ -132,11 +137,12 @@ namespace Pis.Projekt.Business.Scheduling
         }
 
         private ITask<IEnumerable<PricedProduct>> _task;
+
         // private readonly CronSchedulerService _cronScheduler;
         private readonly ITaskClient _taskClient;
         private readonly PriceCalculatorService _priceCalculator;
         private readonly ILogger<TaskHandlerService> _logger;
-        private readonly WsdlConfiguration<TaskScheduler> _wsdlConfiguration;
+        private readonly WsdlConfiguration<TaskHandlerService> _wsdlConfiguration;
     }
 
     public class UserTaskNotFulfilledException : Exception

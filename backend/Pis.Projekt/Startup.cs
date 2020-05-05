@@ -46,8 +46,6 @@ namespace Pis.Projekt
                 _configuration.GetSection("TaskService:WSDL"));
             services.Configure<WsdlEmailClientConfiguration>(
                 _configuration.GetSection("EmailService"));
-            services.Configure<WsdlConfiguration<WsdlTaskClient>>(
-                _configuration.GetSection("TaskService"));
             services.Configure<SmtpClientConfiguration>(
                 _configuration.GetSection("EmailService:SMTP"));
             services.Configure<WaiterService.WaiterConfiguration>(
@@ -63,10 +61,12 @@ namespace Pis.Projekt
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ProductPersistenceService>();
             services.AddScoped<NotificationFactory>();
+            services.AddScoped<PriceCalculatorService>();
             services.AddScoped<IOptimizationNotificationService, EmailNotificationService>();
             services
                 .AddScoped<INotificationClient<IEmailNotification, IEmail>, SmtpClientAdapter>();
             services.AddScoped<INotificationClient<IEmailNotification, IEmail>, WsdlEmailClient>();
+            services.AddScoped<ITaskClient, WsdlTaskClient>();
             services.AddScoped<SalesEvaluatorService>();
             services.AddScoped<WaiterService>();
             services.AddScoped<WeekCounter>();

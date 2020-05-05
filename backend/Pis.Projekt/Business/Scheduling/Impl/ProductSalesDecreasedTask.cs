@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
 using Pis.Projekt.Domain.DTOs;
 
 namespace Pis.Projekt.Business.Scheduling.Impl
 {
-    public class ProductSalesDecreasedTask : ISchedulableTask<IEnumerable<PricedProduct>>
+    public class ProductSalesDecreasedTask : ScheduledTask
     {
-        public ProductSalesDecreasedTask(string name, IEnumerable<PricedProduct> products)
+        public ProductSalesDecreasedTask(string name,
+            IEnumerable<PricedProduct> products,
+            DateTime scheduledOn) : base(products, scheduledOn, name)
         {
             Name = name;
             Products = products;
@@ -15,10 +16,6 @@ namespace Pis.Projekt.Business.Scheduling.Impl
 
         public string Name { get; }
 
-        public ScheduledTask Schedule(int id)
-        {
-            return new ScheduledTask(id, Products, DateTime.Now, Name);
-        }
         public IEnumerable<PricedProduct> Products { get; }
     }
 }

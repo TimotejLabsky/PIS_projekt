@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Pis.Projekt.Business.Notifications;
+using Pis.Projekt.Business.Scheduling;
 using Pis.Projekt.Domain.DTOs;
 using Pis.Projekt.Domain.Repositories;
 using Pis.Projekt.System;
@@ -25,7 +26,7 @@ namespace Pis.Projekt.Business
         {
             _waiter = waiter;
             // _cronScheduler = cronScheduler;
-            // _taskScheduler = taskScheduler;
+            _taskScheduler = taskScheduler;
             _productPersistence = productPersistence;
             _aggregateRepository = aggregateRepository;
             _mapper = mapper;
@@ -47,11 +48,11 @@ namespace Pis.Projekt.Business
             // Split -> send to hosted service
             // Branch increased
             _logger.LogBusinessCase("Getting products with increased sales");
-            var increasedSalesTask = _taskScheduler.RegisterIncreasedSalesTask(evaluationResult.IncreasedSales);
+            var increasedSalesTask = _taskScheduler.StartIncreasedSalesTask(evaluationResult.IncreasedSales);
             tasks.Add(increasedSalesTask);
             // Branch B save to Db
             _logger.LogBusinessCase("Getting products with decreased sales");
-            var decreasedSalesTask = _taskScheduler.RegisterDecreasedSalesTask(evaluationResult.DecreasedSales);
+            var decreasedSalesTask = _taskScheduler.StartDecreasedSalesTask(evaluationResult.DecreasedSales);
             tasks.Add(decreasedSalesTask);
             
             await Task.WhenAll(tasks);
@@ -100,7 +101,7 @@ namespace Pis.Projekt.Business
         private readonly IOptimizationNotificationService _notificationService;
 
         // private readonly CronSchedulerService _cronScheduler;
-        private readonly TaskScheduler _taskScheduler;
+        private readonly TaskHandlerService _taskScheduler;
         private readonly SalesEvaluatorService _evaluator;
         private readonly WaiterService _waiter;
         private readonly IMapper _mapper;

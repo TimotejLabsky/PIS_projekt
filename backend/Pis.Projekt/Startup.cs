@@ -54,10 +54,13 @@ namespace Pis.Projekt
                 _configuration.GetSection("WaiterService"));
             services.Configure<NotificationConfiguration>(
                 _configuration.GetSection("NotificationService"));
+            services.Configure<EntitySeederConfiguration>(
+                _configuration.GetSection("EntitySeederService"));
             services.AddDbContext<SalesDbContext>(c => c.UseInMemoryDatabase("sales"));
             services.AddScoped<SalesOptimalizationService>();
             services.AddScoped<ISalesAggregateRepository, SalesAggregateRepository>();
             services.AddScoped<IPricedProductRepository, PricedProductRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ProductPersistenceService>();
             services.AddScoped<NotificationFactory>();
             services.AddScoped<IOptimizationNotificationService, EmailNotificationService>();
@@ -68,6 +71,7 @@ namespace Pis.Projekt
             services.AddScoped<WaiterService>();
             services.AddScoped<WeekCounter>();
             services.AddScoped<SmtpClient>();
+            services.AddScoped<TaskHandlerService>();
             services.AddSingleton<AuthorizationService>();
             services.AddSingleton<CustomerPortTypeClient>();
             services.AddSingleton<EntitySeeder>();
@@ -75,7 +79,7 @@ namespace Pis.Projekt
             services.AddSingleton<CalendarPortTypeClient>();
             services.AddSingleton<TaskListPortTypeClient>();
             services.AddSingleton<ValidatorPortTypeClient>();
-            
+
             services.AddAutoMapper(c =>
             {
                 c.AddProfile<PricedProductProfile>();
@@ -118,11 +122,8 @@ namespace Pis.Projekt
 
             app.UseMiddleware<AuthorizationMiddleware>();
             app.UseRouting();
-
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-            
-            //TODO fix this
-            //app.ApplicationServices.GetRequiredService<EntitySeeder>().Seed().Wait();
+            app.ApplicationServices.GetRequiredService<EntitySeeder>().Seed().Wait();
         }
 
         private readonly IConfiguration _configuration;

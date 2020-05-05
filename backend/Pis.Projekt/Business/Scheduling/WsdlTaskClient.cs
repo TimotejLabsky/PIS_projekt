@@ -26,7 +26,6 @@ namespace Pis.Projekt.Business.Scheduling
 #if DEBUG
 
             _logger.LogDevelopment("Task sent to WsdlTaskService. " +
-                                   $"Id: {scheduledTask.Id}, " +
                                    $"Name: {scheduledTask.Name}, " +
                                    $"ScheduledOn: {scheduledTask.ScheduledOn}", scheduledTask);
             await Task.CompletedTask;

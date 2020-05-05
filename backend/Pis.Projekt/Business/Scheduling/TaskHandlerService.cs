@@ -6,17 +6,17 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Pis.Projekt.Business.Scheduling.Impl;
 using Pis.Projekt.Domain.DTOs;
-using Pis.Projekt.Domain.Repositories;
 using Pis.Projekt.Framework;
+using Pis.Projekt.System;
 
 namespace Pis.Projekt.Business.Scheduling
 {
     // Done
-    public class TaskSchedulerService : IHostedService
+    public class TaskHandlerService : IHostedService
     {
-        public TaskSchedulerService(PriceCalculatorService priceCalculator,
+        public TaskHandlerService(PriceCalculatorService priceCalculator,
             // CronSchedulerService cronScheduler,
-            ITaskClient taskClient, ILogger<TaskSchedulerService> logger, WsdlConfiguration<TaskScheduler> wsdlConfiguration)
+            ITaskClient taskClient, ILogger<TaskHandlerService> logger, WsdlConfiguration<TaskScheduler> wsdlConfiguration)
         {
             _priceCalculator = priceCalculator;
             // _cronScheduler = cronScheduler;
@@ -25,15 +25,15 @@ namespace Pis.Projekt.Business.Scheduling
             _wsdlConfiguration = wsdlConfiguration;
         }
 
-        public async Task<IEnumerable<PricedProduct>> RegisterDecreasedSalesTask(
+        public async Task<IEnumerable<PricedProduct>> StartDecreasedSalesTask(
             IEnumerable<PricedProduct> products)
         {
-            _task = new ProductSalesDecreasedTask("products decreased", products);
+            _task = new ProductSalesDecreasedTask("product-sales-decreased", products, DateTime.Now);
             await StartAsync(default).ConfigureAwait(false);
             return _task.Result;
         }
 
-        public async Task<IEnumerable<PricedProduct>> RegisterIncreasedSalesTask(
+        public async Task<IEnumerable<PricedProduct>> StartIncreasedSalesTask(
             IEnumerable<PricedProduct> products)
         {
             _task = new ProductSalesIncreasedTask("products increased", products);
@@ -86,27 +86,28 @@ namespace Pis.Projekt.Business.Scheduling
 
             async Task TaskFulfilled(ScheduledTaskResult result)
             {
-                // await _taskRepository.SetResolvedAsync(result.TaskId);
+                // await _taskRepository.SetResolved(failedTask.Id);
+                _logger.LogDevelopment($"Task {result.Name} has been fulfilled");
                 awaiter.SetResult(result.Products);
             }
 
             async Task TaskFailed(ScheduledTask failedTask)
             {
                 // await _taskRepository.SetFailedAsync(failedTask.Id);
+                _logger.LogDevelopment($"Task {failedTask.Name} has failed to be fulfilled");
                 awaiter.SetException(new UserTaskNotFulfilledException(failedTask));
             }
 
             var client = new FiitTaskList.TaskListPortTypeClient();
-            // TODO: team_id, psw and creater_name => Take from configuration
             _logger.LogTrace($"Creating task with {typeof(FiitTaskList.TaskListPortTypeClient)}");
             var response = await client.createTaskAsync(_wsdlConfiguration.TeamId, _wsdlConfiguration.Password,
                 "", true,
                 nameof(ProductSalesDecreasedTask), "descr", DateTime.Now);
-            // task.OnTaskFulfilled += TaskFulfilled;
-            // task.OnTaskFailed += TaskFailed;
+            task.OnTaskFulfilled += TaskFulfilled;
+            task.OnTaskFailed += TaskFailed;
             // await _cronScheduler.ScheduleUserEvaluationTask(task, token).ConfigureAwait(false);
             
-            var scheduledTask = task.Schedule(response.task_id);
+            var scheduledTask = task;
             // TODO missing transaction
             // await _taskRepository.CreateAsync(scheduledTask, token)
                 // .ConfigureAwait(false);
@@ -130,13 +131,11 @@ namespace Pis.Projekt.Business.Scheduling
             return Task.Run(() => _task = null, cancellationToken);
         }
 
-        private readonly PriceCalculatorService _priceCalculator;
-
-
-        private readonly ITaskClient _taskClient;
         private ITask<IEnumerable<PricedProduct>> _task;
         // private readonly CronSchedulerService _cronScheduler;
-        private readonly ILogger<TaskSchedulerService> _logger;
+        private readonly ITaskClient _taskClient;
+        private readonly PriceCalculatorService _priceCalculator;
+        private readonly ILogger<TaskHandlerService> _logger;
         private readonly WsdlConfiguration<TaskScheduler> _wsdlConfiguration;
     }
 
@@ -148,7 +147,7 @@ namespace Pis.Projekt.Business.Scheduling
         }
 
         public override string Message =>
-            $"Task {Task.Id}:{Task.Name} has not been resolved by user in given time";
+            $"Task {Task.Name} has not been resolved by user in given time";
 
 
         public ScheduledTask Task { get; }

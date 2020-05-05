@@ -6,22 +6,18 @@ using Pis.Projekt.Framework.Repositories;
 
 namespace Pis.Projekt.Business.Scheduling
 {
-    public class ScheduledTask : IEntity<int>, ITask<IEnumerable<PricedProduct>>
+    public class ScheduledTask : ITask<IEnumerable<PricedProduct>>
     {
-        public ScheduledTask(int id,
-            IEnumerable<PricedProduct> products,
+        public ScheduledTask(IEnumerable<PricedProduct> products,
             DateTime scheduledOn,
             string name)
         {
-            Id = id;
             Products = products;
             ScheduledOn = scheduledOn;
             Name = name;
             IsResolved = false;
         }
 
-        //TODO JsonProperty attributes
-        public int Id { get; set; }
         public IEnumerable<PricedProduct> Products { get; set; }
         public DateTime ScheduledOn { get; set; }
         public string Name { get; set; }
@@ -39,7 +35,7 @@ namespace Pis.Projekt.Business.Scheduling
         public void Fulfill(IEnumerable<PricedProduct> result)
         {
             Result = result;
-            OnTaskFulfilled?.Invoke(new ScheduledTaskResult {Products = Result});
+            OnTaskFulfilled?.Invoke(new ScheduledTaskResult {Products = Result, Name = Name});
             IsResolved = true;
         }
 
@@ -55,6 +51,7 @@ namespace Pis.Projekt.Business.Scheduling
     public class ScheduledTaskResult
     {
         public int TaskId { get; set; }
+        public string Name { get; set; }
         public IEnumerable<PricedProduct> Products { get; set; }
     }
 }

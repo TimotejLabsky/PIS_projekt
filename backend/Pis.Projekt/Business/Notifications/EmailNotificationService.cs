@@ -16,7 +16,7 @@ namespace Pis.Projekt.Business.Notifications
 
         {
             _client = client;
-            _configuration = configuration.Value;
+            _configuration = configuration;
               _logger = logger;
         }
 
@@ -38,7 +38,7 @@ namespace Pis.Projekt.Business.Notifications
             await NotifyAsync<OptimizationBegunNotification>(new OptimizationBegunNotification(_configuration));
         }
 
-        private readonly NotificationConfiguration _configuration;
+        private readonly IOptions<NotificationConfiguration> _configuration;
         private readonly INotificationClient<IEmailNotification, IEmail> _client;
         private readonly ILogger<EmailValidationService> _logger;
     }

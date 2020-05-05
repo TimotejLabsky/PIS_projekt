@@ -1,18 +1,19 @@
 using System;
 using System.Net.Mail;
+using Microsoft.Extensions.Options;
 
 namespace Pis.Projekt.Business.Notifications.Domain.Impl
 {
     public class OptimizationBegunNotification : IEmailNotification
     {
-        public OptimizationBegunNotification(NotificationConfiguration configuration)
+        public OptimizationBegunNotification(IOptions<NotificationConfiguration> configuration)
         {
-            _configuration = configuration;
+            _configuration = configuration.Value;
             BegunOn = DateTime.Now;
         }
 
         public string NotificationType { get; set; }
-        public IEmail Content { get; set; }
+        public IEmail Content => this;
         public DateTime BegunOn { get; }
 
         public MailAddress ToMailAddress =>

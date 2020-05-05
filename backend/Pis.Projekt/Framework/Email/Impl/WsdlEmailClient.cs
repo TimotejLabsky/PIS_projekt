@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using FiitEmailService;
 using Microsoft.Extensions.Logging;
@@ -26,7 +25,7 @@ namespace Pis.Projekt.Framework.Email.Impl
             where TContent : IEmail
         {
             var email = request.Content;
-            await SendMailAsync(email.Subject, email.Message, email.ToMailAddress.Address)
+            await SendMailAsync(email.Subject, email.Message, email.ToMailAddress?.Address)
                 .ConfigureAwait(false);
         }
 
@@ -35,12 +34,10 @@ namespace Pis.Projekt.Framework.Email.Impl
             email ??= _configuration.DefaultToAddress;
 
 #if DEBUG
-
             _logger.LogDevelopment(
                 $"Email sent. Subject: {subject}, To: {email}, Message: {message}");
-
-#else
             await Task.CompletedTask;
+#else
              var response = await _client.notifyAsync(TeamId, Password, email, subject, message)
                  .ConfigureAwait(false);
             

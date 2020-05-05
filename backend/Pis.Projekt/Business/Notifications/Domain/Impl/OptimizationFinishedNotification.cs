@@ -1,14 +1,15 @@
 using System;
 using System.Net.Mail;
+using Microsoft.Extensions.Options;
 
 namespace Pis.Projekt.Business.Notifications.Domain.Impl
 {
     public class OptimizationFinishedNotification : IEmailNotification
     {
         public OptimizationFinishedNotification(DateTime nextOn,
-            NotificationConfiguration configuration)
+            IOptions<NotificationConfiguration> configuration)
         {
-            _configuration = configuration;
+            _configuration = configuration.Value;
             FinishedOn = DateTime.Now;
             NextOn = nextOn;
             NotificationType = "optimalization.finished";

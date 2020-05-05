@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -71,12 +72,9 @@ namespace Pis.Projekt.Business
             // await _productPersistence.PersistProductsAsync(newPriceList, token).ConfigureAwait(false);
             //
             // _logger.LogBusinessCase("Scheduling next optimization task");
-            // var nextOptimalizationOn = await _cronScheduler.ScheduleNextOptimalizationTask(token)
-            //     .ConfigureAwait(false);
-            //
-            // _logger.LogBusinessCase("Sending notification about finished optimization");
-            // await _notificationService.NotifyOptimizationFinishedAsync(nextOptimalizationOn)
-            //     .ConfigureAwait(false);
+            _logger.LogBusinessCase("Sending notification about finished optimization");
+            await _notificationService.NotifyOptimizationFinishedAsync(DateTime.Now)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -101,7 +99,6 @@ namespace Pis.Projekt.Business
 
         private readonly IOptimizationNotificationService _notificationService;
 
-        // private readonly CronSchedulerService _cronScheduler;
         private readonly TaskHandlerService _taskScheduler;
         private readonly SalesEvaluatorService _evaluator;
         private readonly WaiterService _waiter;

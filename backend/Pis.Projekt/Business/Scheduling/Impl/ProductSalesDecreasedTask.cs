@@ -6,9 +6,9 @@ namespace Pis.Projekt.Business.Scheduling.Impl
 {
     public class ProductSalesDecreasedTask : ScheduledTask
     {
-        public ProductSalesDecreasedTask(string name,
+        public ProductSalesDecreasedTask(Guid guid, string name,
             IEnumerable<PricedProduct> products,
-            DateTime scheduledOn) : base(products, scheduledOn, name)
+            DateTime scheduledOn) : base(guid, products, scheduledOn, name)
         {
             Name = name;
             Products = products;

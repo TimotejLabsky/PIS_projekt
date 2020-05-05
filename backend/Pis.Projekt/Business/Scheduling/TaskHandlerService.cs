@@ -18,20 +18,22 @@ namespace Pis.Projekt.Business.Scheduling
             CronSchedulerService cronScheduler,
             ITaskClient taskClient,
             ILogger<TaskHandlerService> logger,
-            IOptions<WsdlConfiguration<TaskHandlerService>> wsdlConfiguration)
+            IOptions<WsdlConfiguration<TaskHandlerService>> wsdlConfiguration,
+            UserTaskCollectionService taskCollection)
         {
             _priceCalculator = priceCalculator;
             _cronScheduler = cronScheduler;
             _taskClient = taskClient;
             _logger = logger;
+            _taskCollection = taskCollection;
             _wsdlConfiguration = wsdlConfiguration.Value;
         }
 
         public async Task<IEnumerable<PricedProduct>> StartDecreasedSalesTask(
             IEnumerable<PricedProduct> products)
         { 
-            var task = new ProductSalesDecreasedTask("product-sales-decreased", products,
-                DateTime.Now);
+            var task = new ProductSalesDecreasedTask(Guid.NewGuid(), 
+                "product-sales-decreased", products, DateTime.Now);
             await ProcessAsync(task, task.GetType(), default).ConfigureAwait(false);
             return task.Result;
         }
@@ -39,7 +41,7 @@ namespace Pis.Projekt.Business.Scheduling
         public async Task<IEnumerable<PricedProduct>> StartIncreasedSalesTask(
             IEnumerable<PricedProduct> products)
         {
-            var task = new ProductSalesIncreasedTask("products increased", products);
+            var task = new ProductSalesIncreasedTask("product-sales-increased", products);
             await ProcessAsync(task, task.GetType(), default).ConfigureAwait(false);
             return task.Result;
         }
@@ -76,7 +78,6 @@ namespace Pis.Projekt.Business.Scheduling
                 product.SalesWeek++;
                 product.Price = _priceCalculator.CalculatePrice(product);
             }
-
             await Task.CompletedTask;
             return task.Products;
         }
@@ -101,7 +102,7 @@ namespace Pis.Projekt.Business.Scheduling
                 awaiter.SetException(new UserTaskNotFulfilledException(failedTask));
             }
 
-            _logger.LogTrace($"Creating task with {typeof(FiitTaskList.TaskListPortTypeClient)}");
+            _logger.LogTrace($"Creating user task with {typeof(FiitTaskList.TaskListPortTypeClient)}");
 
 #if DEBUG
             _logger.LogDevelopment($"Task: {task.Name} added to Task List Service");
@@ -114,12 +115,11 @@ namespace Pis.Projekt.Business.Scheduling
 #endif
             task.OnTaskFulfilled += TaskFulfilled;
             task.OnTaskFailed += TaskFailed;
-            _logger.LogDevelopment("Test: Scheduling user evaluation task");
+            _logger.LogDevelopment($"Test: Scheduling user evaluation task {task.Id}");
             await _cronScheduler.ScheduleUserEvaluationTask(task, token).ConfigureAwait(false);
-
-            var scheduledTask = task;
-            // TODO missing transaction
-            await _taskClient.SendAsync(scheduledTask);
+            // TODO missing transaction ?? maybe
+            _taskCollection.Register(task);
+            await _taskClient.SendAsync(task);
             return await awaiter.Task.ConfigureAwait(false);
         }
 
@@ -127,6 +127,7 @@ namespace Pis.Projekt.Business.Scheduling
         private readonly ILogger<TaskHandlerService> _logger;
         private readonly CronSchedulerService _cronScheduler;
         private readonly PriceCalculatorService _priceCalculator;
+        private readonly UserTaskCollectionService _taskCollection;
         private readonly WsdlConfiguration<TaskHandlerService> _wsdlConfiguration;
     }
 

@@ -58,10 +58,18 @@ namespace Pis.Projekt.Business.Scheduling
             CancellationToken token)
         {
             // create job from scheduled task
-            var job = CreateJob<UserEvaluationJob>(_configuration);
-            var trigger = CreateTrigger<UserEvaluationJob>(job, _configuration);
+            var job = CreateJob<UserEvaluationJob>(new CronSchedulerConfiguration
+                {Name = "user-eval"});
+            // TODO: iba todo nic viacej, beatify
+            var trigger = TriggerBuilder
+                .Create()
+                .WithIdentity($"user-eval.trigger")
+                .ForJob(job)
+                .WithSimpleSchedule(a => a.WithRepeatCount(0)
+                    .WithIntervalInMinutes(30))
+                .Build();
             var date = await _scheduler.ScheduleJob(job, trigger, token);
-            
+
             _logger.LogDevelopment(
                 $"{nameof(UserEvaluationJob)} scheduled and returned date: {date}");
         }
@@ -77,7 +85,8 @@ namespace Pis.Projekt.Business.Scheduling
                 .Build();
         }
 
-        private static ITrigger CreateTrigger<TJob>(IJobDetail jobDetail, CronSchedulerConfiguration schedule)
+        private static ITrigger CreateTrigger<TJob>(IJobDetail jobDetail,
+            CronSchedulerConfiguration schedule)
             where TJob : IJob
         {
             return TriggerBuilder

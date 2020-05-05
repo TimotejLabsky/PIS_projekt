@@ -74,6 +74,7 @@ namespace Pis.Projekt
             services.AddScoped<WaiterService>();
             services.AddScoped<WeekCounter>();
             services.AddScoped<SmtpClient>();
+            services.AddSingleton<UserTaskCollectionService>();
             services.AddSingleton<ITaskClient, WsdlTaskClient>();
             services.AddSingleton<PriceCalculatorService>();
             services.AddSingleton<CronSchedulerService>();
@@ -136,7 +137,7 @@ namespace Pis.Projekt
             app.ApplicationServices.GetRequiredService<EntitySeeder>().Seed().Wait();
             var scheduler = app.ApplicationServices.GetRequiredService<CronSchedulerService>();
             scheduler.StartAsync(default).Wait();
-            scheduler.ScheduleNextOptimalizationTask().Wait();
+            // scheduler.ScheduleNextOptimalizationTask().Wait();
         }
 
         private readonly IConfiguration _configuration;

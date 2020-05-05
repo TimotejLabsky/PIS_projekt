@@ -6,9 +6,11 @@ using Pis.Projekt.Framework.Repositories;
 
 namespace Pis.Projekt.Business.Scheduling
 {
-    public class ScheduledTask : ITask<IEnumerable<PricedProduct>>
+    public class ScheduledTask : IEntity<Guid>, ITask<IEnumerable<PricedProduct>>
     {
-        public ScheduledTask(IEnumerable<PricedProduct> products,
+        public ScheduledTask(
+            Guid guid,
+            IEnumerable<PricedProduct> products,
             DateTime scheduledOn,
             string name)
         {
@@ -16,8 +18,10 @@ namespace Pis.Projekt.Business.Scheduling
             ScheduledOn = scheduledOn;
             Name = name;
             IsResolved = false;
+            Id = guid;
         }
 
+        public Guid Id { get; }
         public IEnumerable<PricedProduct> Products { get; set; }
         public DateTime ScheduledOn { get; set; }
         public string Name { get; set; }
@@ -38,8 +42,7 @@ namespace Pis.Projekt.Business.Scheduling
             OnTaskFulfilled?.Invoke(new ScheduledTaskResult {Products = Result, Name = Name});
             IsResolved = true;
         }
-
-
+        
         public event TaskFulfilledHandler OnTaskFulfilled;
         public event TaskFailedHandler OnTaskFailed;
 

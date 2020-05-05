@@ -24,6 +24,7 @@ using Pis.Projekt.Domain.Repositories;
 using Pis.Projekt.Domain.Repositories.Impl;
 using Pis.Projekt.Framework;
 using Pis.Projekt.Framework.Email.Impl;
+using Pis.Projekt.Framework.Seed;
 using Pis.Projekt.System;
 
 namespace Pis.Projekt
@@ -69,10 +70,12 @@ namespace Pis.Projekt
             services.AddScoped<SmtpClient>();
             services.AddSingleton<AuthorizationService>();
             services.AddSingleton<CustomerPortTypeClient>();
+            services.AddSingleton<EntitySeeder>();
             services.AddSingleton<EmailPortTypeClient>();
             services.AddSingleton<CalendarPortTypeClient>();
             services.AddSingleton<TaskListPortTypeClient>();
             services.AddSingleton<ValidatorPortTypeClient>();
+            
             services.AddAutoMapper(c =>
             {
                 c.AddProfile<PricedProductProfile>();
@@ -117,6 +120,9 @@ namespace Pis.Projekt
             app.UseRouting();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            
+            //TODO fix this
+            //app.ApplicationServices.GetRequiredService<EntitySeeder>().Seed().Wait();
         }
 
         private readonly IConfiguration _configuration;

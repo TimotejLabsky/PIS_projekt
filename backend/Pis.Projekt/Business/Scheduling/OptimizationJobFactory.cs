@@ -20,7 +20,8 @@ namespace Pis.Projekt.Business.Scheduling
         {
             _logger.LogDebug($"Creating job of type: {bundle.JobDetail.JobType}, " +
                              $"Name: {bundle.JobDetail.Description}");
-            return _provider.GetRequiredService(bundle.JobDetail.JobType) as IJob;
+            var job = _provider.GetRequiredService(bundle.JobDetail.JobType) as IJob;
+            return job;
         }
 
         public void ReturnJob(IJob job)

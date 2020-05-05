@@ -1,20 +1,23 @@
 #nullable enable
 using System;
+using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pis.Projekt.Business.Scheduling.Impl;
+using Pis.Projekt.System;
 using Quartz;
 
 namespace Pis.Projekt.Business.Scheduling
 {
-    public class CronSchedulerService
+    public class CronSchedulerService : IHostedService
     {
         public CronSchedulerService(IOptions<CronSchedulerConfiguration> configuration,
             ISchedulerFactory factory,
-            OptimizationJobFactory jobFactory, ILogger<CronSchedulerService> logger)
+            OptimizationJobFactory jobFactory,
+            ILogger<CronSchedulerService> logger)
         {
             _configuration = configuration.Value;
             _factory = factory;
@@ -27,7 +30,7 @@ namespace Pis.Projekt.Business.Scheduling
         {
             _scheduler = await _factory.GetScheduler(cancellationToken);
             _scheduler.JobFactory = _jobFactory;
-            _logger.LogDebug("Starting scheduler");
+            _logger.LogDebug("Starting scheduler...");
             await _scheduler.Start(cancellationToken);
         }
 
@@ -40,11 +43,14 @@ namespace Pis.Projekt.Business.Scheduling
             }
         }
 
-        public async Task<DateTime> ScheduleNextOptimalizationTask(CancellationToken token)
+        public async Task<DateTime> ScheduleNextOptimalizationTask(CancellationToken token =
+            default)
         {
             var job = CreateJob<OptimizationJob>(_configuration);
             var trigger = CreateTrigger<OptimizationJob>(_configuration);
             var date = await _scheduler.ScheduleJob(job, trigger, token);
+            _logger.LogDevelopment(
+                $"{nameof(OptimizationJob)} scheduled and returned date: {date}");
             return DateTime.Now;
         }
 
@@ -52,10 +58,12 @@ namespace Pis.Projekt.Business.Scheduling
             CancellationToken token)
         {
             // create job from scheduled task
-            var job = CreateJob<OptimizationJob>(_configuration);
-            var trigger = CreateTrigger<OptimizationJob>(_configuration);
+            var job = CreateJob<UserEvaluationJob>(_configuration);
+            var trigger = CreateTrigger<UserEvaluationJob>(_configuration);
             var date = await _scheduler.ScheduleJob(job, trigger, token);
             
+            _logger.LogDevelopment(
+                $"{nameof(UserEvaluationJob)} scheduled and returned date: {date}");
         }
 
         private static IJobDetail CreateJob<TJob>(CronSchedulerConfiguration schedule)
@@ -64,7 +72,7 @@ namespace Pis.Projekt.Business.Scheduling
             var jobType = typeof(TJob);
             return JobBuilder
                 .Create<TJob>()
-                .WithIdentity(jobType.FullName)
+                .WithIdentity(schedule.Name)
                 .WithDescription(jobType.Name)
                 .Build();
         }
@@ -75,8 +83,8 @@ namespace Pis.Projekt.Business.Scheduling
             return TriggerBuilder
                 .Create()
                 .WithIdentity($"{schedule.Name}.trigger")
-                .WithCronSchedule(schedule.CronExpression.ToString())
-                .WithDescription(schedule.CronExpression.ToString())
+                .WithCronSchedule(schedule.CronExpressionString)
+                .WithDescription(schedule.CronExpressionString)
                 .Build();
         }
 
@@ -85,10 +93,17 @@ namespace Pis.Projekt.Business.Scheduling
         private readonly OptimizationJobFactory _jobFactory;
         private readonly CronSchedulerConfiguration _configuration;
         private readonly ILogger<CronSchedulerService> _logger;
+
         public class CronSchedulerConfiguration
         {
+            [ConfigurationProperty("Name", IsRequired = true)]
             public string Name { get; set; }
-            public CronExpression CronExpression { get; set; }
+
+            [ConfigurationProperty("CronExpressionString", IsRequired = true)]
+            public string CronExpressionString { get; set; }
+
+            [ConfigurationProperty("CronExpression", IsRequired = false)]
+            public CronExpression CronExpression => new CronExpression(CronExpressionString);
         }
     }
 }

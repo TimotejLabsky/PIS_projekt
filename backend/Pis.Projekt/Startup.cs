@@ -88,6 +88,7 @@ namespace Pis.Projekt
             services.AddSingleton<TaskListPortTypeClient>();
             services.AddSingleton<ValidatorPortTypeClient>();
             services.AddTransient<UserEvaluationJob>();
+            services.AddTransient<OptimizationJob>();
 
             services.AddAutoMapper(c =>
             {
@@ -133,6 +134,9 @@ namespace Pis.Projekt
             app.UseRouting();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
             app.ApplicationServices.GetRequiredService<EntitySeeder>().Seed().Wait();
+            var scheduler = app.ApplicationServices.GetRequiredService<CronSchedulerService>();
+            scheduler.StartAsync(default).Wait();
+            scheduler.ScheduleNextOptimalizationTask().Wait();
         }
 
         private readonly IConfiguration _configuration;

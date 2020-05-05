@@ -20,8 +20,7 @@ namespace Pis.Projekt
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
-
-        // .ConfigureServices(s => s.AddHostedService<CronSchedulerService>());
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
+                .ConfigureServices(s => s.AddHostedService<CronSchedulerService>());
     }
 }

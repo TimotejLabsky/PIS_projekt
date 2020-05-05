@@ -40,5 +40,18 @@
   "WaiterService": {
     "WaitingPeriod" : "2:00:00:00"
   },
+  "EntitySeederService": {
+      "WeekAmount": 6,
+      "ProductsCSV": "telephone;television;calculator;audio;recorder;player;game console;personal computer;MP3 player;smart appliance;digital camera;camcorder;cell phone;smartphone",
+      "PriceMin": 0.01,
+      "PriceMax": 999.99,
+      "SeedAtStart": "true",
+      "SalesCoefMin": 0.0,
+      "SalesCoefMax": 2.0
+    },
+    "CronSchedulerService":{
+        "Name": "TestScheduler",
+        "CronExpression": "0 0/5 0 ? * * *"
+      },
   "AllowedHosts": "*"
 }

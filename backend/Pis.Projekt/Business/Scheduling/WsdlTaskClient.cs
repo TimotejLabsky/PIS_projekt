@@ -31,10 +31,10 @@ namespace Pis.Projekt.Business.Scheduling
             await Task.CompletedTask;
 
 #else
-            await _client.createTaskAsync(_configuration.TeamId, _configuration.Password,
-                nameof(WsdlTaskClient), true, scheduledTask.Name, serializedTask,
-                // TODO: this probably should be due date
-                scheduledTask.ScheduledOn);
+            // await _client.createTaskAsync(_configuration.TeamId, _configuration.Password,
+            //     nameof(WsdlTaskClient), true, scheduledTask.Name, serializedTask,
+            //     // TODO: this probably should be due date
+            //     scheduledTask.ScheduledOn);
 #endif
         }
 

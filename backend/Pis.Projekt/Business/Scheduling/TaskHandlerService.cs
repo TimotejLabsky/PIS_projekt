@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pis.Projekt.Business.Scheduling.Impl;
@@ -13,16 +12,16 @@ using Pis.Projekt.System;
 namespace Pis.Projekt.Business.Scheduling
 {
     // Done
-    public class TaskHandlerService : IHostedService
+    public class TaskHandlerService
     {
         public TaskHandlerService(PriceCalculatorService priceCalculator,
-            // CronSchedulerService cronScheduler,
+            CronSchedulerService cronScheduler,
             ITaskClient taskClient,
             ILogger<TaskHandlerService> logger,
             IOptions<WsdlConfiguration<TaskHandlerService>> wsdlConfiguration)
         {
             _priceCalculator = priceCalculator;
-            // _cronScheduler = cronScheduler;
+            _cronScheduler = cronScheduler;
             _taskClient = taskClient;
             _logger = logger;
             _wsdlConfiguration = wsdlConfiguration.Value;
@@ -30,19 +29,19 @@ namespace Pis.Projekt.Business.Scheduling
 
         public async Task<IEnumerable<PricedProduct>> StartDecreasedSalesTask(
             IEnumerable<PricedProduct> products)
-        {
-            _task = new ProductSalesDecreasedTask("product-sales-decreased", products,
+        { 
+            var task = new ProductSalesDecreasedTask("product-sales-decreased", products,
                 DateTime.Now);
-            await StartAsync(default).ConfigureAwait(false);
-            return _task.Result;
+            await ProcessAsync(task, task.GetType(), default).ConfigureAwait(false);
+            return task.Result;
         }
 
         public async Task<IEnumerable<PricedProduct>> StartIncreasedSalesTask(
             IEnumerable<PricedProduct> products)
         {
-            _task = new ProductSalesIncreasedTask("products increased", products);
-            await StartAsync(default).ConfigureAwait(false);
-            return _task.Result;
+            var task = new ProductSalesIncreasedTask("products increased", products);
+            await ProcessAsync(task, task.GetType(), default).ConfigureAwait(false);
+            return task.Result;
         }
 
         public async Task ProcessAsync(ITask<IEnumerable<PricedProduct>> task,
@@ -102,46 +101,32 @@ namespace Pis.Projekt.Business.Scheduling
                 awaiter.SetException(new UserTaskNotFulfilledException(failedTask));
             }
 
-            var client = new FiitTaskList.TaskListPortTypeClient();
             _logger.LogTrace($"Creating task with {typeof(FiitTaskList.TaskListPortTypeClient)}");
-            var response = await client.createTaskAsync(_wsdlConfiguration.TeamId,
-                _wsdlConfiguration.Password,
-                "", true,
-                nameof(ProductSalesDecreasedTask), "descr", DateTime.Now);
+
+#if DEBUG
+            _logger.LogDevelopment($"Task: {task.Name} added to Task List Service");
+#else
+            // var client = new FiitTaskList.TaskListPortTypeClient();
+            // var response = await client.createTaskAsync(_wsdlConfiguration.TeamId,
+            //     _wsdlConfiguration.Password,
+            //     "", true,
+            //     nameof(ProductSalesDecreasedTask), "descr", DateTime.Now);
+#endif
             task.OnTaskFulfilled += TaskFulfilled;
             task.OnTaskFailed += TaskFailed;
-            // await _cronScheduler.ScheduleUserEvaluationTask(task, token).ConfigureAwait(false);
+            _logger.LogDevelopment("Test: Scheduling user evaluation task");
+            await _cronScheduler.ScheduleUserEvaluationTask(task, token).ConfigureAwait(false);
 
             var scheduledTask = task;
             // TODO missing transaction
-            // await _taskRepository.CreateAsync(scheduledTask, token)
-            // .ConfigureAwait(false);
             await _taskClient.SendAsync(scheduledTask);
             return await awaiter.Task.ConfigureAwait(false);
         }
 
-
-        public async Task StartAsync(CancellationToken token)
-        {
-            _logger.LogTrace("Starting Task scheduler");
-            if (_task != null)
-            {
-                await ProcessAsync(_task, _task.GetType(), token).ConfigureAwait(false);
-            }
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogTrace("Stoping Task scheduler");
-            return Task.Run(() => _task = null, cancellationToken);
-        }
-
-        private ITask<IEnumerable<PricedProduct>> _task;
-
-        // private readonly CronSchedulerService _cronScheduler;
         private readonly ITaskClient _taskClient;
-        private readonly PriceCalculatorService _priceCalculator;
         private readonly ILogger<TaskHandlerService> _logger;
+        private readonly CronSchedulerService _cronScheduler;
+        private readonly PriceCalculatorService _priceCalculator;
         private readonly WsdlConfiguration<TaskHandlerService> _wsdlConfiguration;
     }
 

@@ -18,6 +18,7 @@ using Pis.Projekt.Business.Authorization;
 using Pis.Projekt.Business.Notifications;
 using Pis.Projekt.Business.Notifications.Domain;
 using Pis.Projekt.Business.Scheduling;
+using Pis.Projekt.Business.Scheduling.Impl;
 using Pis.Projekt.Domain.Database.Contexts;
 using Pis.Projekt.Domain.Mappings;
 using Pis.Projekt.Domain.Repositories;
@@ -26,6 +27,8 @@ using Pis.Projekt.Framework;
 using Pis.Projekt.Framework.Email.Impl;
 using Pis.Projekt.Framework.Seed;
 using Pis.Projekt.System;
+using Quartz;
+using Quartz.Impl;
 
 namespace Pis.Projekt
 {
@@ -54,6 +57,8 @@ namespace Pis.Projekt
                 _configuration.GetSection("NotificationService"));
             services.Configure<EntitySeederConfiguration>(
                 _configuration.GetSection("EntitySeederService"));
+            services.Configure<CronSchedulerService.CronSchedulerConfiguration>(
+                _configuration.GetSection("CronSchedulerService"));
             services.AddDbContext<SalesDbContext>(c => c.UseInMemoryDatabase("sales"));
             services.AddScoped<SalesOptimalizationService>();
             services.AddScoped<ISalesAggregateRepository, SalesAggregateRepository>();
@@ -61,17 +66,20 @@ namespace Pis.Projekt
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ProductPersistenceService>();
             services.AddScoped<NotificationFactory>();
-            services.AddScoped<PriceCalculatorService>();
             services.AddScoped<IOptimizationNotificationService, EmailNotificationService>();
             services
                 .AddScoped<INotificationClient<IEmailNotification, IEmail>, SmtpClientAdapter>();
             services.AddScoped<INotificationClient<IEmailNotification, IEmail>, WsdlEmailClient>();
-            services.AddScoped<ITaskClient, WsdlTaskClient>();
             services.AddScoped<SalesEvaluatorService>();
             services.AddScoped<WaiterService>();
             services.AddScoped<WeekCounter>();
             services.AddScoped<SmtpClient>();
-            services.AddScoped<TaskHandlerService>();
+            services.AddSingleton<ITaskClient, WsdlTaskClient>();
+            services.AddSingleton<PriceCalculatorService>();
+            services.AddSingleton<CronSchedulerService>();
+            services.AddSingleton<TaskHandlerService>();
+            services.AddSingleton<OptimizationJobFactory>();
+            services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
             services.AddSingleton<AuthorizationService>();
             services.AddSingleton<CustomerPortTypeClient>();
             services.AddSingleton<EntitySeeder>();
@@ -79,6 +87,7 @@ namespace Pis.Projekt
             services.AddSingleton<CalendarPortTypeClient>();
             services.AddSingleton<TaskListPortTypeClient>();
             services.AddSingleton<ValidatorPortTypeClient>();
+            services.AddTransient<UserEvaluationJob>();
 
             services.AddAutoMapper(c =>
             {

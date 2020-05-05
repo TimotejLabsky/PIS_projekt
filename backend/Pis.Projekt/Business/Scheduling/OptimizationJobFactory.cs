@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Pis.Projekt.Business.Scheduling.Impl;
 using Quartz;
 using Quartz.Spi;
@@ -9,26 +10,17 @@ namespace Pis.Projekt.Business.Scheduling
     // Done
     public class OptimizationJobFactory : IJobFactory
     {
-        public OptimizationJobFactory(IServiceProvider provider)
+        public OptimizationJobFactory(IServiceProvider provider, ILogger<OptimizationJobFactory> logger)
         {
             _provider = provider;
+            _logger = logger;
         }
 
         public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
         {
+            _logger.LogDebug($"Creating job of type: {bundle.JobDetail.JobType}, " +
+                             $"Name: {bundle.JobDetail.Description}");
             return _provider.GetRequiredService(bundle.JobDetail.JobType) as IJob;
-        }
-
-        public IJob CreateOptimizationJob()
-        {
-            return _provider.GetRequiredService<OptimizationJob>();
-        }
-
-
-        public IJob CreateProductSalesDecreasedTimeoutJob(ProductSalesDecreasedTask task)
-        {
-            var job = _provider.GetRequiredService<UserEvaluationJob>();
-            return job;
         }
 
         public void ReturnJob(IJob job)
@@ -37,6 +29,7 @@ namespace Pis.Projekt.Business.Scheduling
             disposable?.Dispose();
         }
 
+        private readonly ILogger<OptimizationJobFactory> _logger;
         private readonly IServiceProvider _provider;
     }
 }

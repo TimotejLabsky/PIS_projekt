@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -60,13 +61,13 @@ namespace Pis.Projekt.Business
             
             _logger.LogDevelopment("Code section");
 
-            // var increasedList = increasedSalesTask.Result;
-            // var decreasedList = decreasedSalesTask.Result;
-            // _logger.LogDebug($"Products with increased sales: {increasedList}");
-            // _logger.LogDebug($"Products with decreased sales: {decreasedList}");
-            // var newPriceList = increasedList.Concat(decreasedList).ToList();
-            //
-            // _logger.LogBusinessCase("Persisting new data to storage");
+            var increasedList = increasedSalesTask.Result;
+            var decreasedList = decreasedSalesTask.Result;
+            _logger.LogDebug($"Products with increased sales: {increasedList}");
+            _logger.LogDebug($"Products with decreased sales: {decreasedList}");
+            var newPriceList = increasedList.Concat(decreasedList).ToList();
+            
+            _logger.LogBusinessCase("Persisting new data to storage");
             // await _productPersistence.PersistProductsAsync(newPriceList, token).ConfigureAwait(false);
             //
             // _logger.LogBusinessCase("Scheduling next optimization task");

@@ -47,7 +47,7 @@ namespace Pis.Projekt.Business.Scheduling
             default)
         {
             var job = CreateJob<OptimizationJob>(_configuration);
-            var trigger = CreateTrigger<OptimizationJob>(_configuration);
+            var trigger = CreateTrigger<OptimizationJob>(job, _configuration);
             var date = await _scheduler.ScheduleJob(job, trigger, token);
             _logger.LogDevelopment(
                 $"{nameof(OptimizationJob)} scheduled and returned date: {date}");
@@ -59,7 +59,7 @@ namespace Pis.Projekt.Business.Scheduling
         {
             // create job from scheduled task
             var job = CreateJob<UserEvaluationJob>(_configuration);
-            var trigger = CreateTrigger<UserEvaluationJob>(_configuration);
+            var trigger = CreateTrigger<UserEvaluationJob>(job, _configuration);
             var date = await _scheduler.ScheduleJob(job, trigger, token);
             
             _logger.LogDevelopment(
@@ -77,7 +77,7 @@ namespace Pis.Projekt.Business.Scheduling
                 .Build();
         }
 
-        private static ITrigger CreateTrigger<TJob>(CronSchedulerConfiguration schedule)
+        private static ITrigger CreateTrigger<TJob>(IJobDetail jobDetail, CronSchedulerConfiguration schedule)
             where TJob : IJob
         {
             return TriggerBuilder
@@ -85,6 +85,7 @@ namespace Pis.Projekt.Business.Scheduling
                 .WithIdentity($"{schedule.Name}.trigger")
                 .WithCronSchedule(schedule.CronExpressionString)
                 .WithDescription(schedule.CronExpressionString)
+                .ForJob(jobDetail)
                 .Build();
         }
 

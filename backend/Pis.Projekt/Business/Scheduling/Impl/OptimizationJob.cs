@@ -1,28 +1,32 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Quartz;
 
 namespace Pis.Projekt.Business.Scheduling.Impl
 {
-    public class OptimizationJob: IJob
+    public class OptimizationJob : IJob
     {
-        public OptimizationJob(
-            SalesOptimalizationService optimalizationService, 
-            ILogger<OptimizationJob> logger)
+        public OptimizationJob(ILogger<OptimizationJob> logger,
+            IServiceScopeFactory scopeFactory)
         {
-            _optimalizationService = optimalizationService;
             _logger = logger;
-        }
-        
-        public async Task Execute(IJobExecutionContext context)
-        {
-            // Evaluate deadline
-            _logger.LogError($"Executing optimization job at {DateTime.Now}");
-            await _optimalizationService.OptimizeSalesAsync().ConfigureAwait(false);
+            _scopeFactory = scopeFactory;
         }
 
-        private readonly SalesOptimalizationService _optimalizationService;
+        public async Task Execute(IJobExecutionContext context)
+        {
+            using var scope = _scopeFactory.CreateScope();
+            // Evaluate deadline
+            _logger.LogError($"Executing optimization job at {DateTime.Now}");
+
+            var optimalizationService = scope.ServiceProvider
+                .GetRequiredService<SalesOptimalizationService>();
+            await optimalizationService.OptimizeSalesAsync().ConfigureAwait(false);
+        }
+
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<OptimizationJob> _logger;
     }
 }

@@ -23,7 +23,7 @@ namespace Pis.Projekt.Business.Scheduling.Impl
 
             var optimalizationService = scope.ServiceProvider
                 .GetRequiredService<SalesOptimalizationService>();
-            await optimalizationService.OptimizeSalesAsync().ConfigureAwait(false);
+            //await optimalizationService.OptimizeSalesAsync().ConfigureAwait(false);
         }
 
         private readonly IServiceScopeFactory _scopeFactory;

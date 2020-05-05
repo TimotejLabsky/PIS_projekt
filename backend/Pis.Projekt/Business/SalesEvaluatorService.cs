@@ -15,12 +15,24 @@ namespace Pis.Projekt.Business
             {
                 if (salesAggregate.SaleCoefficient >= new decimal(1.1))
                 {
-                    increasedSales.Add(salesAggregate.PricedProduct);
+                    increasedSales.Add(new PricedProduct
+                    {
+                        Id = salesAggregate.ProductGuid,
+                        Price = salesAggregate.Price,
+                        Product = salesAggregate.Product,
+                        SalesWeek = salesAggregate.WeekNumber
+                    });
                 }
                 
                 if (salesAggregate.SaleCoefficient <= new decimal(0.8))
                 {
-                    decreasedSales.Add(salesAggregate.PricedProduct);
+                    decreasedSales.Add(new PricedProduct
+                    {
+                        Id = salesAggregate.ProductGuid,
+                        Price = salesAggregate.Price,
+                        Product = salesAggregate.Product,
+                        SalesWeek = salesAggregate.WeekNumber
+                    });
                 }
             }
             

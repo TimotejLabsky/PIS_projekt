@@ -5,11 +5,14 @@ namespace Pis.Projekt.Domain.DTOs
 {
     public class SalesAggregate
     {
-        public Guid Guid { get; set; }
-        public Guid PricedProductGuid { get; set; }
-        public PricedProduct PricedProduct { get; set; }
+        public Guid Id { get; set; }
+        public Guid ProductGuid { get; set; }
+        public Product Product { get; set; }
         public decimal SaleCoefficient { get; set; }
         
         public uint WeekNumber { get; set; }
+        
+        public decimal Price { get; set; }
+
     }
 }

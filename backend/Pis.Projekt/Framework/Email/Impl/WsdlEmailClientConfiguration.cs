@@ -5,3 +5,4 @@ namespace Pis.Projekt.Framework.Email.Impl
         public string DefaultToAddress { get; set; }
     }
 }
+

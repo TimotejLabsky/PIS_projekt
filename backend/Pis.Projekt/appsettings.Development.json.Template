@@ -7,51 +7,51 @@
     }
   },
   "EmailService": {
-    "WSDL" : {
-      "TeamId" : "[enter value]",
+    "WSDL": {
+      "TeamId": "[enter value]",
       "Password": "[enter value]"
     },
-    "SMTP" : {
+    "SMTP": {
       "From": "optimization.service@company.com"
     },
-    "DefaultToAddress" : "store@company.com"
+    "DefaultToAddress": "store@company.com"
   },
   "TaskService": {
-    "WSDL" : {
-      "TeamId" : "[enter value]",
+    "WSDL": {
+      "TeamId": "[enter value]",
       "Password": "[enter value]"
     }
   },
   "CalendarService": {
-    "WSDL" : {
-      "TeamId" : "[enter value]",
+    "WSDL": {
+      "TeamId": "[enter value]",
       "Password": "[enter value]"
     }
   },
   "ValidationService": {
-    "WSDL" : {
-      "TeamId" : "[enter value]",
+    "WSDL": {
+      "TeamId": "[enter value]",
       "Password": "[enter value]"
     }
   },
   "NotificationService": {
-    "OptimizationFinishedToAddress" : "store@company.com"
+    "OptimizationFinishedToAddress": "store@company.com"
   },
   "WaiterService": {
-    "WaitingPeriod" : "2:00:00:00"
+    "WaitingPeriod": "2:00:00:00"
   },
   "EntitySeederService": {
-      "WeekAmount": 6,
-      "ProductsCSV": "telephone;television;calculator;audio;recorder;player;game console;personal computer;MP3 player;smart appliance;digital camera;camcorder;cell phone;smartphone",
-      "PriceMin": 0.01,
-      "PriceMax": 999.99,
-      "SeedAtStart": "true",
-      "SalesCoefMin": 0.0,
-      "SalesCoefMax": 2.0
-    },
-    "CronSchedulerService":{
-        "Name": "TestScheduler",
-        "CronExpression": "0 0/5 0 ? * * *"
-      },
+    "WeekAmount": 6,
+    "ProductsCSV": "telephone;television;calculator;audio;recorder;player;game console;personal computer;MP3 player;smart appliance;digital camera;camcorder;cell phone;smartphone",
+    "PriceMin": 0.01,
+    "PriceMax": 999.99,
+    "SeedAtStart": "true",
+    "SalesCoefMin": 0.0,
+    "SalesCoefMax": 2.0
+  },
+  "CronSchedulerService": {
+    "Name": "TestScheduler",
+    "CronExpression": "0 0/5 0 ? * * *"
+  },
   "AllowedHosts": "*"
 }

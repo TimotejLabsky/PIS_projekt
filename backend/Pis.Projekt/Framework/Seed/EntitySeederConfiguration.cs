@@ -11,7 +11,10 @@ namespace Pis.Projekt.Framework.Seed
         public string ProductsCSV { get; set; }
 
         public IEnumerable<string> ProductNames => ProductsCSV.Split(";");
-        public double MinPrice { get; set; }
-        public double MaxPrice { get; set; }
+        public double PriceMin { get; set; }
+        public double PriceMax { get; set; }
+        
+        public double SalesCoefMin { get; set; }
+        public double SalesCoefMax { get; set; }
     }
 }

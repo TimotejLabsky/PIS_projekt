@@ -30,11 +30,14 @@ namespace Pis.Projekt.Framework.Seed
                 _logger.LogDebug($"Seeding of entities by {nameof(EntitySeeder)} has started");
                 var weekAmount = _configuration.WeekAmount;
                 var products = _configuration.ProductNames;
-                var minValue = _configuration.MinPrice;
-                var maxValue = _configuration.MaxPrice;
+                var minValue = _configuration.PriceMin;
+                var maxValue = _configuration.PriceMax;
+
+                var salesCoefMin = _configuration.SalesCoefMin;
+                var salesCoefMax = _configuration.SalesCoefMax;
 
                 using var saleAggregateEnumerator =
-                    CreateSaleAggregates(weekAmount, products, minValue, maxValue).GetEnumerator();
+                    CreateSaleAggregates(weekAmount, products, minValue, maxValue,salesCoefMin, salesCoefMax).GetEnumerator();
                 while (saleAggregateEnumerator.MoveNext())
                 {
                     var salesAggregate = saleAggregateEnumerator.Current;
@@ -69,7 +72,7 @@ namespace Pis.Projekt.Framework.Seed
         }
 
         private IEnumerable<SalesAggregateEntity> CreateSaleAggregates(uint weekAmount, IEnumerable<string> products,
-            double minValue, double maxValue)
+            double minValue, double maxValue, double salesCoefMin, double salesCoefMax)
         {
             using var productEnumerator = CreateProducts(products).GetEnumerator();
             while (productEnumerator.MoveNext())
@@ -86,7 +89,8 @@ namespace Pis.Projekt.Framework.Seed
                                                 minValue),
                             Product = product,
                             ProductGuid = product.Id,
-                            SaleCoefficient = new decimal(new Random().NextDouble()),
+                            SaleCoefficient = new decimal(new Random().NextDouble() * (salesCoefMax - salesCoefMin) +
+                                                          salesCoefMin),
                             WeekNumber = i
                         };
                         _logger.LogDebug(

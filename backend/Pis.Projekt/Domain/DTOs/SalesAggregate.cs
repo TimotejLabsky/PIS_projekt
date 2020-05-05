@@ -9,5 +9,7 @@ namespace Pis.Projekt.Domain.DTOs
         public Guid PricedProductGuid { get; set; }
         public PricedProduct PricedProduct { get; set; }
         public decimal SaleCoefficient { get; set; }
+        
+        public uint WeekNumber { get; set; }
     }
 }

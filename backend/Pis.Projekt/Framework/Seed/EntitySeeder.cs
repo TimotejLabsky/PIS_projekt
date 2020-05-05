@@ -40,8 +40,6 @@ namespace Pis.Projekt.Framework.Seed
                     var salesAggregate = saleAggregateEnumerator.Current;
                     if (salesAggregate != null)
                     {
-                        await productRepository.CreateAsync(salesAggregate.Product)
-                            .ConfigureAwait(false);
                         await salesAggregateRepository.CreateAsync(salesAggregate)
                             .ConfigureAwait(false);
                     }
@@ -80,13 +78,14 @@ namespace Pis.Projekt.Framework.Seed
                 {
                     if (productEnumerator.Current != null)
                     {
+                        var product = productEnumerator.Current;
                         var aggregate = new SalesAggregateEntity
                         {
                             Id = Guid.NewGuid(),
                             Price = new decimal(new Random().NextDouble() * (maxValue - minValue) +
                                                 minValue),
-                            Product = productEnumerator.Current,
-                            ProductGuid = productEnumerator.Current.Id,
+                            Product = product,
+                            ProductGuid = product.Id,
                             SaleCoefficient = new decimal(new Random().NextDouble()),
                             WeekNumber = i
                         };

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Product} from "../../model/product-model";
-import {ProductStore} from "../../store/product.store";
 import {Observable} from "rxjs";
+import {ProductService} from "../../services/product.service";
 
 @Component({
   selector: 'app-price-update',
@@ -16,8 +16,8 @@ export class PriceUpdateComponent implements OnInit {
   //TODO date from to
   actual_season: any = "20.20.2020-25.20.2020";
 
-  constructor(private productStore: ProductStore) {
-    this.dataSource = this.productStore.products$;
+  constructor(private productService: ProductService) {
+    this.dataSource = this.productService.getAllProducts();
   }
 
   ngOnInit(): void {

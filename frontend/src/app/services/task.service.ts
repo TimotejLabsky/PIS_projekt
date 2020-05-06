@@ -10,6 +10,6 @@ export class TaskService {
   constructor() { }
 
   getTask(user: User): Task{
-    return {taskType: TaskType.nothing}
+    return {taskType: TaskType.advertisement_picking}
   }
 }

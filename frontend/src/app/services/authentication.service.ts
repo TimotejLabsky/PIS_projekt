@@ -22,7 +22,7 @@ export class AuthenticationService {
   login(userName: string, password: string){
     if(userName == 'admin' && password == 'admin'){
       //TODO
-      let user = {userName: userName, email: '', task:{taskType: TaskType.advertisement_picking}}
+      let user = {userName: userName, email: '', task:null};
       this._currentUserSubject.next(user);
       localStorage.setItem('currentUser', JSON.stringify(user));
 

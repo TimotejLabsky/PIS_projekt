@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router, RouterModule} from "@angular/router";
 import {AuthenticationService} from "../../services/authentication.service";
+import {connectableObservableDescriptor} from "rxjs/internal/observable/ConnectableObservable";
+import {TaskService} from "../../services/task.service";
 
 @Component({
   selector: 'app-home',
@@ -9,10 +11,14 @@ import {AuthenticationService} from "../../services/authentication.service";
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute, private authenticationService: AuthenticationService) {
-    let task = authenticationService.getCurrentUser().task.taskType;
+  constructor(private router: Router, private activatedRoute: ActivatedRoute,
+              private authenticationService: AuthenticationService,
+              private taskService: TaskService) {
 
-    this.router.navigate([task], {relativeTo: this.activatedRoute});
+    let task = taskService.getTask(authenticationService.getCurrentUser());
+
+    console.log(task);
+    this.router.navigate([task.taskType], {relativeTo: this.activatedRoute});
 
   }
 

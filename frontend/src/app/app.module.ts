@@ -21,6 +21,7 @@ import {MatCheckboxModule} from "@angular/material/checkbox";
 import { OrderingCancelationComponent } from './components/ordering-cancelation/ordering-cancelation.component';
 import { HomeComponent } from './components/home/home.component';
 import {RouterModule} from "@angular/router";
+import { NoTaskComponent } from './components/no-task/no-task.component';
 
 
 @NgModule({
@@ -30,7 +31,8 @@ import {RouterModule} from "@angular/router";
     PriceUpdateComponent,
     AdvertisementPickingComponent,
     OrderingCancelationComponent,
-    HomeComponent
+    HomeComponent,
+    NoTaskComponent
   ],
   imports: [
     BrowserModule,

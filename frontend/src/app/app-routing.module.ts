@@ -6,6 +6,7 @@ import {LoginComponent} from "./components/login/login.component";
 import {AdvertisementPickingComponent} from "./components/advertisement-picking/advertisement-picking.component";
 import {AuthGuard} from "./authGuard";
 import {HomeComponent} from "./components/home/home.component";
+import {NoTaskComponent} from "./components/no-task/no-task.component";
 
 
 const routes: Routes = [
@@ -13,10 +14,11 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard],
     children: [
-      {path: '', component: PriceUpdateComponent, canActivate: [AuthGuard]},
       { path: 'price-update', component: PriceUpdateComponent, canActivate: [AuthGuard]},
       { path: 'ordering-cancellation', component: OrderingCancelationComponent, canActivate: [AuthGuard]},
       { path: 'advertisement-picking', component: AdvertisementPickingComponent, canActivate: [AuthGuard]},
+      { path: '**', component: NoTaskComponent, canActivate: [AuthGuard]}
+
     ] },
 
   // otherwise redirect to home

@@ -5,14 +5,14 @@ import {OrderingCancelationComponent} from "./components/ordering-cancelation/or
 import {LoginComponent} from "./components/login/login.component";
 import {AdvertisementPickingComponent} from "./components/advertisement-picking/advertisement-picking.component";
 import {AuthGuard} from "./authGuard";
-import {HomeComponent} from "./components/home/home.component";
+import {SalesOptimalizationComponent} from "./components/sales-optimalization/sales-optimalization.component";
 import {NoTaskComponent} from "./components/no-task/no-task.component";
 
 
 const routes: Routes = [
   { path: '', component: LoginComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard],
+  { path: 'sales-optimalization', component: SalesOptimalizationComponent, canActivate: [AuthGuard],
     children: [
       { path: 'price-update', component: PriceUpdateComponent, canActivate: [AuthGuard]},
       { path: 'ordering-cancellation', component: OrderingCancelationComponent, canActivate: [AuthGuard]},

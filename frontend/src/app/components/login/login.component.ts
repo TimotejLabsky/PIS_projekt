@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
     this.authenticationService.login(this.credentials.getRawValue().username, this.credentials.getRawValue().password);
 
     if (this.authenticationService.getCurrentUser() != null){
-      this.router.navigate(["home"]).then(r => console);
+      this.router.navigate(["sales-optimalization"]).then(r => console);
     }else{
       alert("invalid credentials")
     }

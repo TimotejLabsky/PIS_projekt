@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Product} from "../../model/product-model";
 import {Observable} from "rxjs";
+import { map } from 'rxjs/operators';
 import {ProductStore} from "../../store/product.store";
 
 @Component({
@@ -22,4 +23,11 @@ export class AdvertisementPickingComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  applyFilter($event: KeyboardEvent) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    console.log(filterValue);
+    this.dataSource.pipe(map(products => products.filter(p => p.name === p.name)))
+    this.dataSource.pipe(map(products => products.filter(product => product.name.toLowerCase() === filterValue.toLowerCase())));
+
+  }
 }

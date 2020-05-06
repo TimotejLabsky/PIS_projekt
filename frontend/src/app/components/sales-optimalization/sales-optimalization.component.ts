@@ -6,10 +6,10 @@ import {TaskService} from "../../services/task.service";
 
 @Component({
   selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  templateUrl: './sales-optimalization.component.html',
+  styleUrls: ['./sales-optimalization.component.css']
 })
-export class HomeComponent implements OnInit {
+export class SalesOptimalizationComponent implements OnInit {
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute,
               private authenticationService: AuthenticationService,

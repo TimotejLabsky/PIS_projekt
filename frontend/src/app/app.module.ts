@@ -19,9 +19,10 @@ import {MatTableModule} from "@angular/material/table";
 import { AdvertisementPickingComponent } from './components/advertisement-picking/advertisement-picking.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import { OrderingCancelationComponent } from './components/ordering-cancelation/ordering-cancelation.component';
-import { HomeComponent } from './components/home/home.component';
+import { SalesOptimalizationComponent } from './components/sales-optimalization/sales-optimalization.component';
 import {RouterModule} from "@angular/router";
 import { NoTaskComponent } from './components/no-task/no-task.component';
+import { IncludeToSeasonComponent } from './components/include-to-season/include-to-season.component';
 
 
 @NgModule({
@@ -31,8 +32,9 @@ import { NoTaskComponent } from './components/no-task/no-task.component';
     PriceUpdateComponent,
     AdvertisementPickingComponent,
     OrderingCancelationComponent,
-    HomeComponent,
-    NoTaskComponent
+    SalesOptimalizationComponent,
+    NoTaskComponent,
+    IncludeToSeasonComponent
   ],
   imports: [
     BrowserModule,

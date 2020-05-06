@@ -27,12 +27,14 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  /*login() : void {
-    if(this.credentials.getRawValue() == 'admin' && this.credentials.getRawValue() == 'admin'){
-      this.router.navigate(["user"]);
+  login() : void {
+    console.log(this.credentials.getRawValue());
+    console.log(this.credentials.getRawValue().username == 'admin' && this.credentials.getRawValue().password == 'admin');
+    if(this.credentials.getRawValue().username == 'admin' && this.credentials.getRawValue().password == 'admin'){
+      this.router.navigate(["price-update"]);
     }else {
       alert("Invalid credentials");
     }
-  }*/
+  }
 
 }

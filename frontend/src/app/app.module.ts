@@ -19,6 +19,8 @@ import {MatTableModule} from "@angular/material/table";
 import { AdvertisementPickingComponent } from './components/advertisement-picking/advertisement-picking.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import { OrderingCancelationComponent } from './components/ordering-cancelation/ordering-cancelation.component';
+import { HomeComponent } from './components/home/home.component';
+import {RouterModule} from "@angular/router";
 
 
 @NgModule({
@@ -27,7 +29,8 @@ import { OrderingCancelationComponent } from './components/ordering-cancelation/
     LoginComponent,
     PriceUpdateComponent,
     AdvertisementPickingComponent,
-    OrderingCancelationComponent
+    OrderingCancelationComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
@@ -45,9 +48,8 @@ import { OrderingCancelationComponent } from './components/ordering-cancelation/
     MatPaginatorModule,
     MatTableModule,
     MatCheckboxModule
-
   ],
-  providers: [],
+  providers: [ ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

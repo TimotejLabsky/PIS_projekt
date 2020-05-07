@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {User} from "./model/user-model";
 import {Router} from "@angular/router";
 import {AuthenticationService} from "./services/authentication.service";
+import {AuthStore} from "./store/auth.store";
 
 @Component({
   selector: 'app-root',
@@ -14,8 +15,8 @@ export class AppComponent {
 
   constructor(
     private router: Router,
-    private authenticationService: AuthenticationService) {
-    this.authenticationService.$currentUser.subscribe(x => this.handleUserChange(x));
+    private authStore: AuthStore) {
+    this.authStore.$currentUser.subscribe(x => this.handleUserChange(x));
   }
 
   handleUserChange(user: User){
@@ -24,7 +25,7 @@ export class AppComponent {
     }
   }
   logout(){
-    this.authenticationService.logout();
+    this.authStore.logout();
   }
 
 }

@@ -3,6 +3,7 @@ import {ActivatedRoute, Router, RouterModule} from "@angular/router";
 import {AuthenticationService} from "../../services/authentication.service";
 import {connectableObservableDescriptor} from "rxjs/internal/observable/ConnectableObservable";
 import {TaskService} from "../../services/task.service";
+import {AuthStore} from "../../store/auth.store";
 
 @Component({
   selector: 'app-home',
@@ -12,10 +13,10 @@ import {TaskService} from "../../services/task.service";
 export class SalesOptimalizationComponent implements OnInit {
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute,
-              private authenticationService: AuthenticationService,
+              private authStore: AuthStore,
               private taskService: TaskService) {
 
-    let task = taskService.getTask(authenticationService.getCurrentUser());
+    let task = taskService.getTask(authStore.getCurrentUser());
 
     console.log(task);
     this.router.navigate([task.taskType], {relativeTo: this.activatedRoute});

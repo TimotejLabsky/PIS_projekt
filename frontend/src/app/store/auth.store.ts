@@ -15,11 +15,12 @@ export class AuthStore {
     this.$currentUser = this._currentUserSubject.asObservable();
   }
 
-  public login(userName: string, password: string){
+  public login(userName: string, password: string): boolean{
 
     let user: User = this.authenticationService.authenticate(userName, password);
     localStorage.setItem('currentUser', JSON.stringify(user));
     this._currentUserSubject.next(user);
+    return (user != null);
   }
 
   public logout(){

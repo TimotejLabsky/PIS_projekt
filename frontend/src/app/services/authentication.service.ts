@@ -11,12 +11,8 @@ export class AuthenticationService {
   authenticate(userName: string, password: string): User{
     let user: User = null;
 
-    if(userName == 'admin' && password == 'admin'){
-      //TODO
-      user = {userName: userName, email: '', task:null};
-
-    }else {
-      alert("Invalid credentials");
+    if(userName == 'admin' && password == 'admin') {
+      user = {userName: userName, email: '', task: null};
     }
 
     return user

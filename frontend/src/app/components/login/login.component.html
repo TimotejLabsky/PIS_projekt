@@ -1,4 +1,4 @@
-<div class="login_wrapper">
+<div class="login_wrapper" (keyup.enter)="login()">
   <mat-card>
     <mat-card-header>
       <mat-card-title>Login</mat-card-title>
@@ -21,7 +21,11 @@
       </mat-form-field>
     </form>
 
-    <button mat-raised-button color="primary" class="login_btn" (click)="login()">Login</button>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" class="login_btn" (click)="login()" (keyup.enter)="login()">Login</button>
+      <a class='error' *ngIf='loginFailed'>Nesprávne prihlasovacie údaje</a>
+    </mat-card-actions>
+
 
   </mat-card>
 </div>

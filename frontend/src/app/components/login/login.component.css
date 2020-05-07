@@ -6,6 +6,10 @@
   margin-right: 5px;
 }
 
+.error{
+  margin: 10px;
+  color: red;
+}
 
 .mat-card{
   width: 500px;

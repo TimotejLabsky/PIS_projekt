@@ -51,7 +51,7 @@ namespace Pis.Projekt.Business
             var increasedSalesTask = _increasedSalesHandler.Handle(evaluationResult.IncreasedSales);
             var decreasedSalesTask = _decreasedSalesHandler.Handle(evaluationResult.DecreasedSales);
             await Task.WhenAll(increasedSalesTask, decreasedSalesTask).ConfigureAwait(false);
-            await _waiter.WaitAsync();
+            await _waiter.WaitAsync().ConfigureAwait(false);
             // capture results from parallel tasks
             var increasedList = increasedSalesTask.Result;
             var decreasedList = decreasedSalesTask.Result;

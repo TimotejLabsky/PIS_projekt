@@ -45,7 +45,6 @@ namespace Pis.Projekt.Business
                 await SelectToAdvertisementCampaign(updatedList).ConfigureAwait(false);
                 await EndProductStocking(updatedList.Select(s => s.Id))
                     .ConfigureAwait(false);
-                await _waiter.WaitAsync().ConfigureAwait(false);
                 return updatedList;
             }
 
@@ -140,6 +139,12 @@ namespace Pis.Projekt.Business
         public Task EndProductStocking(IEnumerable<Guid> endProductsGuids)
         {
             _logger.LogInformation($"Stocking of products {endProductsGuids} has ended");
+            return Task.CompletedTask;
+        }
+        
+        public void SendOrder(ProductOrder order)
+        {
+            _logger.LogInformation($"Supplier received order of ptoducts: {order}");
             return Task.CompletedTask;
         }
 

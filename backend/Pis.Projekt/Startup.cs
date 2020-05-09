@@ -83,7 +83,7 @@ namespace Pis.Projekt
             // business case
             services.AddSingleton<WeekCounter>();
             services.AddScoped<SalesEvaluatorService>();
-            services.AddScoped<WaiterService>();
+            services.AddSingleton<WaiterService>();
             services.AddSingleton<AggregateFetcher>();
             services.AddSingleton<DecreasedSalesHandler>();
             services.AddSingleton<IncreasedSalesHandler>();

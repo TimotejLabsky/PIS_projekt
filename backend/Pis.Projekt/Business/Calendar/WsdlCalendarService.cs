@@ -15,10 +15,10 @@ namespace Pis.Projekt.Business.Calendar
             _logger = logger;
         }
         
-        public async Task<DateTime> GetCurrentDate()
+        public async Task<DateTime> GetCurrentDateAsync()
         {
             var currentDate = await _client.getCurrentDateAsync().ConfigureAwait(false);
-            if (!DateTime.TryParseExact(currentDate.date, "YYYY-MM-DD",
+            if (!DateTime.TryParseExact(currentDate.date, "yyyy-MM-dd",
                 CultureInfo.InvariantCulture, 
                 DateTimeStyles.None, out var outDate))
             {

@@ -43,14 +43,14 @@ namespace Pis.Projekt.Business.Scheduling
             }
         }
 
-        public async Task<DateTime> ScheduleNextOptimalizationTask(CancellationToken token =
+        public async Task<DateTime> ScheduleOptimalizationTask(CancellationToken token =
             default)
         {
             var job = CreateJob<OptimizationJob>(_configuration);
             var trigger = CreateTrigger<OptimizationJob>(job, _configuration);
             var date = await _scheduler.ScheduleJob(job, trigger, token);
-            _logger.LogDevelopment(
-                $"{nameof(OptimizationJob)} scheduled and returned date: {date}");
+            _logger.LogBusinessCase(BusinessTasks.OptimizationSchedulingTask,
+                $"Task: {job.Description} scheduled on {date}");
             return DateTime.Now;
         }
 
@@ -60,18 +60,11 @@ namespace Pis.Projekt.Business.Scheduling
             // create job from scheduled task
             var job = CreateJob<UserEvaluationJob>(new CronSchedulerConfiguration
                 {Name = "user-eval"});
-            // TODO: iba todo nic viacej, beatify
-            var trigger = TriggerBuilder
-                .Create()
-                .WithIdentity($"user-eval.trigger")
-                .ForJob(job)
-                .WithSimpleSchedule(a => a.WithRepeatCount(0)
-                    .WithIntervalInMinutes(30))
-                .Build();
+            var trigger = CreateOneTimeTrigger<UserEvaluationJob>(job, _configuration);
             var date = await _scheduler.ScheduleJob(job, trigger, token);
 
-            _logger.LogDevelopment(
-                $"{nameof(UserEvaluationJob)} scheduled and returned date: {date}");
+            _logger.LogBusinessCase(BusinessTasks.UserEvaluationSchedulingTask,
+                $"Task: {job.Description} scheduled on {date}");
         }
 
         private static IJobDetail CreateJob<TJob>(CronSchedulerConfiguration schedule)
@@ -82,6 +75,19 @@ namespace Pis.Projekt.Business.Scheduling
                 .Create<TJob>()
                 .WithIdentity(schedule.Name)
                 .WithDescription(jobType.Name)
+                .Build();
+        }
+
+        private static ITrigger CreateOneTimeTrigger<TJob>(IJobDetail job,
+            CronSchedulerConfiguration schedule)
+            where TJob : IJob
+        {
+            return TriggerBuilder
+                .Create()
+                .WithIdentity($"{schedule.Name}.trigger")
+                .ForJob(job)
+                .WithSimpleSchedule(a => a.WithRepeatCount(0)
+                    .WithIntervalInMinutes(30))
                 .Build();
         }
 
@@ -98,7 +104,7 @@ namespace Pis.Projekt.Business.Scheduling
                 .Build();
         }
 
-        private IScheduler? _scheduler;
+        private IScheduler _scheduler;
         private readonly ISchedulerFactory _factory;
         private readonly OptimizationJobFactory _jobFactory;
         private readonly CronSchedulerConfiguration _configuration;

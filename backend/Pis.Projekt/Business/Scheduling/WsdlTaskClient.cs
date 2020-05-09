@@ -21,15 +21,13 @@ namespace Pis.Projekt.Business.Scheduling
 
         public async Task SendAsync(ScheduledTask scheduledTask)
         {
-            var serializedTask = JsonConvert.SerializeObject(scheduledTask);
-            _logger.LogDebug($"Sending scheduled task {serializedTask}");
+            var serializedTask = JsonConvert.SerializeObject(scheduledTask, Formatting.Indented);
+            _logger.LogDebug($"Sending scheduled task to Task List {serializedTask}");
 #if DEBUG
-
             _logger.LogDevelopment("Task sent to WsdlTaskService. " +
                                    $"Name: {scheduledTask.Name}, " +
                                    $"ScheduledOn: {scheduledTask.ScheduledOn}", scheduledTask);
             await Task.CompletedTask;
-
 #else
             // await _client.createTaskAsync(_configuration.TeamId, _configuration.Password,
             //     nameof(WsdlTaskClient), true, scheduledTask.Name, serializedTask,

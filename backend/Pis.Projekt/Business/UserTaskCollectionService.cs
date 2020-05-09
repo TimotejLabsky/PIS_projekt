@@ -9,12 +9,12 @@ namespace Pis.Projekt.Business
     {
         public UserTaskCollectionService()
         {
-            _scheduledTasks = new List<ScheduledTask>();
+            _scheduledTasks = new Queue<ScheduledTask>();
         }
 
         public void Register(ScheduledTask task)
         {
-            _scheduledTasks.Add(task);
+            _scheduledTasks.Append(task);
         }
 
         public ScheduledTask Find(Guid id)
@@ -22,6 +22,16 @@ namespace Pis.Projekt.Business
             return _scheduledTasks.Where(s => s.Id == id).First();
         }
 
-        private readonly IList<ScheduledTask> _scheduledTasks;
+        public ScheduledTask GetNext()
+        {
+            return _scheduledTasks.Peek();
+        }
+        
+        public IEnumerable<ScheduledTask> All()
+        {
+            return _scheduledTasks;
+        }
+
+        private readonly Queue<ScheduledTask> _scheduledTasks;
     }
 }

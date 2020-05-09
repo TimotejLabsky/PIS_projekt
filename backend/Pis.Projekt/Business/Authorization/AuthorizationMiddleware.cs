@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
@@ -14,12 +16,24 @@ namespace Pis.Projekt.Business.Authorization
             _service = service;
         }
 
-        public Task Invoke(HttpContext httpContext)
+        public async Task Invoke(HttpContext context)
         {
-            var headers = httpContext.Request.Headers;
-            _service.Login(headers["user_id"], headers["password"]);
-            return _next(httpContext);
+            var headers = context.Request.Headers;
+            var isSuccess = await _service.LoginAsync(headers["user_id"], headers["password"])
+                .ConfigureAwait(false);
+            if (isSuccess)
+            {
+                await _next.Invoke(context);
+            }
+            else
+            {
+                context.Response.Clear();
+                context.Response.ContentType = "text/plain";
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                await context.Response.WriteAsync("Unauthorized");
+            }
         }
+
         private readonly AuthorizationService _service;
     }
 }

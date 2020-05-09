@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using Pis.Projekt.Domain.DTOs;
 
 namespace Pis.Projekt.Business
@@ -6,8 +7,14 @@ namespace Pis.Projekt.Business
     // Done
     public class SalesEvaluatorService
     {
+        public SalesEvaluatorService(ILogger<SalesEvaluatorService> logger)
+        {
+            _logger = logger;
+        }
+        
         public EvaluationResult EvaluateSales(IEnumerable<SalesAggregate> allProducts)
         {
+            _logger.LogBusinessCase(BusinessTasks.EvaluationTask);
             var decreasedSales = new List<PricedProduct>();
             var increasedSales = new List<PricedProduct>();
 
@@ -42,5 +49,7 @@ namespace Pis.Projekt.Business
                 DecreasedSales = decreasedSales
             };
         }
+
+        private readonly ILogger<SalesEvaluatorService> _logger;
     }
 }

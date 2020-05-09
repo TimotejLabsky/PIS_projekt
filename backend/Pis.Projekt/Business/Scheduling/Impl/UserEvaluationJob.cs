@@ -10,18 +10,15 @@ namespace Pis.Projekt.Business.Scheduling.Impl
     {
         public UserEvaluationJob()
         {
-            // _task = ;
-            Console.WriteLine("Job created!!!!!!!!!!!!!");
         }
 
         public Task Execute(IJobExecutionContext context)
         {
             // Evaluate deadline
             // _task.Evaluate();
-            Console.WriteLine("Job executed!!!!!!!!!!!!!");
             return Task.CompletedTask;
         }
-
-        // private readonly ScheduledTask _task;
     }
+
+    // private readonly ScheduledTask _task;
 }

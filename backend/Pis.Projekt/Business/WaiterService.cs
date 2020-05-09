@@ -9,16 +9,19 @@ namespace Pis.Projekt.Business
     // Done
     public class WaiterService
     {
-        public WaiterService(IOptions<WaiterConfiguration> configuration, ILogger<WaiterService> logger)
+        public WaiterService(IOptions<WaiterConfiguration> configuration,
+            ILogger<WaiterService> logger)
         {
             _logger = logger;
             _configuration = configuration.Value;
         }
-        
+
         public async Task WaitAsync()
         {
+            _logger.LogBusinessCase(BusinessTasks.WaitingTask);
             _token = new CancellationToken();
-            await Task.Delay(_configuration.WaitingPeriod, _token.Value)
+            var hoursToWait = TimeSpan.FromHours(_configuration.WaitingHrsPeriod);
+            await Task.Delay(hoursToWait, _token.Value)
                 .ContinueWith(OnWaitingEnded);
         }
 
@@ -30,7 +33,7 @@ namespace Pis.Projekt.Business
 
         private void OnWaitingEnded(Task waitingTask)
         {
-            _logger.LogDebug("Water has ended");
+            _logger.LogDebug("Waiting has ended");
         }
 
 
@@ -40,7 +43,7 @@ namespace Pis.Projekt.Business
 
         public class WaiterConfiguration
         {
-            public TimeSpan WaitingPeriod { get; set; }
+            public int WaitingHrsPeriod { get; set; }
         }
     }
 }

@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Pis.Projekt.Business;
 using Pis.Projekt.Business.Authorization;
+using Pis.Projekt.Business.Calendar;
 using Pis.Projekt.Business.Notifications;
 using Pis.Projekt.Business.Notifications.Domain;
 using Pis.Projekt.Business.Scheduling;
@@ -74,6 +75,9 @@ namespace Pis.Projekt
             services.AddScoped<WaiterService>();
             services.AddScoped<WeekCounter>();
             services.AddScoped<SmtpClient>();
+            services.AddSingleton<WsdlCalendarService>();
+            services.AddSingleton<ParallelTaskService>();
+            services.AddSingleton<AggregateFetcher>();
             services.AddSingleton<UserTaskCollectionService>();
             services.AddSingleton<ITaskClient, WsdlTaskClient>();
             services.AddSingleton<PriceCalculatorService>();

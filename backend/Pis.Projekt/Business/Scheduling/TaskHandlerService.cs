@@ -31,19 +31,27 @@ namespace Pis.Projekt.Business.Scheduling
 
         public async Task<IEnumerable<PricedProduct>> StartDecreasedSalesTask(
             IEnumerable<PricedProduct> products)
-        { 
-            var task = new ProductSalesDecreasedTask(Guid.NewGuid(), 
+        {
+            _logger.LogBusinessCase(BusinessTasks.DecreasedSalesBranch);
+            var task = new ProductSalesDecreasedTask(Guid.NewGuid(),
                 "product-sales-decreased", products, DateTime.Now);
             await ProcessAsync(task, task.GetType(), default).ConfigureAwait(false);
-            return task.Result;
+            var result = task.Result;
+            _logger.LogOutput(BusinessTasks.DecreasedSalesBranch,
+                "pole aggregatov kde sa predaj znizil o viac ako 20%", result);
+            return result;
         }
 
         public async Task<IEnumerable<PricedProduct>> StartIncreasedSalesTask(
             IEnumerable<PricedProduct> products)
         {
+            _logger.LogBusinessCase(BusinessTasks.IncreasedSalesBranch);
             var task = new ProductSalesIncreasedTask("product-sales-increased", products);
             await ProcessAsync(task, task.GetType(), default).ConfigureAwait(false);
-            return task.Result;
+            var result = task.Result;
+            _logger.LogOutput(BusinessTasks.DecreasedSalesBranch,
+                "pole aggregatov kde sa predaj zvisil o viac ako 20%", result);
+            return result;
         }
 
         public async Task ProcessAsync(ITask<IEnumerable<PricedProduct>> task,
@@ -78,6 +86,7 @@ namespace Pis.Projekt.Business.Scheduling
                 product.SalesWeek++;
                 product.Price = _priceCalculator.CalculatePrice(product);
             }
+
             await Task.CompletedTask;
             return task.Products;
         }
@@ -102,7 +111,8 @@ namespace Pis.Projekt.Business.Scheduling
                 awaiter.SetException(new UserTaskNotFulfilledException(failedTask));
             }
 
-            _logger.LogTrace($"Creating user task with {typeof(FiitTaskList.TaskListPortTypeClient)}");
+            _logger.LogTrace(
+                $"Creating user task with {typeof(FiitTaskList.TaskListPortTypeClient)}");
 
 #if DEBUG
             _logger.LogDevelopment($"Task: {task.Name} added to Task List Service");

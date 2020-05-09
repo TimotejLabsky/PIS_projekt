@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace Pis.Projekt.Business
 {
     public static class BusinessTasks
@@ -9,5 +11,6 @@ namespace Pis.Projekt.Business
         public const string OptimizationSchedulingTask = "Optimalizacia kazdy tyzden";
         public const string IncreasedSalesBranch = "Vetva pre zvysenie predaja o viac ako 10%";
         public const string DecreasedSalesBranch = "Vetva pre Znizenie predaja o viac ako 20%";
+        public const string NotifyMarketing = "Upozornenie Marketingoveho oddelenia";
     }
 }

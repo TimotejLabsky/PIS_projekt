@@ -75,14 +75,15 @@ namespace Pis.Projekt
             services.AddScoped<WaiterService>();
             services.AddScoped<WeekCounter>();
             services.AddScoped<SmtpClient>();
+            services.AddSingleton<DecreasedSalesHandler>();
+            services.AddSingleton<IncreasedSalesHandler>();
+            services.AddSingleton<SupplierService>();
             services.AddSingleton<WsdlCalendarService>();
-            services.AddSingleton<ParallelTaskService>();
             services.AddSingleton<AggregateFetcher>();
             services.AddSingleton<UserTaskCollectionService>();
             services.AddSingleton<ITaskClient, WsdlTaskClient>();
             services.AddSingleton<PriceCalculatorService>();
             services.AddSingleton<CronSchedulerService>();
-            services.AddSingleton<TaskHandlerService>();
             services.AddSingleton<OptimizationJobFactory>();
             services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
             services.AddSingleton<AuthorizationService>();
@@ -92,7 +93,7 @@ namespace Pis.Projekt
             services.AddSingleton<CalendarPortTypeClient>();
             services.AddSingleton<TaskListPortTypeClient>();
             services.AddSingleton<ValidatorPortTypeClient>();
-            services.AddTransient<UserEvaluationJob>();
+            services.AddTransient<UserTaskTimeoutEvaluationJob>();
             services.AddTransient<OptimizationJob>();
 
             services.AddAutoMapper(c =>

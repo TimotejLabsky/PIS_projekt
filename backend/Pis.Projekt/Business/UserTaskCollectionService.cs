@@ -12,7 +12,7 @@ namespace Pis.Projekt.Business
             _scheduledTasks = new Queue<ScheduledTask>();
         }
 
-        public void Register(ScheduledTask task)
+        public void Push(ScheduledTask task)
         {
             _scheduledTasks.Append(task);
         }

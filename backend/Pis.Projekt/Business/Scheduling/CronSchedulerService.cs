@@ -54,14 +54,14 @@ namespace Pis.Projekt.Business.Scheduling
             return DateTime.Now;
         }
 
-        public async Task ScheduleUserEvaluationTask(ProductSalesDecreasedTask task,
-            CancellationToken token)
+        public async Task ScheduleUserTaskTimeoutJob(ScheduledTask task)
         {
             // create job from scheduled task
-            var job = CreateJob<UserEvaluationJob>(new CronSchedulerConfiguration
+            var job = CreateJob<UserTaskTimeoutEvaluationJob>(new CronSchedulerConfiguration
                 {Name = "user-eval"});
-            var trigger = CreateOneTimeTrigger<UserEvaluationJob>(job, _configuration);
-            var date = await _scheduler.ScheduleJob(job, trigger, token);
+            var trigger = CreateOneTimeTrigger<UserTaskTimeoutEvaluationJob>(job, _configuration);
+            job.JobDataMap.Add("task", task);
+            var date = await _scheduler.ScheduleJob(job, trigger).ConfigureAwait(false);
 
             _logger.LogBusinessCase(BusinessTasks.UserEvaluationSchedulingTask,
                 $"Task: {job.Description} scheduled on {date}");

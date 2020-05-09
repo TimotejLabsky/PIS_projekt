@@ -25,9 +25,10 @@ namespace Pis.Projekt.Business
         public static void LogInput<TLogger>(this ILogger<TLogger> logger,
             string taskName,
             string inputName,
-            object data = null)
+            object data = null,
+            bool toJson = true)
         {
-            if (data != null)
+            if (toJson)
             {
                 var dataAsJson = JsonConvert.SerializeObject(data, Formatting.Indented);
                 data = dataAsJson;

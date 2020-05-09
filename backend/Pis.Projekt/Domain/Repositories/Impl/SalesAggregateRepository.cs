@@ -52,6 +52,11 @@ namespace Pis.Projekt.Domain.Repositories.Impl
             return found.First();
         }
 
+        public override string ToString()
+        {
+            return $"In memory {nameof(SalesAggregateRepository)}";
+        }
+
         private readonly WeekCounter _counter;
 
         #region __ Disposable Pattern __

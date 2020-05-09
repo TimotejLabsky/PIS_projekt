@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
@@ -27,14 +26,13 @@ namespace Pis.Projekt
         /// <returns></returns>
         public async Task<IEnumerable<SalesAggregate>> FetchSalesAggregatesAsync(
             DateTime currentDate,
-            ISalesAggregateRepository repository,
-            CancellationToken token = default)
+            ISalesAggregateRepository repository)
         {
             _logger.LogBusinessCase(BusinessTasks.FetchLastAggregates);
             _logger.LogInput(BusinessTasks.FetchLastAggregates, "Dnešný dátum", currentDate);
-            _logger.LogInput(BusinessTasks.FetchLastAggregates, "Úložisko", repository);
+            _logger.LogInput(BusinessTasks.FetchLastAggregates, "Úložisko", repository, false);
             var sales = await repository
-                .FetchFromLastWeekAsync(token)
+                .FetchFromLastWeekAsync()
                 .ConfigureAwait(false);
             _logger.LogTrace($"Fetched sales: {sales}");
             var aggregates = _mapper.Map<IEnumerable<SalesAggregate>>(sales);

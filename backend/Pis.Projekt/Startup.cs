@@ -70,25 +70,26 @@ namespace Pis.Projekt
             services.AddScoped<ProductPersistenceService>();
             
             // notification pipeline
-            services.AddScoped<NotificationFactory>();
-            services.AddScoped<IOptimizationNotificationService, EmailNotificationService>();
+            services.AddSingleton<NotificationFactory>();
+            services.AddSingleton<IOptimizationNotificationService, EmailNotificationService>();
             services
-                .AddScoped<INotificationClient<IEmailNotification, IEmail>, SmtpClientAdapter>();
-            services.AddScoped<INotificationClient<IEmailNotification, IEmail>, WsdlEmailClient>();
+                .AddSingleton<INotificationClient<IEmailNotification, IEmail>, SmtpClientAdapter>();
+            services.AddSingleton<INotificationClient<IEmailNotification, IEmail>, WsdlEmailClient>();
             
             // testing tools
             services.AddSingleton<EntitySeeder>();
             services.AddSingleton<AuthorizationService>();
             
             // business case
+            services.AddSingleton<SalesEvaluatorService>();
             services.AddSingleton<WeekCounter>();
-            services.AddScoped<SalesEvaluatorService>();
             services.AddSingleton<WaiterService>();
             services.AddSingleton<AggregateFetcher>();
             services.AddSingleton<DecreasedSalesHandler>();
             services.AddSingleton<IncreasedSalesHandler>();
-            services.AddSingleton<UserTaskCollectionService>();
             services.AddSingleton<PriceCalculatorService>();
+            services.AddSingleton<UserTaskCollectionService>();
+            services.AddSingleton<SalesOptimalizationService>();
             
             // scheduling
             services.AddSingleton<CronSchedulerService>();
@@ -101,7 +102,7 @@ namespace Pis.Projekt
             // WSDL adapters
             services.AddSingleton<ITaskClient, WsdlTaskClient>();
             services.AddSingleton<WsdlCalendarService>();
-            services.AddScoped<SmtpClient>();
+            services.AddSingleton<SmtpClient>();
             
             // WSDL references
             services.AddSingleton<CustomerPortTypeClient>();

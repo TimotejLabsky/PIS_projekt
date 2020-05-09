@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Pis.Projekt.Business.Calendar;
 using Pis.Projekt.Business.Notifications;
@@ -14,32 +15,37 @@ namespace Pis.Projekt.Business
     {
         public SalesOptimalizationService(WaiterService waiter,
             IOptimizationNotificationService notificationService,
-            ISalesAggregateRepository aggregateRepository,
-            ProductPersistenceService productPersistence,
             DecreasedSalesHandler decreasedSalesHandler,
             IncreasedSalesHandler increasedSalesHandler,
             ILogger<SalesOptimalizationService> logger,
             SalesEvaluatorService evaluator,
             WsdlCalendarService calendar,
-            AggregateFetcher fetcher)
+            AggregateFetcher fetcher,
+            IServiceScopeFactory scopeFactory)
         {
             _waiter = waiter;
-            _productPersistence = productPersistence;
-            _aggregateRepository = aggregateRepository;
             _evaluator = evaluator;
             _notificationService = notificationService;
             _logger = logger;
             _calendar = calendar;
             _fetcher = fetcher;
+            _scopeFactory = scopeFactory;
             _decreasedSalesHandler = decreasedSalesHandler;
             _increasedSalesHandler = increasedSalesHandler;
         }
 
         public async Task OptimizeSalesAsync(CancellationToken token = default)
         {
+            // inject and arrange
+            using var scope = _scopeFactory.CreateScope();
+            var salesRepository =
+                scope.ServiceProvider.GetRequiredService<ISalesAggregateRepository>();
+                var productPersistence = scope.ServiceProvider.GetRequiredService<ProductPersistenceService>();
             var currentDate = await _calendar.GetCurrentDateAsync().ConfigureAwait(false);
+                
+            // act
             var products = await _fetcher
-                .FetchSalesAggregatesAsync(currentDate, _aggregateRepository, token)
+                .FetchSalesAggregatesAsync(currentDate, salesRepository)
                 .ConfigureAwait(false);
             var evaluationResult = _evaluator.EvaluateSales(products);
             var increasedSalesTask = _increasedSalesHandler.Handle(evaluationResult.IncreasedSales);
@@ -54,7 +60,7 @@ namespace Pis.Projekt.Business
             var newPriceList = increasedList.Concat(decreasedList).ToList();
 
             _logger.LogBusinessCase("Persisting new data to storage");
-            await _productPersistence.PersistProductsAsync(newPriceList, token)
+            await productPersistence.PersistProductsAsync(newPriceList, token)
                 .ConfigureAwait(false);
             //
             // _logger.LogBusinessCase("Scheduling next optimization task");
@@ -64,11 +70,10 @@ namespace Pis.Projekt.Business
         }
 
         private readonly IOptimizationNotificationService _notificationService;
-        private readonly ISalesAggregateRepository _aggregateRepository;
-        private readonly ProductPersistenceService _productPersistence;
         private readonly DecreasedSalesHandler _decreasedSalesHandler;
         private readonly IncreasedSalesHandler _increasedSalesHandler;
         private readonly ILogger<SalesOptimalizationService> _logger;
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly SalesEvaluatorService _evaluator;
         private readonly WsdlCalendarService _calendar;
         private readonly AggregateFetcher _fetcher;

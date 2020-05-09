@@ -44,6 +44,7 @@ namespace Pis.Projekt
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            // reading configuration
             services.Configure<WsdlConfiguration<WsdlEmailClient>>(
                 _configuration.GetSection("EmailService:WSDL"));
             services.Configure<WsdlConfiguration<WsdlTaskClient>>(
@@ -60,39 +61,56 @@ namespace Pis.Projekt
                 _configuration.GetSection("EntitySeederService"));
             services.Configure<CronSchedulerService.CronSchedulerConfiguration>(
                 _configuration.GetSection("CronSchedulerService"));
+            
+            // db layer
             services.AddDbContext<SalesDbContext>(c => c.UseInMemoryDatabase("sales"));
-            services.AddScoped<SalesOptimalizationService>();
             services.AddScoped<ISalesAggregateRepository, SalesAggregateRepository>();
             services.AddScoped<IPricedProductRepository, PricedProductRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ProductPersistenceService>();
+            
+            // notification pipeline
             services.AddScoped<NotificationFactory>();
             services.AddScoped<IOptimizationNotificationService, EmailNotificationService>();
             services
                 .AddScoped<INotificationClient<IEmailNotification, IEmail>, SmtpClientAdapter>();
             services.AddScoped<INotificationClient<IEmailNotification, IEmail>, WsdlEmailClient>();
+            
+            // testing tools
+            services.AddSingleton<EntitySeeder>();
+            services.AddSingleton<AuthorizationService>();
+            
+            // business case
+            services.AddSingleton<WeekCounter>();
             services.AddScoped<SalesEvaluatorService>();
             services.AddScoped<WaiterService>();
-            services.AddScoped<WeekCounter>();
-            services.AddScoped<SmtpClient>();
+            services.AddSingleton<AggregateFetcher>();
             services.AddSingleton<DecreasedSalesHandler>();
             services.AddSingleton<IncreasedSalesHandler>();
-            services.AddSingleton<SupplierService>();
-            services.AddSingleton<WsdlCalendarService>();
-            services.AddSingleton<AggregateFetcher>();
             services.AddSingleton<UserTaskCollectionService>();
-            services.AddSingleton<ITaskClient, WsdlTaskClient>();
             services.AddSingleton<PriceCalculatorService>();
+            
+            // scheduling
             services.AddSingleton<CronSchedulerService>();
             services.AddSingleton<OptimizationJobFactory>();
             services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
-            services.AddSingleton<AuthorizationService>();
+            
+            // external services
+            services.AddSingleton<SupplierService>();
+            
+            // WSDL adapters
+            services.AddSingleton<ITaskClient, WsdlTaskClient>();
+            services.AddSingleton<WsdlCalendarService>();
+            services.AddScoped<SmtpClient>();
+            
+            // WSDL references
             services.AddSingleton<CustomerPortTypeClient>();
-            services.AddSingleton<EntitySeeder>();
             services.AddSingleton<EmailPortTypeClient>();
             services.AddSingleton<CalendarPortTypeClient>();
             services.AddSingleton<TaskListPortTypeClient>();
             services.AddSingleton<ValidatorPortTypeClient>();
+            
+            // jobs
             services.AddTransient<UserTaskTimeoutEvaluationJob>();
             services.AddTransient<OptimizationJob>();
 
@@ -112,9 +130,6 @@ namespace Pis.Projekt
                     new OpenApiInfo {Title = "Sales Optimization API", Version = "v1"});
                 c.OperationFilter<AuthorizationParameters>();
             });
-
-            // private readonly CronSchedulerService _cronScheduler;
-            // private readonly TaskSchedulerService _taskScheduler;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

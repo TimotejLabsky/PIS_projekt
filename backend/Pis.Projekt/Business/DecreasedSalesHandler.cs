@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Pis.Projekt.Business.Scheduling;
 using Pis.Projekt.Business.Scheduling.Impl;
 using Pis.Projekt.Domain.DTOs;
@@ -21,7 +22,7 @@ namespace Pis.Projekt.Business
             ITaskClient taskClient,
             CronSchedulerService cronScheduler,
             ILogger<DecreasedSalesHandler> logger,
-            WsdlConfiguration<WsdlTaskClient> wsdlConfiguration)
+            IOptions<WsdlConfiguration<WsdlTaskClient>> wsdlConfiguration)
         {
             _supplier = supplier;
             _waiter = waiter;
@@ -29,7 +30,7 @@ namespace Pis.Projekt.Business
             _taskClient = taskClient;
             _cronScheduler = cronScheduler;
             _logger = logger;
-            _wsdlConfiguration = wsdlConfiguration;
+            _wsdlConfiguration = wsdlConfiguration.Value;
         }
 
         public async Task<IEnumerable<PricedProduct>> Handle(

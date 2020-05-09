@@ -91,7 +91,10 @@ namespace Pis.Projekt.Framework.Seed
                             ProductGuid = product.Id,
                             SaleCoefficient = new decimal(new Random().NextDouble() * (salesCoefMax - salesCoefMin) +
                                                           salesCoefMin),
-                            WeekNumber = i
+                            WeekNumber = i,
+                            //TODO change it if you have time and mood
+                            SoldAmount = new Random().Next(50,500)
+                            
                         };
                         _logger.LogDebug(
                             $"{nameof(EntitySeeder)} created {nameof(SalesAggregateEntity)}" +

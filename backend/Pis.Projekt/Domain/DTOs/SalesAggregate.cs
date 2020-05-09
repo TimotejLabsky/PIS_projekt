@@ -13,6 +13,6 @@ namespace Pis.Projekt.Domain.DTOs
         public uint WeekNumber { get; set; }
         
         public decimal Price { get; set; }
-
+        public int SoldAmount { get; set; }
     }
 }

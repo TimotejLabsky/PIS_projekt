@@ -34,5 +34,9 @@ namespace Pis.Projekt.Domain.Database
         [Column("price")]
         [Required]
         public decimal Price { get; set; }
+        
+        [Column("sold_amount")]
+        [Required]
+        public int SoldAmount { get; set; }
     }
 }

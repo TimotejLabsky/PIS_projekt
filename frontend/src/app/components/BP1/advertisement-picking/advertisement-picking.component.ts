@@ -48,10 +48,11 @@ export class AdvertisementPickingComponent implements OnInit {
   onSubmit() {
     this.task.products = this.dataSource.data;
     console.log('submit')
-    this.taskService.fulfillTask(this.task).subscribe(
+    console.log(this.dataSource.data);
+    /*this.taskService.fulfillTask(this.task).subscribe(
       value => console.log(value),
       error => console.error(error),
       () => this.router.navigate(['sales-optimalization'])
-    );
+    );*/
   }
 }

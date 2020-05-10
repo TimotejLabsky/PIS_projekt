@@ -30,4 +30,7 @@ export class PriceUpdateComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  onSubmit(){
+    console.log(this.dataSource);
+  }
 }

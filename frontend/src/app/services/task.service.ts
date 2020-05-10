@@ -32,7 +32,7 @@ export class TaskService {
   constructor() { }
 
   getTask(user: User): Observable<Task>{
-    return of({taskType: TaskType.price_update, guid: '0', products: this.mockData, scheduledOn: new Date()}).pipe(
+    return of({taskType: TaskType.advertisement_picking, guid: '0', products: this.mockData, scheduledOn: new Date()}).pipe(
       delay(2000)
     );
   }

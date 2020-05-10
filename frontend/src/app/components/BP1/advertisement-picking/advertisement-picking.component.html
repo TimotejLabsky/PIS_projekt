@@ -33,7 +33,16 @@
         <mat-cell *matCellDef="let element"> {{element.delta_sales}} </mat-cell>
       </ng-container>
 
-      <!-- new_price Column -->
+
+      <!-- new_price Column
+      <ng-container matColumnDef="include">
+        <mat-header-cell *matHeaderCellDef> Nová cena </mat-header-cell>
+        <mat-cell *matCellDef="let element; let i = index">
+            <mat-checkbox></mat-checkbox>
+        </mat-cell>
+      </ng-container>-->
+
+      <!-- new_price Column-->
       <ng-container matColumnDef="include">
         <mat-header-cell *matHeaderCellDef> Zaradiť </mat-header-cell>
         <mat-cell *matCellDef="let element">
@@ -53,7 +62,7 @@
         <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium">
       </mat-form-field>
 
-      <button mat-raised-button color="primary">Potvrdiť</button>
+      <button mat-raised-button color="primary" (click)="onSubmit()">Potvrdiť</button>
 
 
     </mat-card-actions>

@@ -4,11 +4,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
 using Pis.Projekt.Business;
 using Pis.Projekt.Domain.Database;
 using Pis.Projekt.Domain.Database.Contexts;
+using Pis.Projekt.Domain.DTOs;
 using Pis.Projekt.Framework.Repositories;
 
 namespace Pis.Projekt.Domain.Repositories.Impl
@@ -17,18 +20,21 @@ namespace Pis.Projekt.Domain.Repositories.Impl
         AbstractEFRepository<SalesDbContext, Guid, SalesAggregateEntity>, ISalesAggregateRepository,
         IDisposable
     {
-        public SalesAggregateRepository(IServiceScopeFactory scopeFactory) : base(scopeFactory)
+        public SalesAggregateRepository(IServiceScopeFactory scopeFactory, IMapper mapper) : base(
+            scopeFactory)
         {
+            _mapper = mapper;
             _scope = scopeFactory.CreateScope();
             _counter = _scope.ServiceProvider.GetRequiredService<WeekCounter>();
         }
 
-        public async Task<IEnumerable<SalesAggregateEntity>> FetchFromLastWeekAsync(
+        public async Task<IEnumerable<SalesAggregate>> FetchFromLastWeekAsync(
             CancellationToken token = default)
         {
             var weekNumber = _counter.Current();
-            return await ListAsync(s => s.WeekNumber == weekNumber, null, true, token)
+            var entities = await ListAsync(s => s.WeekNumber == weekNumber, null, true, token)
                 .ConfigureAwait(false);
+            return entities.Select(s => _mapper.Map<SalesAggregate>(s));
         }
 
         public async Task<SalesAggregateEntity> RequireAsync(
@@ -50,6 +56,22 @@ namespace Pis.Projekt.Domain.Repositories.Impl
             }
 
             return found.First();
+        }
+
+        protected override Task<IEnumerable<SalesAggregateEntity>> ListAsync(
+            Expression<Func<SalesAggregateEntity, bool>> predicate = null,
+            string sortField = null,
+            bool isAscending = true,
+            Func<IQueryable<SalesAggregateEntity>, IQueryable<SalesAggregateEntity>>
+                queryableUpdateFunc = null,
+            CancellationToken token = default)
+        {
+            return base.ListAsync(predicate, sortField, isAscending,
+                q =>
+                {
+                    queryableUpdateFunc ??= same => same;
+                    return queryableUpdateFunc(q).Include(p => p.Product);
+                }, token);
         }
 
         public override string ToString()
@@ -89,6 +111,7 @@ namespace Pis.Projekt.Domain.Repositories.Impl
         #endregion
 
         private readonly IServiceScope _scope;
+        private readonly IMapper _mapper;
         protected override DbSet<SalesAggregateEntity> Entities => DbContext.SaleAggregates;
     }
 }

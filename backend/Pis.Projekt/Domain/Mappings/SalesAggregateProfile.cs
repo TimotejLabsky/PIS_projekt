@@ -9,8 +9,11 @@ namespace Pis.Projekt.Domain.Mappings
     {
         public SalesAggregateProfile()
         {
-            CreateMap<SalesAggregateEntity, SalesAggregateResponse>();
-            CreateMap<SalesAggregateEntity, SalesAggregate>();
+            CreateMap<SalesAggregateEntity, SalesAggregate>()
+                .ForMember(d => d.Product, o => o.MapFrom(s => s.Product));
+            
+            CreateMap<SalesAggregate, SalesAggregateEntity>();
+            CreateMap<ProductEntity, Product>();
         }
     }
 }

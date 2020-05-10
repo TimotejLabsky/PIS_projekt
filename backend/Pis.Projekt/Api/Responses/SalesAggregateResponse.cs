@@ -16,7 +16,7 @@ namespace Pis.Projekt.Api.Responses
         [JsonProperty("priced_product")]
         public PricedProductResponse PricedProduct { get; set; }
         
-        [JsonProperty("sale_coeficcient")]
+        [JsonProperty("sale_coeficient")]
         public decimal SaleCoefficient { get; set; }
     }
 }

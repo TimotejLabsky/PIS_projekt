@@ -26,6 +26,7 @@ export class OrderingCancelationComponent implements OnInit {
       () => this.loading = false
     );
   }
+
   ngOnInit(): void {
   }
 

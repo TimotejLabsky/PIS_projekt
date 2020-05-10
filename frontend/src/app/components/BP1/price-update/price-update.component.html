@@ -37,10 +37,13 @@
       <!-- new_price Column -->
       <ng-container matColumnDef="new_price">
         <mat-header-cell *matHeaderCellDef> Nová cena </mat-header-cell>
-        <mat-cell *matCellDef="let element">
-          <input matInput class="table_input" value="{{element.new_price}}">
+        <mat-cell *matCellDef="let element; let i = index">
+          <mat-form-field>
+            <input matInput [(ngModel)]="dataSource[i].new_price">
+          </mat-form-field>
         </mat-cell>
       </ng-container>
+
 
       <!-- Header and Row Declarations -->
       <mat-header-row *matHeaderRowDef="columns; sticky: true"></mat-header-row>
@@ -49,7 +52,7 @@
     </mat-table>
 
     <mat-card-actions align="end">
-      <button mat-raised-button color="primary">Potvrdiť</button>
+      <button mat-raised-button color="primary" (click)="onSubmit()">Potvrdiť</button>
     </mat-card-actions>
 
   </mat-card>

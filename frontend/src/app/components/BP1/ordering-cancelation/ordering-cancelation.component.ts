@@ -45,7 +45,7 @@ export class OrderingCancelationComponent implements OnInit {
     this.taskService.fulfillTask(this.task).subscribe(
      value => console.log(value),
      error => console.error(error),
-     () => this.router.navigate(['price-update'])
+     () => this.router.navigate(['sales-optimalization'])
     );
   }
 

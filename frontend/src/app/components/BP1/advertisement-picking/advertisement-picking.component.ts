@@ -6,6 +6,7 @@ import {AuthStore} from "../../../store/auth.store";
 import {combineAll} from "rxjs/operators";
 import {Router} from "@angular/router";
 import { Task } from 'src/app/model/task-model';
+import {TaskStore} from "../../../store/task.store";
 
 
 @Component({
@@ -21,21 +22,17 @@ export class AdvertisementPickingComponent implements OnInit {
 
   private task: Task = null;
 
-  constructor(private taskService: TaskService, private authStore: AuthStore,
-              private router: Router) {
-    let products: Product[] = null;
-    this.loading = true;
+  constructor(private authStore: AuthStore, private taskService: TaskService,
+              private router: Router, private taskStore: TaskStore) {
 
-    this.taskService.getTask(authStore.getCurrentUser()).subscribe(
-      tasks => products = tasks.products,
-      err => console.error(err),
-      () => this.initComplete(products)
-    )
+    this.loading = true;
+    this.initComplete(this.taskStore.getTask());
 
   }
 
-  private initComplete(products: Product[]){
-    this.dataSource = new MatTableDataSource(products);
+  private initComplete(task: Task){
+    this.task = task;
+    this.dataSource = new MatTableDataSource(task.products);
     this.loading = false;
   }
 
@@ -49,7 +46,6 @@ export class AdvertisementPickingComponent implements OnInit {
   }
 
   onSubmit() {
-
     this.task.products = this.dataSource.data;
     console.log('submit')
     this.taskService.fulfillTask(this.task).subscribe(

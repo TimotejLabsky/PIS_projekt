@@ -1,7 +1,5 @@
 .DS_STORE
 
-*.Template
-
 /dist/
 /bazel-out
 /integration/bazel/bazel-*

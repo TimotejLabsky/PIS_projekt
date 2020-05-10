@@ -15,6 +15,7 @@ export class PriceUpdateComponent implements OnInit {
 
   dataSource: Product[];
   loading: boolean = false;
+  private task: Task;
 
   //TODO date from to
   actual_season: any = "20.20.2020-25.20.2020";
@@ -22,15 +23,22 @@ export class PriceUpdateComponent implements OnInit {
   constructor(private taskService: TaskService, private authStore: AuthStore) {
     this.loading = true;
     this.taskService.getTask(authStore.getCurrentUser()).subscribe(
-      task => this.dataSource = task.products,
+      task => this.task = task,
       err => console.error(err),
-      () => this.loading = false
+      () => this.initComplete()
     );
   }
+
+  private initComplete(){
+    this.dataSource = this.task.products;
+    this.loading = false;
+  }
+
   ngOnInit(): void {
   }
 
   onSubmit(){
-    console.log(this.dataSource);
+    this.task.products = this.dataSource;
+    this.taskService.fulfillTask(this.task);
   }
 }

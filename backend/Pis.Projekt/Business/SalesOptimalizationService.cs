@@ -16,7 +16,7 @@ namespace Pis.Projekt.Business
         public SalesOptimalizationService(WaiterService waiter,
             IOptimizationNotificationService notificationService,
             DecreasedSalesHandler decreasedSalesHandler,
-            IncreasedSalesHandler increasedSalesHandler,
+            // IncreasedSalesHandler increasedSalesHandler,
             ILogger<SalesOptimalizationService> logger,
             SalesEvaluatorService evaluator,
             WsdlCalendarService calendar,
@@ -31,7 +31,7 @@ namespace Pis.Projekt.Business
             _fetcher = fetcher;
             _scopeFactory = scopeFactory;
             _decreasedSalesHandler = decreasedSalesHandler;
-            _increasedSalesHandler = increasedSalesHandler;
+            // _increasedSalesHandler = increasedSalesHandler;
         }
 
         public async Task OptimizeSalesAsync(CancellationToken token = default)
@@ -40,7 +40,7 @@ namespace Pis.Projekt.Business
             using var scope = _scopeFactory.CreateScope();
             var salesRepository =
                 scope.ServiceProvider.GetRequiredService<ISalesAggregateRepository>();
-                var productPersistence = scope.ServiceProvider.GetRequiredService<ProductPersistenceService>();
+            var productPersistence = scope.ServiceProvider.GetRequiredService<ProductPersistenceService>();
             var currentDate = await _calendar.GetCurrentDateAsync().ConfigureAwait(false);
                 
             // act
@@ -48,20 +48,21 @@ namespace Pis.Projekt.Business
                 .FetchSalesAggregatesAsync(currentDate, salesRepository)
                 .ConfigureAwait(false);
             var evaluationResult = _evaluator.EvaluateSales(products);
-            var increasedSalesTask = _increasedSalesHandler.Handle(evaluationResult.IncreasedSales);
+            // var increasedSalesTask = _increasedSalesHandler.Handle(evaluationResult.IncreasedSales);
             var decreasedSalesTask = _decreasedSalesHandler.Handle(evaluationResult.DecreasedSales);
-            await Task.WhenAll(increasedSalesTask, decreasedSalesTask).ConfigureAwait(false);
+            // await Task.WhenAll(increasedSalesTask, decreasedSalesTask).ConfigureAwait(false);
+            await Task.WhenAll(decreasedSalesTask).ConfigureAwait(false);
             await _waiter.WaitAsync().ConfigureAwait(false);
             // capture results from parallel tasks
-            var increasedList = increasedSalesTask.Result;
+            // var increasedList = increasedSalesTask.Result;
             var decreasedList = decreasedSalesTask.Result;
-            _logger.LogDebug($"Products with increased sales: {increasedList}");
+            // _logger.LogDebug($"Products with increased sales: {increasedList}");
             _logger.LogDebug($"Products with decreased sales: {decreasedList}");
-            var newPriceList = increasedList.Concat(decreasedList).ToList();
+            // var newPriceList = increasedList.Concat(decreasedList).ToList();
 
             _logger.LogBusinessCase("Persisting new data to storage");
-            await productPersistence.PersistProductsAsync(newPriceList, token)
-                .ConfigureAwait(false);
+            // await productPersistence.PersistProductsAsync(newPriceList, token)
+                // .ConfigureAwait(false);
             //
             // _logger.LogBusinessCase("Scheduling next optimization task");
             _logger.LogBusinessCase("Sending notification about finished optimization");
@@ -71,7 +72,7 @@ namespace Pis.Projekt.Business
 
         private readonly IOptimizationNotificationService _notificationService;
         private readonly DecreasedSalesHandler _decreasedSalesHandler;
-        private readonly IncreasedSalesHandler _increasedSalesHandler;
+        // private readonly IncreasedSalesHandler _increasedSalesHandler;
         private readonly ILogger<SalesOptimalizationService> _logger;
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly SalesEvaluatorService _evaluator;

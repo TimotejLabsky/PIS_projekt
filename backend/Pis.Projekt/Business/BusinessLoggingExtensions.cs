@@ -35,7 +35,7 @@ namespace Pis.Projekt.Business
             }
 
             logger.LogInformation($"Business - Task: {taskName} - Input\n" +
-                                  $"{inputName}: {data}", data);
+                                  $"{inputName}: {data}");
         }
         
         public static void LogOutput<TLogger>(this ILogger<TLogger> logger,
@@ -51,6 +51,14 @@ namespace Pis.Projekt.Business
             
             logger.LogInformation($"Business - Task: {taskName} - Output\n" +
                                   $"{outputName}: {data}");
+        }
+        
+        public static void LogDecisionBlock<TLogger>(this ILogger<TLogger> logger,
+            string decision,
+            string answer)
+        {
+            logger.LogInformation($"Business - DecisionBlock: {decision}\n" +
+                                  $"Answer: {answer}");
         }
     }
 }

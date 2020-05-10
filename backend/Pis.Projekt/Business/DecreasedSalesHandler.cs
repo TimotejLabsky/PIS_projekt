@@ -2,13 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FiitTaskList;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Pis.Projekt.Business.Calendar;
+using Pis.Projekt.Business.Notifications;
 using Pis.Projekt.Business.Scheduling;
 using Pis.Projekt.Business.Scheduling.Impl;
 using Pis.Projekt.Domain.DTOs;
 using Pis.Projekt.Framework;
 using Pis.Projekt.System;
+using Task = System.Threading.Tasks.Task;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -17,27 +21,33 @@ namespace Pis.Projekt.Business
     public class DecreasedSalesHandler
     {
         public DecreasedSalesHandler(SupplierService supplier,
-            WaiterService waiter,
             UserTaskCollectionService taskCollection,
             ITaskClient taskClient,
             CronSchedulerService cronScheduler,
             ILogger<DecreasedSalesHandler> logger,
-            IOptions<WsdlConfiguration<WsdlTaskClient>> wsdlConfiguration)
+            IOptions<WsdlConfiguration<WsdlTaskClient>> wsdlConfiguration,
+            IOptimizationNotificationService notificationService,
+            WsdlCalendarService calendar,
+            TaskListPortTypeClient wsdlTaskList)
         {
             _supplier = supplier;
-            _waiter = waiter;
             _taskCollection = taskCollection;
             _taskClient = taskClient;
             _cronScheduler = cronScheduler;
             _logger = logger;
+            _notificationService = notificationService;
+            _calendar = calendar;
+            _wsdlTaskList = wsdlTaskList;
             _wsdlConfiguration = wsdlConfiguration.Value;
         }
 
         public async Task<IEnumerable<PricedProduct>> Handle(
             IEnumerable<PricedProduct> decreasedList)
         {
-            if (!decreasedList.Any())
+            _logger.LogBusinessCase(BusinessTasks.DecreasedSalesBranch, "Branch handling started");
+            if (decreasedList.Any())
             {
+                _logger.LogDecisionBlock(BusinessTasks.DecreasedSaleOfAtLeastOneProduct, "Ano");
                 await NotifyMarketing().ConfigureAwait(false);
                 var updatedList =
                     await EvaluatePriceDecreaseRate(decreasedList)
@@ -47,29 +57,40 @@ namespace Pis.Projekt.Business
                     .ConfigureAwait(false);
                 return updatedList;
             }
+            else
+            {
+                _logger.LogDecisionBlock(BusinessTasks.DecreasedSaleOfAtLeastOneProduct, "Nie");
+            }
 
             return decreasedList;
         }
 
-
         private async Task NotifyMarketing()
         {
             _logger.LogInformation(BusinessTasks.NotifyMarketing);
-            // TODO
+            await _notificationService.NotifyUserTaskCreatedAsync().ConfigureAwait(false);
             await Task.CompletedTask;
         }
 
         private async Task<IEnumerable<PricedProduct>> EvaluatePriceDecreaseRate(
             IEnumerable<PricedProduct> decreasedList)
         {
-            return await ExecuteUserTask("evaluate-sale-rate", decreasedList)
+            var date = await _calendar.GetCurrentDateAsync().ConfigureAwait(false);
+            _logger.LogBusinessCase(BusinessTasks.SaleDecreaseEvaluationTask);
+            _logger.LogInput(BusinessTasks.SaleDecreaseEvaluationTask,
+                "Produkty so znizenou predajnostou", decreasedList);
+            _logger.LogInput(BusinessTasks.SaleDecreaseEvaluationTask, "Dnešný dátum", date);
+            var output = await ExecuteUserTask("evaluate-sale-rate", decreasedList)
                 .ConfigureAwait(false);
+            _logger.LogOutput(BusinessTasks.SaleDecreaseEvaluationTask,
+                "Zoznam produktov so zníženou predajnosťou a zmenenými cenami", output);
+            return output;
         }
 
         private async Task SelectToAdvertisementCampaign(IEnumerable<PricedProduct> updatedList)
         {
             // var advertisedProducts = await ExecuteUserTask("select-to-ad", updatedList)
-                // .ConfigureAwait(false);
+            // .ConfigureAwait(false);
         }
 
         /// <param name="endProductsGuids">List of product guids that should not be ordered anymore</param>
@@ -101,8 +122,9 @@ namespace Pis.Projekt.Business
 
 #if DEBUG
             _logger.LogDevelopment($"Task: {taskName} added to Task List Service");
-            var client = new FiitTaskList.TaskListPortTypeClient();
-            var response = await client.createTaskAsync(_wsdlConfiguration.TeamId,
+#else
+            //TODO: make this format beautiful
+            var response = await _wsdlTaskList.createTaskAsync(_wsdlConfiguration.TeamId,
                 _wsdlConfiguration.Password,
                 "", true,
                 nameof(ProductSalesDecreasedTask), "descr", DateTime.Now);
@@ -120,13 +142,15 @@ namespace Pis.Projekt.Business
             return await awaiter.Task.ConfigureAwait(false);
         }
 
+        private readonly IOptimizationNotificationService _notificationService;
         private readonly WsdlConfiguration<WsdlTaskClient> _wsdlConfiguration;
         private readonly UserTaskCollectionService _taskCollection;
         private readonly ILogger<DecreasedSalesHandler> _logger;
+        private readonly TaskListPortTypeClient _wsdlTaskList;
         private readonly CronSchedulerService _cronScheduler;
+        private readonly WsdlCalendarService _calendar;
         private readonly SupplierService _supplier;
         private readonly ITaskClient _taskClient;
-        private readonly WaiterService _waiter;
     }
 
     public class UserTaskNotFulfilledException : Exception

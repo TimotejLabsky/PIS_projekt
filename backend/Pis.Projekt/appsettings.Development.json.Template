@@ -2,7 +2,7 @@
   "Logging": {
     "LogLevel": {
       "Default": "Trace",
-      "Microsoft": "Warning",
+      "Microsoft": "Trace",
       "Microsoft.Hosting.Lifetime": "Information"
     }
   },
@@ -35,10 +35,18 @@
     }
   },
   "NotificationService": {
-    "OptimizationFinishedToAddress": "store@company.com"
+    "OptimizationBegunNotification": {
+      "ToAddress": "store@company.com"
+    },
+    "UserTaskNotification": {
+      "ToAddress": "marketing@company.com"
+    },
+    "OptimizationFinishedNotification": {
+      "ToAddress": "store@company.com"
+    }
   },
   "WaiterService": {
-    "WaitingPeriod": "2:00:00:00"
+    "WaitingHrsPeriod": 1
   },
   "EntitySeederService": {
     "WeekAmount": 6,
@@ -51,7 +59,8 @@
   },
   "CronSchedulerService": {
     "Name": "TestScheduler",
-    "CronExpressionString": "0 0/1 0 ? * * *"
+    "CronExpressionString": "0 * * ? * *"
   },
   "AllowedHosts": "*"
 }
+

@@ -14,7 +14,7 @@ namespace Pis.Projekt.Business
         
         public EvaluationResult EvaluateSales(IEnumerable<SalesAggregate> allProducts)
         {
-            _logger.LogBusinessCase(BusinessTasks.EvaluationTask);
+            _logger.LogBusinessCase(BusinessTasks.SaleEvaluationTask);
             var decreasedSales = new List<PricedProduct>();
             var increasedSales = new List<PricedProduct>();
 

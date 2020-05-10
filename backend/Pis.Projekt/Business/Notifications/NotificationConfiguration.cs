@@ -1,7 +1,7 @@
 namespace Pis.Projekt.Business.Notifications
 {
-    public class NotificationConfiguration
+    public class NotificationConfiguration<TNotification>
     {
-        public string OptimizationFinishedToAddress { get; set; }
+        public string ToAddress { get; set; }
     }
 }

@@ -18,10 +18,10 @@ namespace Pis.Projekt.Business
             return Task.CompletedTask;
         }
         
-        public void SendOrder(ProductOrder order)
-        {
-            _logger.LogInformation($"Supplier received order of ptoducts: {order}");
-        }
+        // public void SendOrder(ProductOrder order)
+        // {
+            // _logger.LogInformation($"Supplier received order of ptoducts: {order}");
+        // }
 
         private readonly ILogger<SupplierService> _logger;
     }

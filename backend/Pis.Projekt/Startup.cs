@@ -18,6 +18,7 @@ using Pis.Projekt.Business.Authorization;
 using Pis.Projekt.Business.Calendar;
 using Pis.Projekt.Business.Notifications;
 using Pis.Projekt.Business.Notifications.Domain;
+using Pis.Projekt.Business.Notifications.Domain.Impl;
 using Pis.Projekt.Business.Scheduling;
 using Pis.Projekt.Business.Scheduling.Impl;
 using Pis.Projekt.Domain.Database.Contexts;
@@ -55,8 +56,12 @@ namespace Pis.Projekt
                 _configuration.GetSection("EmailService:SMTP"));
             services.Configure<WaiterService.WaiterConfiguration>(
                 _configuration.GetSection("WaiterService"));
-            services.Configure<NotificationConfiguration>(
-                _configuration.GetSection("NotificationService"));
+            services.Configure<NotificationConfiguration<UserTaskRequiredNotification>>(
+                _configuration.GetSection("NotificationService:UserTaskNotification"));
+            services.Configure<NotificationConfiguration<OptimizationBegunNotification>>(
+                _configuration.GetSection("NotificationService:OptimizationBegunNotification"));
+            services.Configure<NotificationConfiguration<OptimizationFinishedNotification>>(
+                _configuration.GetSection("NotificationService:OptimizationFinishedNotification"));
             services.Configure<EntitySeederConfiguration>(
                 _configuration.GetSection("EntitySeederService"));
             services.Configure<CronSchedulerService.CronSchedulerConfiguration>(
@@ -86,7 +91,7 @@ namespace Pis.Projekt
             services.AddSingleton<WaiterService>();
             services.AddSingleton<AggregateFetcher>();
             services.AddSingleton<DecreasedSalesHandler>();
-            services.AddSingleton<IncreasedSalesHandler>();
+            // services.AddSingleton<IncreasedSalesHandler>();
             services.AddSingleton<PriceCalculatorService>();
             services.AddSingleton<UserTaskCollectionService>();
             services.AddSingleton<SalesOptimalizationService>();

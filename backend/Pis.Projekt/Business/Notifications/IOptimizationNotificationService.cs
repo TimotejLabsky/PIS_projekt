@@ -5,8 +5,8 @@ namespace Pis.Projekt.Business.Notifications
 {
     public interface IOptimizationNotificationService
     {
-        public Task NotifyOptimizationFinishedAsync(DateTime nextOptimalizationOn);
-
-        public Task NotifyOptimizationBegunAsync();
+        Task NotifyOptimizationFinishedAsync(DateTime nextOptimalizationOn);
+        Task NotifyOptimizationBegunAsync();
+        Task NotifyUserTaskCreatedAsync();
     }
 }

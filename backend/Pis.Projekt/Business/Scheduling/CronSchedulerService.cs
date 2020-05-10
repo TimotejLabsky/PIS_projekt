@@ -7,7 +7,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pis.Projekt.Business.Scheduling.Impl;
-using Pis.Projekt.System;
 using Quartz;
 
 namespace Pis.Projekt.Business.Scheduling
@@ -24,7 +23,6 @@ namespace Pis.Projekt.Business.Scheduling
             _jobFactory = jobFactory;
             _logger = logger;
         }
-
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
@@ -62,7 +60,6 @@ namespace Pis.Projekt.Business.Scheduling
             var trigger = CreateOneTimeTrigger<UserTaskTimeoutEvaluationJob>(job, _configuration);
             job.JobDataMap.Add("task", task);
             var date = await _scheduler.ScheduleJob(job, trigger).ConfigureAwait(false);
-
             _logger.LogBusinessCase(BusinessTasks.UserEvaluationSchedulingTask,
                 $"Task: {job.Description} scheduled on {date}");
         }

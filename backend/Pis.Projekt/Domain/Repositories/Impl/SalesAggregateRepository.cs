@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Pis.Projekt.Business;
 using Pis.Projekt.Domain.Database;
 using Pis.Projekt.Domain.Database.Contexts;
 using Pis.Projekt.Domain.DTOs;
@@ -19,16 +18,14 @@ namespace Pis.Projekt.Domain.Repositories.Impl
         AbstractEFRepository<SalesDbContext, Guid, SalesAggregateEntity>, ISalesAggregateRepository,
         IDisposable
     {
-        public SalesAggregateRepository(IServiceScopeFactory scopeFactory, WeekCounter counter, IMapper mapper) : base(scopeFactory)
+        public SalesAggregateRepository(IServiceScopeFactory scopeFactory, IMapper mapper) : base(scopeFactory)
         {
-            _counter = counter;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<SalesAggregate>> FetchFromLastWeekAsync(
+        public async Task<IEnumerable<SalesAggregate>> FetchFromLastWeekAsync(int week,
             CancellationToken token = default)
         {
-            var weekNumber = _counter.Current();
-            var entities = await ListAsync(s => s.WeekNumber == weekNumber, null, true, token)
+            var entities = await ListAsync(s => s.WeekNumber == week, null, true, token)
                 .ConfigureAwait(false);
             return entities.Select(s => _mapper.Map<SalesAggregate>(s));
         }
@@ -74,8 +71,6 @@ namespace Pis.Projekt.Domain.Repositories.Impl
         {
             return $"In memory {nameof(SalesAggregateRepository)}";
         }
-
-        private readonly WeekCounter _counter;
 
         private readonly IMapper _mapper;
         protected override DbSet<SalesAggregateEntity> Entities => DbContext.SaleAggregates;

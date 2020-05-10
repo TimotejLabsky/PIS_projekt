@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FiitTaskList;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pis.Projekt.Business.Calendar;
 using Pis.Projekt.Business.Notifications;
 using Pis.Projekt.Business.Scheduling;
+using Pis.Projekt.Domain.Database;
 using Pis.Projekt.Domain.DTOs;
+using Pis.Projekt.Domain.Repositories.Impl;
 using Pis.Projekt.Framework;
 using Pis.Projekt.System;
 using Task = System.Threading.Tasks.Task;
@@ -24,10 +28,9 @@ namespace Pis.Projekt.Business
             ITaskClient taskClient,
             CronSchedulerService cronScheduler,
             ILogger<DecreasedSalesHandler> logger,
-            IOptions<WsdlConfiguration<WsdlTaskClient>> wsdlConfiguration,
             IOptimizationNotificationService notificationService,
             WsdlCalendarService calendar,
-            TaskListPortTypeClient wsdlTaskList)
+            IServiceScopeFactory scopeFactory)
         {
             _supplier = supplier;
             _taskCollection = taskCollection;
@@ -36,8 +39,7 @@ namespace Pis.Projekt.Business
             _logger = logger;
             _notificationService = notificationService;
             _calendar = calendar;
-            _wsdlTaskList = wsdlTaskList;
-            _wsdlConfiguration = wsdlConfiguration.Value;
+            _scopeFactory = scopeFactory;
         }
 
         public async Task<IEnumerable<PricedProduct>> Handle(IEnumerable<TaskProduct> decreasedList)
@@ -47,26 +49,27 @@ namespace Pis.Projekt.Business
             {
                 _logger.LogDecisionBlock(BusinessTasks.DecreasedSaleOfAtLeastOneProduct, "Ano");
                 await NotifyMarketing().ConfigureAwait(false);
-                var newPriceList = await EvaluatePriceDecreaseRate(decreasedList)
-                    .ConfigureAwait(false);
-                var advertisedList = await SelectToAdvertisementCampaign(decreasedList)
-                    .ConfigureAwait(false);
-                var cancelledList = await EndProductStocking(decreasedList).ConfigureAwait(false);
+                var newPriceList = (await EvaluatePriceDecreaseRate(decreasedList)
+                    .ConfigureAwait(false)).ToList();
+                var advertisedList = (await SelectToAdvertisementCampaign(decreasedList)
+                    .ConfigureAwait(false)).ToList();
+                var cancelledList = (await EndProductStocking(decreasedList).ConfigureAwait(false))
+                    .ToList();
 
                 foreach (var taskProduct in decreasedList)
                 {
                     taskProduct.Price = newPriceList.First(p => p.Id == taskProduct.Id).Price;
                     taskProduct.IsAdvertised =
                         advertisedList.First(p => p.Id == taskProduct.Id).IsAdvertised;
-                    taskProduct.IsCancelled =
-                        cancelledList.First(p => p.Id == taskProduct.Id).IsCancelled;
                 }
 
-                return decreasedList;
+                var notOnlyCancelled = decreasedList.Where(s => !cancelledList.Any(c => c.Id == s.Id)).ToList();
+                return notOnlyCancelled;
             }
 
             _logger.LogDecisionBlock(BusinessTasks.DecreasedSaleOfAtLeastOneProduct, "Nie");
-            return decreasedList;
+            var filtered = decreasedList.Where(d => d.IsCancelled != true).ToList();
+            return filtered;
         }
 
         private async Task NotifyMarketing()
@@ -98,11 +101,27 @@ namespace Pis.Projekt.Business
             _logger.LogBusinessCase(BusinessTasks.SelectToAdTask);
             _logger.LogInput(BusinessTasks.SelectToAdTask,
                 "Produkty so znizenou predajnostou", updatedList);
-            _logger.LogInput(BusinessTasks.SelectToAdTask, "Dnešný dátum", date);
             var output = await ExecuteUserTask(UserTaskType.AdvertisementPicking, updatedList)
                 .ConfigureAwait(false);
+            var onlyAdvertised = output.Where(o => o.IsAdvertised);
             _logger.LogOutput(BusinessTasks.SelectToAdTask,
-                "Zoznam produktov zaradenych do reklamnych letakov", output);
+                "Zoznam produktov zaradenych do reklamnych letakov",
+                onlyAdvertised);
+            using var scope = _scopeFactory.CreateScope();
+            var provider = scope.ServiceProvider;
+            var adRepository = provider.GetRequiredService<AdvertisedRepository>();
+            foreach (var taskProduct in onlyAdvertised)
+            {
+                
+                await adRepository.CreateAsync(new AdvertisedProductEntity
+                {
+                    Id = Guid.NewGuid(),
+                    ProductId = taskProduct.Product.Id,
+                    ProductName = taskProduct.Product.Name,
+                    WeekNumber = taskProduct.SalesWeek
+                }).ConfigureAwait(false);
+            }
+            
             return output;
         }
 
@@ -112,16 +131,17 @@ namespace Pis.Projekt.Business
             var date = await _calendar.GetCurrentDateAsync().ConfigureAwait(false);
             _logger.LogBusinessCase(BusinessTasks.EndStockingTask);
             _logger.LogInput(BusinessTasks.EndStockingTask,
-                "Produkty so znizenou predajnostou", decreasedProducts);
-            _logger.LogInput(BusinessTasks.EndStockingTask, "Dnešný dátum", date);
+                "Zoznam produktov so zníženou predajnosťou", decreasedProducts);
             var output = await ExecuteUserTask(UserTaskType.OrderingCancellation, decreasedProducts)
                 .ConfigureAwait(false);
-            _logger.LogOutput(BusinessTasks.EndStockingTask,
-                "Zoznam produktov zaradenych do reklamnych letakov", output);
+            var cancelled = output.Where(s => s.IsCancelled);
 
-            await _supplier.EndProductStocking(output.Select(s => s.Product.Id))
+            _logger.LogOutput(BusinessTasks.EndStockingTask,
+                "Zoznam produktov na vyradenie z objednávania", cancelled);
+
+            await _supplier.EndProductStocking(cancelled.Select(s => s.Product.Id))
                 .ConfigureAwait(false);
-            return output;
+            return cancelled;
         }
 
         private async Task<IEnumerable<TaskProduct>> ExecuteUserTask(string taskName,
@@ -138,7 +158,10 @@ namespace Pis.Projekt.Business
             async Task TaskFailed(ScheduledTask failedTask)
             {
                 _logger.LogDevelopment($"Task {failedTask.Name} has failed to be fulfilled");
-                awaiter.SetException(new UserTaskNotFulfilledException(failedTask));
+                failedTask.IsFailed = true;
+                var ex = new UserTaskNotFulfilledException(failedTask);
+                awaiter.SetException(ex);
+                throw ex;
             }
 
             _logger.LogTrace(
@@ -156,16 +179,24 @@ namespace Pis.Projekt.Business
             _logger.LogDebug($"{nameof(DecreasedSalesHandler)} is waiting either " +
                              $"on user to fulfil task or on timeout");
             // wait on user result or timeout
-            return await awaiter.Task.ConfigureAwait(false);
+            var result =  awaiter.Task.ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                {
+                    throw t.Exception;
+                }
+                
+                return t.Result; 
+            }).Result;
+            return result;
         }
 
         private readonly IOptimizationNotificationService _notificationService;
-        private readonly WsdlConfiguration<WsdlTaskClient> _wsdlConfiguration;
         private readonly UserTaskCollectionService _taskCollection;
         private readonly ILogger<DecreasedSalesHandler> _logger;
-        private readonly TaskListPortTypeClient _wsdlTaskList;
         private readonly CronSchedulerService _cronScheduler;
         private readonly WsdlCalendarService _calendar;
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly SupplierService _supplier;
         private readonly ITaskClient _taskClient;
     }

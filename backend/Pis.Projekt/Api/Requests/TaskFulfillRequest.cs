@@ -37,7 +37,7 @@ namespace Pis.Projekt.Api.Requests
             public decimal Price { get; set; }
 
             [JsonProperty("new_price")]
-            public decimal NewPrice => Price;
+            public decimal NewPrice { get; set; }
 
             [JsonProperty("currency")]
             public string Currency => "EUR";

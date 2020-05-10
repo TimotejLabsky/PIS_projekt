@@ -19,7 +19,7 @@ namespace Pis.Projekt.Business
                 messageBuilder.Append($"\nMessage: {message}");
             }
             
-            logger.LogInformation(messageBuilder.ToString(), data);
+            logger.LogWarning(messageBuilder.ToString(), data);
         }
         
         public static void LogInput<TLogger>(this ILogger<TLogger> logger,
@@ -34,8 +34,8 @@ namespace Pis.Projekt.Business
                 data = dataAsJson;
             }
 
-            logger.LogInformation($"Business - Task: {taskName} - Input\n" +
-                                  $"{inputName}: {data}");
+            logger.LogWarning($"Business - Task: {taskName} - Input\n" +
+                              $"{inputName}: {data}");
         }
         
         public static void LogOutput<TLogger>(this ILogger<TLogger> logger,
@@ -49,16 +49,16 @@ namespace Pis.Projekt.Business
                 data = dataAsJson;
             }
             
-            logger.LogInformation($"Business - Task: {taskName} - Output\n" +
-                                  $"{outputName}: {data}");
+            logger.LogWarning($"Business - Task: {taskName} - Output\n" +
+                              $"{outputName}: {data}");
         }
         
         public static void LogDecisionBlock<TLogger>(this ILogger<TLogger> logger,
             string decision,
             string answer)
         {
-            logger.LogInformation($"Business - DecisionBlock: {decision}\n" +
-                                  $"Answer: {answer}");
+            logger.LogWarning($"Business - DecisionBlock: {decision}\n" +
+                              $"Answer: {answer}");
         }
     }
 }

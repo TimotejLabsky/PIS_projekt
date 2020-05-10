@@ -50,5 +50,6 @@ namespace Pis.Projekt.Domain.Database.Contexts
         public DbSet<PricedProductEntity> PricedProducts { get; set; }
         public DbSet<SalesAggregateEntity> SaleAggregates { get; set; }
         public DbSet<ProductEntity> Products { get; set; }
+        public DbSet<AdvertisedProductEntity> Advertised { get; set; }
     }
 }

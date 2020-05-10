@@ -11,8 +11,8 @@ namespace Pis.Projekt.Domain.Repositories
 {
     public interface ISalesAggregateRepository : IRepository<Guid, SalesAggregateEntity>, ITransactionalRepository
     {
-        Task<IEnumerable<SalesAggregate>> FetchFromLastWeekAsync(CancellationToken token =
-            default);
+        Task<IEnumerable<SalesAggregate>> FetchFromLastWeekAsync(int week,
+            CancellationToken token = default);
 
         Task<SalesAggregateEntity> RequireAsync(
             Expression<Func<SalesAggregateEntity, bool>> predicate,

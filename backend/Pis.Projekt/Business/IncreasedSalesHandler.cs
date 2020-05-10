@@ -41,8 +41,8 @@ namespace Pis.Projekt.Business
                 product.Key.SalesWeek++;
                 product.Key.Price = _priceCalculator.CalculatePrice(product.Key);
             }
-            _logger.LogOutput(BusinessTasks.CalculateFinalPrice,"Zoznam produktov s novou cenou"
-            , pricedProducts.Select(s=>s.Key));
+            _logger.LogOutput(BusinessTasks.CalculateFinalPrice,"Zoznam produktov s novou cenou",
+                pricedProducts.Select(s=>s.Key));
             return pricedProducts;
         }
 

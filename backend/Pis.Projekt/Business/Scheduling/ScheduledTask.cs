@@ -28,7 +28,8 @@ namespace Pis.Projekt.Business.Scheduling
         public string Name { get; set; }
         public IEnumerable<TaskProduct> Result { get; set; }
         public bool IsResolved { get; set; }
-        
+        public bool IsFailed { get; set; }
+
 
         public void Evaluate()
         {

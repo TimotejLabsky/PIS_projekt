@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Pis.Projekt.Business.Calendar;
@@ -34,7 +35,7 @@ namespace Pis.Projekt.Business
             _increasedSalesHandler = increasedSalesHandler;
         }
 
-        public async Task OptimizeSalesAsync(CancellationToken token = default)
+        public async Task OptimizeSalesAsync([FromQuery]int weekOffset = 0, CancellationToken token = default)
         {
             // inject and arrange
             using var scope = _scopeFactory.CreateScope();
@@ -43,7 +44,7 @@ namespace Pis.Projekt.Business
             var productPersistence =
                 scope.ServiceProvider.GetRequiredService<ProductPersistenceService>();
             var currentDate = await _calendar.GetCurrentDateAsync().ConfigureAwait(false);
-
+            currentDate = currentDate.Add(TimeSpan.FromDays(weekOffset*7));
             // act
             var products = await _fetcher
                 .FetchSalesAggregatesAsync(currentDate, salesRepository)
@@ -56,7 +57,7 @@ namespace Pis.Projekt.Business
             // capture results from parallel tasks
             var increasedList = increasedSalesTask.Result;
             var decreasedList = decreasedSalesTask.Result;
-            // _logger.LogDebug($"Products with increased sales: {increasedList}");
+
             _logger.LogDebug($"Products with decreased sales: {decreasedList}");
             var newPriceList = increasedList.Concat(decreasedList).ToList();
             var merged = newPriceList.Concat(evaluationResult.SameSales);

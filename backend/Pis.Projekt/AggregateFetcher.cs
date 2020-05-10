@@ -31,8 +31,9 @@ namespace Pis.Projekt
             _logger.LogBusinessCase(BusinessTasks.FetchLastAggregates);
             _logger.LogInput(BusinessTasks.FetchLastAggregates, "Dnešný dátum", currentDate);
             _logger.LogInput(BusinessTasks.FetchLastAggregates, "Úložisko", repository, false);
+            var week = GetWeekNumberOfMonth(currentDate);
             var sales = await repository
-                .FetchFromLastWeekAsync()
+                .FetchFromLastWeekAsync(week)
                 .ConfigureAwait(false);
             _logger.LogTrace($"Fetched sales: {sales}");
             var aggregates = _mapper.Map<IEnumerable<SalesAggregate>>(sales);
@@ -40,6 +41,18 @@ namespace Pis.Projekt
             return aggregates;
         }
 
+        static int GetWeekNumberOfMonth(DateTime date)
+        {
+            date = date.Date;
+            DateTime firstMonthDay = new DateTime(date.Year, date.Month, 1);
+            DateTime firstMonthMonday = firstMonthDay.AddDays((DayOfWeek.Monday + 7 - firstMonthDay.DayOfWeek) % 7);
+            if (firstMonthMonday > date)
+            {
+                firstMonthDay = firstMonthDay.AddMonths(-1);
+                firstMonthMonday = firstMonthDay.AddDays((DayOfWeek.Monday + 7 - firstMonthDay.DayOfWeek) % 7);
+            }
+            return (date - firstMonthMonday).Days / 7 + 1;
+        }
         private readonly ILogger<AggregateFetcher> _logger;
         private readonly IMapper _mapper;
     }

@@ -28,7 +28,15 @@ namespace Pis.Projekt.Business
 
         public KeyValuePair<ScheduledTask, int> Find(Guid id)
         {
-            return _scheduledTasks.Where(s => s.Key.Id == id).First();
+            var result = _scheduledTasks.Where(s => s.Key.Id == id).First();
+
+            if (result.Key.IsFailed)
+            {
+                _scheduledTasks.Dequeue();
+                throw new KeyNotFoundException($"Task with id {id} does not exist");
+            }
+
+            return result;
         }
 
         public void Fulfill(Guid id)

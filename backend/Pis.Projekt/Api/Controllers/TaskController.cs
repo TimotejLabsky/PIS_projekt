@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +9,7 @@ using Pis.Projekt.Api.Responses;
 using Pis.Projekt.Business;
 using Pis.Projekt.Business.Scheduling;
 using Pis.Projekt.Domain.DTOs;
+using Pis.Projekt.Domain.Repositories;
 
 namespace Pis.Projekt.Api.Controllers
 {
@@ -19,22 +19,32 @@ namespace Pis.Projekt.Api.Controllers
         public TaskController(UserTaskCollectionService taskCollection,
             ILogger<TaskController> logger,
             IMapper mapper,
-            ITaskClient client)
+            ITaskClient client,
+            IProductRepository productRepository)
         {
             _taskCollection = taskCollection;
             _logger = logger;
             _mapper = mapper;
             _client = client;
+            _productRepository = productRepository;
         }
 
         [HttpPost("fulfill")]
-        public async Task<IActionResult> ConfirmTaskAsync([FromBody] TaskFulfillRequest request,
-            CancellationToken token = default)
+        public async Task<IActionResult> ConfirmTaskAsync([FromBody] TaskFulfillRequest request)
         {
             try
             {
                 var task = _taskCollection.Find(request.Id);
-                var taskProducts = request.Products.Select(p => _mapper.Map<TaskProduct>(p));
+                var taskProducts = request.Products.Select(p =>
+                {
+                    var taskProduct = _mapper.Map<TaskProduct>(p);
+                    var productEntity = _productRepository.RequireAsync(p.ProductId).Result;
+                    taskProduct.Product = _mapper.Map<Product>(productEntity);
+                    taskProduct.Price = p.NewPrice;    
+                    return taskProduct;
+                }).ToList();
+                
+                
                 task.Key.Fulfill(taskProducts);
                 _taskCollection.Fulfill(request.Id);
                 await _client.SetCompleteAsync(task.Value).ConfigureAwait(false);
@@ -71,6 +81,7 @@ namespace Pis.Projekt.Api.Controllers
         }
 
         private readonly UserTaskCollectionService _taskCollection;
+        private readonly IProductRepository _productRepository;
         private readonly ILogger<TaskController> _logger;
         private readonly ITaskClient _client;
         private readonly IMapper _mapper;

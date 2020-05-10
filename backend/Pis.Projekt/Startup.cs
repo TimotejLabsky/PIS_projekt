@@ -76,6 +76,7 @@ namespace Pis.Projekt
             services.AddScoped<ISalesAggregateRepository, SalesAggregateRepository>();
             services.AddScoped<IPricedProductRepository, PricedProductRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<AdvertisedRepository>();
             services.AddScoped<ProductPersistenceService>();
             var dbConnectionString = _configuration.GetValue<string>("Database:ConnectionString");
             services.AddDbContext<SalesDbContext>(c => c.UseSqlServer(dbConnectionString));

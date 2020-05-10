@@ -4,6 +4,7 @@ import {AuthenticationService} from "../../services/authentication.service";
 import {connectableObservableDescriptor} from "rxjs/internal/observable/ConnectableObservable";
 import {TaskService} from "../../services/task.service";
 import {AuthStore} from "../../store/auth.store";
+import { Task } from 'src/app/model/task-model';
 
 @Component({
   selector: 'app-home',
@@ -16,10 +17,12 @@ export class SalesOptimalizationComponent implements OnInit {
               private authStore: AuthStore,
               private taskService: TaskService) {
 
-    let task = taskService.getTask(authStore.getCurrentUser());
+    let task = null;
 
-    console.log(task);
-    this.router.navigate([task.taskType], {relativeTo: this.activatedRoute});
+    taskService.getTask(authStore.getCurrentUser()).subscribe(
+      task => this.router.navigate([task.taskType], {relativeTo: this.activatedRoute})
+    );
+
 
   }
 

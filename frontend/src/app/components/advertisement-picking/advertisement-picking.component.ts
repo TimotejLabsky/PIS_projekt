@@ -1,9 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Product} from "../../model/product-model";
 import {Observable} from "rxjs";
 import {map} from 'rxjs/operators';
-import {ProductService} from "../../services/product.service";
 import { MatTableDataSource } from "@angular/material/table";
+import {TaskService} from "../../services/task.service";
+import {AuthStore} from "../../store/auth.store";
 
 @Component({
   selector: 'app-advertisement-picking',
@@ -15,14 +16,17 @@ export class AdvertisementPickingComponent implements OnInit {
   dataSource: MatTableDataSource<Product>
   actual_season: string = "20.20.2020-25.20.2020";
 
-  constructor(private productService: ProductService) {
-    this.dataSource = new MatTableDataSource();
+  constructor(private taskService: TaskService, private authStore: AuthStore) {
+    let products: Product[];
+    this.taskService.getTask(authStore.getCurrentUser()).subscribe(
+      tasks => products = tasks.products
+    )
+
+    this.dataSource = new MatTableDataSource(products);
   }
 
   ngOnInit(): void {
-    this.productService.getAllProducts().subscribe(products => {
-      this.dataSource.data = products;
-    })
+
   }
 
   applyFilter($event: KeyboardEvent) {

@@ -127,7 +127,7 @@ namespace Pis.Projekt
                 c.AddProfile<SalesAggregateProfile>();
             }, typeof(Startup));
             services.AddLogging(c => c.AddConsole().AddConfiguration(_configuration));
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
@@ -135,6 +135,7 @@ namespace Pis.Projekt
                 c.SwaggerDoc("v1",
                     new OpenApiInfo {Title = "Sales Optimization API", Version = "v1"});
             });
+            services.AddSwaggerGenNewtonsoftSupport(); // explicit opt-in - needs to be placed after AddSwaggerGen()
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

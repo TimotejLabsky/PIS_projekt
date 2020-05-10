@@ -7,7 +7,7 @@ namespace Pis.Projekt.Api.Requests
     {
         [JsonProperty("userName")]
         public string User { get; set; }
-        [JsonProperty("passwords")]
+        [JsonProperty("password")]
         public string Password { get; set; }
     }
 }

@@ -25,7 +25,7 @@ namespace Pis.Projekt.Api.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost("fulfill/{taskGuid}")]
+        [HttpPost("fulfill")]
         public async Task<IActionResult> ConfirmTaskAsync([FromBody] TaskFulfillRequest request,
             CancellationToken token = default)
         {

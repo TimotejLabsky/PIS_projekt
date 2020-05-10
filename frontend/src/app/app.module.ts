@@ -23,7 +23,7 @@ import { SalesOptimalizationComponent } from './components/sales-optimalization/
 import {RouterModule} from "@angular/router";
 import { NoTaskComponent } from './components/no-task/no-task.component';
 import { IncludeToSeasonComponent } from './components/include-to-season/include-to-season.component';
-
+import { HttpClientModule } from '@angular/common/http'
 
 @NgModule({
   declarations: [
@@ -51,7 +51,8 @@ import { IncludeToSeasonComponent } from './components/include-to-season/include
     MatToolbarModule,
     MatPaginatorModule,
     MatTableModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    HttpClientModule
   ],
   providers: [ ],
   bootstrap: [AppComponent]

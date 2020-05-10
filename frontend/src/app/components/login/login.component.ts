@@ -14,7 +14,8 @@ export class LoginComponent implements OnInit {
 
   credentials: FormGroup;
   hide_password = true;
-  loginFailed = false;
+  public loginFailed: boolean = false;
+
   constructor(private router: Router, fb: FormBuilder, private authStore: AuthStore) {
     this.credentials = fb.group({
       'username': ['', Validators.compose([Validators.required])],
@@ -27,10 +28,12 @@ export class LoginComponent implements OnInit {
 
   login() : void {
     let cred = this.credentials.getRawValue();
-    if (!(this.authStore.login(cred.username, cred.password))) {
+    this.authStore.login(cred.username, cred.password)
+
+    /*if (!(this.authStore.login(cred.username, cred.password))) {
       console.log("alksdjflaksjfljldskafjldskjfal");
       this.loginFailed = true;
-    }
+    }*/
 
 
     this.router.navigate(['sales-optimalization'])

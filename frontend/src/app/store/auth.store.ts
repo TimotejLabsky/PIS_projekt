@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from "rxjs";
+import {BehaviorSubject, Observable, throwError} from "rxjs";
 import {User} from "../model/user-model";
 import {AuthenticationService} from "../services/authentication.service";
+import {LoginComponent} from "../components/login/login.component";
 
 @Injectable({
   providedIn: 'root'
@@ -15,12 +16,15 @@ export class AuthStore {
     this.$currentUser = this._currentUserSubject.asObservable();
   }
 
-  public login(userName: string, password: string): boolean{
+  public login(userName: string, password: string) {
+    this.authenticationService.authenticate(userName, password).subscribe(
+      user => this.setUser(user),
+    );
+  }
 
-    let user: User = this.authenticationService.authenticate(userName, password);
+  private setUser(user: User){
     localStorage.setItem('currentUser', JSON.stringify(user));
     this._currentUserSubject.next(user);
-    return (user != null);
   }
 
   public logout(){

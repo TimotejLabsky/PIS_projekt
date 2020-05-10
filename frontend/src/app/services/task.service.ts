@@ -1,9 +1,7 @@
 import {Injectable} from '@angular/core';
 import {User} from "../model/user-model";
 import {Task, TaskType} from "../model/task-model";
-import {Product} from "../model/product-model";
 import {Observable, of} from "rxjs";
-import {delay} from "rxjs/operators";
 import {base_endpoint} from "../url.constatns";
 import {HttpClient} from "@angular/common/http";
 

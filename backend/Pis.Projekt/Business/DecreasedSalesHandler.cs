@@ -44,7 +44,7 @@ namespace Pis.Projekt.Business
         public async Task<IEnumerable<PricedProduct>> Handle(
             IEnumerable<PricedProduct> decreasedList)
         {
-            _logger.LogBusinessCase(BusinessTasks.DecreasedSalesBranch, "Branch handling started");
+            _logger.LogBusinessCase(BusinessTasks.DecreasedSalesBranch);
             if (decreasedList.Any())
             {
                 _logger.LogDecisionBlock(BusinessTasks.DecreasedSaleOfAtLeastOneProduct, "Ano");
@@ -80,7 +80,7 @@ namespace Pis.Projekt.Business
             _logger.LogInput(BusinessTasks.SaleDecreaseEvaluationTask,
                 "Produkty so znizenou predajnostou", decreasedList);
             _logger.LogInput(BusinessTasks.SaleDecreaseEvaluationTask, "Dnešný dátum", date);
-            var output = await ExecuteUserTask("evaluate-sale-rate", decreasedList)
+            var output = await ExecuteUserTask(UserTaskType.PriceUpdate, decreasedList)
                 .ConfigureAwait(false);
             _logger.LogOutput(BusinessTasks.SaleDecreaseEvaluationTask,
                 "Zoznam produktov so zníženou predajnosťou a zmenenými cenami", output);
@@ -118,7 +118,7 @@ namespace Pis.Projekt.Business
             }
 
             _logger.LogTrace(
-                $"Creating user task with {typeof(FiitTaskList.TaskListPortTypeClient)}");
+                $"Creating user task with {typeof(TaskListPortTypeClient)}");
 
 #if DEBUG
             _logger.LogDevelopment($"Task: {taskName} added to Task List Service");

@@ -18,7 +18,7 @@ namespace Pis.Projekt.Business.Scheduling.Impl
 
             // Evaluate deadline
             task.Evaluate();
-            
+            context.Scheduler.UnscheduleJob(context.Trigger.Key);
             return Task.CompletedTask;
         }
 

@@ -32,6 +32,10 @@ export class SalesOptimalizationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.updateTaskListener();
+  }
+
+  private updateTaskListener(){
     this.updateSubscription = interval(2000).subscribe(
       (val) => { this.taskStore.loadTask()
       });
@@ -42,8 +46,12 @@ export class SalesOptimalizationComponent implements OnInit {
     this.loading = false
     try {
       this.router.navigate([task.taskType], {relativeTo: this.activatedRoute})
+        .then(() => this.updateSubscription.unsubscribe());
+
     }catch (e) {
       this.router.navigate([TaskType.nothing], {relativeTo: this.activatedRoute})
+        .then(() => this.updateTaskListener());
+
     }
   }
 

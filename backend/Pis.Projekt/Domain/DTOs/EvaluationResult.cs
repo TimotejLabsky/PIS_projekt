@@ -13,5 +13,6 @@ namespace Pis.Projekt.Domain.DTOs
         /// List od products where sales DECREASED by 20% or more
         /// </summary>
         public IEnumerable<TaskProduct> DecreasedSales { get; set; }
+        public IEnumerable<PricedProduct> SameSales { get; set; }
     }
 }

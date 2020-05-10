@@ -17,6 +17,7 @@ namespace Pis.Projekt.Business
             _logger.LogBusinessCase(BusinessTasks.SaleEvaluationTask);
             var decreasedSales = new List<TaskProduct>();
             var increasedSales = new List<KeyValuePair<PricedProduct,int>>();
+            var sameSales = new List<PricedProduct>();
 
             foreach (var salesAggregate in allProducts)
             {
@@ -32,9 +33,7 @@ namespace Pis.Projekt.Business
                             SalesWeek = salesAggregate.WeekNumber
                         },salesAggregate.SoldAmount
                     ));
-                }
-                
-                if (salesAggregate.SaleCoefficient <= new decimal(0.8))
+                } else if (salesAggregate.SaleCoefficient <= new decimal(0.8))
                 {
                     decreasedSales.Add(new TaskProduct()
                     {
@@ -46,12 +45,23 @@ namespace Pis.Projekt.Business
                         SoldAmount = salesAggregate.SoldAmount
                     });
                 }
+                else
+                {
+                    sameSales.Add(new PricedProduct
+                    {
+                        Id = salesAggregate.ProductGuid,
+                        Price = salesAggregate.Price,
+                        Product = salesAggregate.Product,
+                        SalesWeek = salesAggregate.WeekNumber
+                    });
+                }
             }
             
             return new EvaluationResult
             {
                 IncreasedSales = increasedSales,
-                DecreasedSales = decreasedSales
+                DecreasedSales = decreasedSales,
+                SameSales = sameSales
             };
         }
 

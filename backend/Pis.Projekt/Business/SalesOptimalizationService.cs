@@ -40,7 +40,8 @@ namespace Pis.Projekt.Business
             using var scope = _scopeFactory.CreateScope();
             var salesRepository =
                 scope.ServiceProvider.GetRequiredService<ISalesAggregateRepository>();
-            var productPersistence = scope.ServiceProvider.GetRequiredService<ProductPersistenceService>();
+            var productPersistence =
+                scope.ServiceProvider.GetRequiredService<ProductPersistenceService>();
             var currentDate = await _calendar.GetCurrentDateAsync().ConfigureAwait(false);
 
             // act
@@ -50,21 +51,19 @@ namespace Pis.Projekt.Business
             var evaluationResult = _evaluator.EvaluateSales(products);
             var increasedSalesTask = _increasedSalesHandler.Handle(evaluationResult.IncreasedSales);
             var decreasedSalesTask = _decreasedSalesHandler.Handle(evaluationResult.DecreasedSales);
-            // await Task.WhenAll(increasedSalesTask, decreasedSalesTask).ConfigureAwait(false);
             await Task.WhenAll(decreasedSalesTask).ConfigureAwait(false);
             await _waiter.WaitAsync().ConfigureAwait(false);
             // capture results from parallel tasks
-            // var increasedList = increasedSalesTask.Result;
+            var increasedList = increasedSalesTask.Result;
             var decreasedList = decreasedSalesTask.Result;
             // _logger.LogDebug($"Products with increased sales: {increasedList}");
             _logger.LogDebug($"Products with decreased sales: {decreasedList}");
-            // var newPriceList = increasedList.Concat(decreasedList).ToList();
-
+            var newPriceList = increasedList.Concat(decreasedList).ToList();
+            var merged = newPriceList.Concat(evaluationResult.SameSales);
+            
             _logger.LogBusinessCase("Persisting new data to storage");
-            // await productPersistence.PersistProductsAsync(newPriceList, token)
-            // .ConfigureAwait(false);
-            //
-            // _logger.LogBusinessCase("Scheduling next optimization task");
+            await productPersistence.PersistProductsAsync(merged, token)
+                .ConfigureAwait(false);
             _logger.LogBusinessCase("Sending notification about finished optimization");
             await _notificationService.NotifyOptimizationFinishedAsync(DateTime.Now)
                 .ConfigureAwait(false);

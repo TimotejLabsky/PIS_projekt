@@ -9,4 +9,6 @@ export interface Product {
   currency: string;
   new_price: number;
   include_to_ad: boolean;
+  cancel_ordering: boolean;
+  include_to_season: boolean;
 }

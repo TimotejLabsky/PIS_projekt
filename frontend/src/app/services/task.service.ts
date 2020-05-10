@@ -17,9 +17,8 @@ export class TaskService {
     return this.httpClient.get<Task>(this.endpoint + '/next')
   }
 
-  fulfillTask(task: Task){
-    console.log('fulfill');
-    return this.httpClient.post(this.endpoint + '/fulfill', task);
+  fulfillTask(task: Task): Observable<any>{
+    return this.httpClient.post<any>(this.endpoint + '/fulfill', task);
   }
 
 }

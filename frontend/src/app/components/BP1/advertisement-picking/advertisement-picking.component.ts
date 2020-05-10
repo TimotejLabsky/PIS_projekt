@@ -4,6 +4,9 @@ import { MatTableDataSource } from "@angular/material/table";
 import {TaskService} from "../../../services/task.service";
 import {AuthStore} from "../../../store/auth.store";
 import {combineAll} from "rxjs/operators";
+import {Router} from "@angular/router";
+import { Task } from 'src/app/model/task-model';
+
 
 @Component({
   selector: 'app-advertisement-picking',
@@ -16,7 +19,10 @@ export class AdvertisementPickingComponent implements OnInit {
   actual_season: string = "20.20.2020-25.20.2020";
   loading: boolean;
 
-  constructor(private taskService: TaskService, private authStore: AuthStore) {
+  private task: Task = null;
+
+  constructor(private taskService: TaskService, private authStore: AuthStore,
+              private router: Router) {
     let products: Product[] = null;
     this.loading = true;
 
@@ -43,6 +49,13 @@ export class AdvertisementPickingComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.dataSource)
+
+    this.task.products = this.dataSource.data;
+    console.log('submit')
+    this.taskService.fulfillTask(this.task).subscribe(
+      value => console.log(value),
+      error => console.error(error),
+      () => this.router.navigate(['sales-optimalization'])
+    );
   }
 }

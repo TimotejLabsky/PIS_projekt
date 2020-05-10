@@ -84,8 +84,8 @@ namespace Pis.Projekt.Business.Scheduling
                 .Create()
                 .WithIdentity($"{job.Key.Name}.trigger")
                 .ForJob(job)
-                .WithSimpleSchedule(a => a.WithRepeatCount(2)
-                    .WithInterval(schedule.UserTaskTimeout))
+                .WithCronSchedule(schedule.UserTimeoutCron)
+                .WithDescription(schedule.UserTimeoutCron)
                 .Build();
         }
 
@@ -95,9 +95,9 @@ namespace Pis.Projekt.Business.Scheduling
         {
             return TriggerBuilder
                 .Create()
-                .WithIdentity($"{schedule.Name}.trigger")
-                .WithCronSchedule(schedule.CronExpressionString)
-                .WithDescription(schedule.CronExpressionString)
+                .WithIdentity($"{jobDetail.Key.Name}.trigger")
+                .WithCronSchedule(schedule.OptimalizationCron)
+                .WithDescription(schedule.OptimalizationCron)
                 .ForJob(jobDetail)
                 .Build();
         }
@@ -110,16 +110,9 @@ namespace Pis.Projekt.Business.Scheduling
 
         public class CronSchedulerConfiguration
         {
-            [ConfigurationProperty("Name", IsRequired = true)]
-            public string Name { get; set; }
+            public string OptimalizationCron { get; set; }
 
-            [ConfigurationProperty("CronExpressionString", IsRequired = true)]
-            public string CronExpressionString { get; set; }
-
-            [ConfigurationProperty("CronExpression", IsRequired = false)]
-            public CronExpression CronExpression => new CronExpression(CronExpressionString);
-
-            public TimeSpan UserTaskTimeout { get; set; }
+            public string UserTimeoutCron { get; set; }
         }
     }
 }

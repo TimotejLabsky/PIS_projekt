@@ -41,7 +41,7 @@ export class IncludeToSeasonComponent implements OnInit {
     this.task.products = this.dataSource;
 
     this.task.products.forEach(product => (this.selection.selected.filter((item) => item == product)).length > 0
-      ? product.cancel_ordering = true : product.cancel_ordering = false);
+      ? product.include_to_season = true : product.include_to_season = false);
 
     this.taskService.fulfillTask(this.task).subscribe(
       value => console.log(value),

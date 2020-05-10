@@ -19,19 +19,19 @@
       <!-- old_price Column -->
       <ng-container matColumnDef="old_price">
         <mat-header-cell *matHeaderCellDef> Predchádzajúca cena </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.price}} </mat-cell>
+        <mat-cell *matCellDef="let element"> {{element.price | number : '1.2-2'}} </mat-cell>
       </ng-container>
 
       <!-- sales Column -->
       <ng-container matColumnDef="sales">
         <mat-header-cell *matHeaderCellDef> Predajnosť </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.sales}} </mat-cell>
+        <mat-cell *matCellDef="let element"> {{element.sales | number : '1.2-2'}} </mat-cell>
       </ng-container>
 
       <!-- delta_sales Column -->
       <ng-container matColumnDef="delta_sales">
         <mat-header-cell *matHeaderCellDef>  Δ Predajnosť </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.delta_sales}} </mat-cell>
+        <mat-cell *matCellDef="let element"> {{element.delta_sales | number : '1.2-2'}} </mat-cell>
       </ng-container>
 
       <!-- new_price Column -->

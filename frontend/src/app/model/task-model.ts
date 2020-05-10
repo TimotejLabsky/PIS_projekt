@@ -1,3 +1,5 @@
+import {Product} from "./product-model";
+
 export enum TaskType {
   price_update= 'price-update',
   ordering_cancellation = 'ordering-cancellation',
@@ -7,5 +9,8 @@ export enum TaskType {
 }
 
 export interface Task {
-  taskType: TaskType
+  taskType: TaskType;
+  scheduledOn: Date;
+  guid: string;
+  products: Product[];
 }

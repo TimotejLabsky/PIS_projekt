@@ -1,1 +1,1 @@
-export const base_endpoint = 'http://localhost:4200/:5000'
+export const base_endpoint = 'http://localhost:5000'

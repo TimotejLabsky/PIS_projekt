@@ -8,8 +8,8 @@
   },
   "EmailService": {
     "WSDL": {
-      "TeamId": "[enter value]",
-      "Password": "[enter value]"
+      "TeamId": "017",
+      "Password": "FMLCCJ"
     },
     "SMTP": {
       "From": "optimization.service@company.com"
@@ -18,20 +18,20 @@
   },
   "TaskService": {
     "WSDL": {
-      "TeamId": "[enter value]",
-      "Password": "[enter value]"
+      "TeamId": "017",
+      "Password": "FMLCCJ"
     }
   },
   "CalendarService": {
     "WSDL": {
-      "TeamId": "[enter value]",
-      "Password": "[enter value]"
+      "TeamId": "017",
+      "Password": "FMLCCJ"
     }
   },
   "ValidationService": {
     "WSDL": {
-      "TeamId": "[enter value]",
-      "Password": "[enter value]"
+      "TeamId": "017",
+      "Password": "FMLCCJ"
     }
   },
   "NotificationService": {
@@ -58,9 +58,8 @@
     "SalesCoefMax": 2.0
   },
   "CronSchedulerService": {
-    "Name": "TestScheduler",
-    "CronExpressionString": "0 * * ? * *"
+    "OptimalizationCron": "0 * * ? * *",
+    "UserTimeoutCron": "0 0/5 * * * ?"
   },
   "AllowedHosts": "*"
 }
-

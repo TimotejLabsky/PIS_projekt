@@ -12,15 +12,16 @@ import { Task } from 'src/app/model/task-model';
   styleUrls: ['./sales-optimalization.component.css']
 })
 export class SalesOptimalizationComponent implements OnInit {
+  loading: boolean;
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute,
               private authStore: AuthStore,
               private taskService: TaskService) {
-
-    let task = null;
-
+    this.loading = true;
     taskService.getTask(authStore.getCurrentUser()).subscribe(
-      task => this.router.navigate([task.taskType], {relativeTo: this.activatedRoute})
+      task => this.router.navigate([task.taskType], {relativeTo: this.activatedRoute}),
+      err => console.error(err),
+      () => this.loading = false
     );
 
 

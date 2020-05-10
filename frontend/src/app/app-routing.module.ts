@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {PriceUpdateComponent} from "./components/price-update/price-update.component";
-import {OrderingCancelationComponent} from "./components/ordering-cancelation/ordering-cancelation.component";
+import {PriceUpdateComponent} from "./components/BP1/price-update/price-update.component";
+import {OrderingCancelationComponent} from "./components/BP1/ordering-cancelation/ordering-cancelation.component";
 import {LoginComponent} from "./components/login/login.component";
-import {AdvertisementPickingComponent} from "./components/advertisement-picking/advertisement-picking.component";
+import {AdvertisementPickingComponent} from "./components/BP1/advertisement-picking/advertisement-picking.component";
 import {AuthGuard} from "./authGuard";
 import {SalesOptimalizationComponent} from "./components/sales-optimalization/sales-optimalization.component";
 import {NoTaskComponent} from "./components/no-task/no-task.component";

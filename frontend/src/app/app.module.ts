@@ -13,16 +13,16 @@ import { MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
 import {MatToolbarModule} from "@angular/material/toolbar";
-import { PriceUpdateComponent } from './components/price-update/price-update.component';
+import { PriceUpdateComponent } from './components/BP1/price-update/price-update.component';
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {MatTableModule} from "@angular/material/table";
-import { AdvertisementPickingComponent } from './components/advertisement-picking/advertisement-picking.component';
+import { AdvertisementPickingComponent } from './components/BP1/advertisement-picking/advertisement-picking.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
-import { OrderingCancelationComponent } from './components/ordering-cancelation/ordering-cancelation.component';
+import { OrderingCancelationComponent } from './components/BP1/ordering-cancelation/ordering-cancelation.component';
 import { SalesOptimalizationComponent } from './components/sales-optimalization/sales-optimalization.component';
 import {RouterModule} from "@angular/router";
 import { NoTaskComponent } from './components/no-task/no-task.component';
-import { IncludeToSeasonComponent } from './components/include-to-season/include-to-season.component';
+import { IncludeToSeasonComponent } from './components/BP2/include-to-season/include-to-season.component';
 import { HttpClientModule } from '@angular/common/http'
 
 @NgModule({

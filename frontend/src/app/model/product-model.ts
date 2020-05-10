@@ -8,4 +8,5 @@ export interface Product {
   delta_sales: number;
   currency: string;
   new_price: number;
+  include_to_ad: boolean;
 }

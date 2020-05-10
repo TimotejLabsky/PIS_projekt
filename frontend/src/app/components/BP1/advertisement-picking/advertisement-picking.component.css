@@ -1,0 +1,46 @@
+.full-width {
+  width: 100%;
+}
+
+.mat-spinner {
+  position: relative;
+  margin-left: 50%;
+  margin-right: 50%;
+}
+
+.mat-card{
+  width: 80%;
+  display: block;
+  margin-left:auto;
+  margin-right:auto;
+
+  justify-content: center;
+  align-items: center;
+}
+
+.mat-card-title{
+  display:inline-block
+}
+.mat-card-subtitle{
+  display:inline-block;
+  position: absolute;
+  right: 0px;
+  margin: 10px
+}
+
+
+.table_input{
+  border-style: solid;
+  border-width: thin;
+  border-color: lightgray;
+  border-radius: 5px;
+}
+
+.content-table{
+  max-height: 800px;
+  overflow: auto;
+}
+
+.mat-checkbox{
+  margin-left: 25px;
+}

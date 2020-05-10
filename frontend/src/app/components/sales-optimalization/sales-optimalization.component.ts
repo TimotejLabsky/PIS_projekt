@@ -39,12 +39,10 @@ export class SalesOptimalizationComponent implements OnInit {
     this.task = task;
     this.loading = false
     try {
-      this.router.navigate([task.taskType], {relativeTo: this.activatedRoute})
-        .then(() => console.log("NEW TASK : ", task.taskType));
+      this.router.navigate([task.taskType], {relativeTo: this.activatedRoute});
 
     }catch (e) {
-      this.router.navigate([TaskType.nothing], {relativeTo: this.activatedRoute})
-        .then(() => console.log("NO TASK AVAILABLE"));
+      this.router.navigate([TaskType.nothing], {relativeTo: this.activatedRoute});
 
     }
   }

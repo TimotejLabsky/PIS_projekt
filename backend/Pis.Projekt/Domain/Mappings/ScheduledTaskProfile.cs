@@ -1,3 +1,4 @@
+using System.Linq;
 using AutoMapper;
 using Pis.Projekt.Api.Responses;
 using Pis.Projekt.Business.Scheduling;
@@ -9,8 +10,20 @@ namespace Pis.Projekt.Domain.Mappings
     {
         public ScheduledTaskProfile()
         {
-            CreateMap<ScheduledTask, NextTaskResponse>();
-            CreateMap<PricedProduct, PricedProductResponse>();
+            CreateMap<ScheduledTask, NextTaskResponse>()
+                .ForMember(d => d.Products,
+                    o =>
+                        o.MapFrom(s => s.Products.Select(p => new NextTaskResponse.TaskProductResponse
+                        {
+                            Price = p.Price,
+                            SalesWeek = p.SalesWeek,
+                            SoldAmount = p.SoldAmount,
+                            Id = p.Id,
+                            Name = p.Product.Name,
+                            ProductId = p.Product.Id,
+                            SaleCoeficient = p.SaleCoefficient
+                        })));
+            CreateMap<TaskProduct, PricedProductResponse>();
         }
     }
 }

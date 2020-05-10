@@ -21,6 +21,7 @@ using Pis.Projekt.Business.Notifications.Domain;
 using Pis.Projekt.Business.Notifications.Domain.Impl;
 using Pis.Projekt.Business.Scheduling;
 using Pis.Projekt.Business.Scheduling.Impl;
+using Pis.Projekt.Business.Validation;
 using Pis.Projekt.Domain.Database.Contexts;
 using Pis.Projekt.Domain.Mappings;
 using Pis.Projekt.Domain.Repositories;
@@ -66,6 +67,10 @@ namespace Pis.Projekt
                 _configuration.GetSection("EntitySeederService"));
             services.Configure<CronSchedulerService.CronSchedulerConfiguration>(
                 _configuration.GetSection("CronSchedulerService"));
+            
+            //validation
+            services.AddSingleton<EmailValidationService>();
+            services.AddSingleton<ConfigEmailValidation>();
             
             // db layer
             services.AddDbContext<SalesDbContext>(c => c.UseInMemoryDatabase("sales"));
@@ -166,6 +171,7 @@ namespace Pis.Projekt
             });
             app.UseRouting();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.ApplicationServices.GetRequiredService<ConfigEmailValidation>().Validate().Wait();
             app.ApplicationServices.GetRequiredService<EntitySeeder>().Seed().Wait();
             var scheduler = app.ApplicationServices.GetRequiredService<CronSchedulerService>();
             scheduler.StartAsync(default).Wait();

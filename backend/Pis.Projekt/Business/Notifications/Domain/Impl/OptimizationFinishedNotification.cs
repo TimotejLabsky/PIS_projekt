@@ -16,7 +16,7 @@ namespace Pis.Projekt.Business.Notifications.Domain.Impl
         }
 
         public string NotificationType { get; set; }
-        public IEmail Content { get; set; }
+        public IEmail Content => this;
         public DateTime FinishedOn { get; }
         public DateTime NextOn { get; }
 

@@ -93,8 +93,8 @@ namespace Pis.Projekt.Framework.Seed
                                                           salesCoefMin),
                             WeekNumber = i,
                             //TODO change it if you have time and mood
-                            SoldAmount = new Random().Next(50,500)
-                            
+                            SoldAmount = new Random().Next(50,500),
+
                         };
                         _logger.LogDebug(
                             $"{nameof(EntitySeeder)} created {nameof(SalesAggregateEntity)}" +

@@ -10,7 +10,7 @@ namespace Pis.Projekt.Business.Scheduling
     {
         public ScheduledTask(
             Guid guid,
-            IEnumerable<PricedProduct> products,
+            IEnumerable<TaskProduct> products,
             DateTime scheduledOn,
             string name)
         {
@@ -22,11 +22,12 @@ namespace Pis.Projekt.Business.Scheduling
         }
 
         public Guid Id { get; }
-        public IEnumerable<PricedProduct> Products { get; set; }
+        public IEnumerable<TaskProduct> Products { get; set; }
         public DateTime ScheduledOn { get; set; }
         public string Name { get; set; }
         public IEnumerable<PricedProduct> Result { get; set; }
         public bool IsResolved { get; set; }
+        
 
         public void Evaluate()
         {

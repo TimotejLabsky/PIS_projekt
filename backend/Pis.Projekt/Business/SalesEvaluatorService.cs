@@ -15,7 +15,7 @@ namespace Pis.Projekt.Business
         public EvaluationResult EvaluateSales(IEnumerable<SalesAggregate> allProducts)
         {
             _logger.LogBusinessCase(BusinessTasks.SaleEvaluationTask);
-            var decreasedSales = new List<PricedProduct>();
+            var decreasedSales = new List<TaskProduct>();
             var increasedSales = new List<KeyValuePair<PricedProduct,int>>();
 
             foreach (var salesAggregate in allProducts)
@@ -36,12 +36,14 @@ namespace Pis.Projekt.Business
                 
                 if (salesAggregate.SaleCoefficient <= new decimal(0.8))
                 {
-                    decreasedSales.Add(new PricedProduct
+                    decreasedSales.Add(new TaskProduct()
                     {
                         Id = salesAggregate.ProductGuid,
                         Price = salesAggregate.Price,
                         Product = salesAggregate.Product,
-                        SalesWeek = salesAggregate.WeekNumber
+                        SalesWeek = salesAggregate.WeekNumber,
+                        SaleCoefficient = salesAggregate.SaleCoefficient,
+                        SoldAmount = salesAggregate.SoldAmount
                     });
                 }
             }

@@ -19,7 +19,7 @@ namespace Pis.Projekt.Framework.Repositories
         public abstract Task<TDocument> FindAsync(TKey id, CancellationToken token = default);
 
         public abstract Task<TDocument> RequireAsync(TKey id, CancellationToken token = default);
-
+    
         public abstract Task<TDocument> CreateAsync(TDocument document, CancellationToken token = default);
 
         public abstract Task<TDocument> UpdateAsync(TDocument document,

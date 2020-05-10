@@ -24,8 +24,7 @@ namespace Pis.Projekt.Framework.Email.Impl
         public async Task NotifyAsync<TContent>(IEmailNotification request)
             where TContent : IEmail
         {
-            var email = request.Content;
-            await SendMailAsync(email.Subject, email.Message, email.ToMailAddress?.Address)
+            await SendMailAsync(request.Subject, request.Message, request.ToMailAddress?.Address)
                 .ConfigureAwait(false);
         }
 

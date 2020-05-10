@@ -13,12 +13,12 @@ namespace Pis.Projekt.Api.Responses
         public string Name { get; set; }
 
         [JsonProperty("products")]
-        public IEnumerable<PricedProductResponse> Products { get; set; }
+        public IEnumerable<TaskProductResponse> Products { get; set; }
 
         [JsonProperty("scheduledOn")]
         public DateTime ScheduledOn { get; set; }
 
-        public class PricedProductResponse
+        public class TaskProductResponse
         {
             [JsonProperty("id")]
             public Guid Id { get; set; }
@@ -42,7 +42,10 @@ namespace Pis.Projekt.Api.Responses
             public string Currency => "EUR";
 
             [JsonProperty("sales")]
-            public decimal Sales { get; set; }
+            public decimal SaleCoeficient { get; set; }
+
+            [JsonProperty("sold_amount")]
+            public int SoldAmount { get; set; }
         }
     }
 }

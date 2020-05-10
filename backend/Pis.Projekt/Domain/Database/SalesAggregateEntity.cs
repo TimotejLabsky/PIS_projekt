@@ -36,5 +36,6 @@ namespace Pis.Projekt.Domain.Database
         [Column("sold_amount")]
         [Required]
         public int SoldAmount { get; set; }
+        
     }
 }

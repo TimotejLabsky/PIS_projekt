@@ -42,7 +42,7 @@ namespace Pis.Projekt.Business
         }
 
         public async Task<IEnumerable<PricedProduct>> Handle(
-            IEnumerable<PricedProduct> decreasedList)
+            IEnumerable<TaskProduct> decreasedList)
         {
             _logger.LogBusinessCase(BusinessTasks.DecreasedSalesBranch);
             if (decreasedList.Any())
@@ -73,7 +73,7 @@ namespace Pis.Projekt.Business
         }
 
         private async Task<IEnumerable<PricedProduct>> EvaluatePriceDecreaseRate(
-            IEnumerable<PricedProduct> decreasedList)
+            IEnumerable<TaskProduct> decreasedList)
         {
             var date = await _calendar.GetCurrentDateAsync().ConfigureAwait(false);
             _logger.LogBusinessCase(BusinessTasks.SaleDecreaseEvaluationTask);
@@ -101,7 +101,7 @@ namespace Pis.Projekt.Business
         }
 
         private async Task<IEnumerable<PricedProduct>> ExecuteUserTask(string taskName,
-            IEnumerable<PricedProduct> products)
+            IEnumerable<TaskProduct> products)
         {
             var awaiter = new TaskCompletionSource<IEnumerable<PricedProduct>>();
 

@@ -17,5 +17,6 @@ namespace Pis.Projekt.Api.Responses
         
         [JsonProperty("currency")]
         public string Currency { get; set; }
+        
     }
 }

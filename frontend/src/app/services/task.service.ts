@@ -14,6 +14,7 @@ export class TaskService {
   constructor(private httpClient: HttpClient) { }
 
   getTask(user: User): Observable<Task>{
+    console.log("TASK_SERVICE: ", this.endpoint + '/next')
     return this.httpClient.get<Task>(this.endpoint + '/next')
   }
 

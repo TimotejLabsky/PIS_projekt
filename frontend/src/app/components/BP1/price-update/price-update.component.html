@@ -39,7 +39,7 @@
         <mat-header-cell *matHeaderCellDef> Nová cena </mat-header-cell>
         <mat-cell *matCellDef="let element; let i = index">
           <mat-form-field>
-            <input matInput [ngModel]="dataSource[i].new_price | currency:'EUR'">
+            <input matInput [ngModel]="dataSource[i].new_price" (ngModelChange)="priceChange($event, element)">
           </mat-form-field>
         </mat-cell>
       </ng-container>

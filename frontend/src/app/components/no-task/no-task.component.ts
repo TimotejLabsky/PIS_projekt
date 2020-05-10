@@ -13,9 +13,9 @@ export class NoTaskComponent implements OnInit {
   constructor(private taskStore: TaskStore) { }
 
   ngOnInit(): void {
-    this.updateSubscription = interval(2000).subscribe(
+    /*this.updateSubscription = interval(2000).subscribe(
       (val) => { this.taskStore.loadTask()
-      });
+      });*/
   }
 
 }

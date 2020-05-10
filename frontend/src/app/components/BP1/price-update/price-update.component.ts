@@ -29,11 +29,6 @@ export class PriceUpdateComponent implements OnInit {
     this.initComplete(this.taskStore.getTask());
 
 
-    /*this.taskService.getTask(authStore.getCurrentUser()).subscribe(
-      task => this.task = task,
-      err => console.error(err),
-      () => this.initComplete()
-    );*/
 
   }
 
@@ -41,6 +36,7 @@ export class PriceUpdateComponent implements OnInit {
     this.task = task;
     this.dataSource = this.task.products;
     this.loading = false;
+
   }
 
   ngOnInit(): void {
@@ -48,11 +44,15 @@ export class PriceUpdateComponent implements OnInit {
 
   onSubmit(){
     this.task.products = this.dataSource;
-    console.log('submit')
+
     this.taskService.fulfillTask(this.task).subscribe(
       value => console.log(value),
       error => console.error(error),
       () => this.router.navigate(['sales-optimalization'])
     );
+  }
+
+  priceChange($event: any, element: any) {
+    element.new_price = Number($event);
   }
 }

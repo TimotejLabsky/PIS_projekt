@@ -28,7 +28,6 @@ using Pis.Projekt.Domain.Repositories.Impl;
 using Pis.Projekt.Framework;
 using Pis.Projekt.Framework.Email.Impl;
 using Pis.Projekt.Framework.Seed;
-using Pis.Projekt.System;
 using Quartz;
 using Quartz.Impl;
 
@@ -126,6 +125,7 @@ namespace Pis.Projekt
                 c.AddProfile<PricedProductProfile>();
                 c.AddProfile<ProductProfile>();
                 c.AddProfile<SalesAggregateProfile>();
+                c.AddProfile<ScheduledTaskProfile>();
             }, typeof(Startup));
             services.AddLogging(c => c.AddConsole().AddConfiguration(_configuration));
             services.AddControllers().AddNewtonsoftJson();

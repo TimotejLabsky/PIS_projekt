@@ -31,6 +31,17 @@ namespace Pis.Projekt.Business
             return _scheduledTasks.Where(s => s.Id == id).First();
         }
 
+        public void Fulfill(Guid id)
+        {
+            var deq = _scheduledTasks.Dequeue();
+            if (id != deq.Id)
+            {
+                var taskJson = JsonConvert.SerializeObject(deq, Formatting.Indented);
+                throw new InvalidOperationException(
+                    $"Unable to dequeue task: {id}. Next task in line was {taskJson}");
+            }
+        }
+
         public ScheduledTask GetNext()
         {
             return _scheduledTasks.Peek();

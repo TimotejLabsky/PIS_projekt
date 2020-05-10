@@ -22,7 +22,7 @@ namespace Pis.Projekt.Domain.Mappings
                             Id = p.Id,
                             Name = p.Product.Name,
                             ProductId = p.Product.Id,
-                            SaleCoeficient = p.SaleCoefficient
+                            SaleCoefficient = p.SaleCoefficient
                         })));
             CreateMap<TaskProduct, PricedProductResponse>();
             CreateMap<TaskFulfillRequest.TaskProductRequest, TaskProduct>();

@@ -45,7 +45,7 @@ namespace Pis.Projekt.Api.Requests
             [JsonProperty("delta_sales")]
             public decimal SaleCoefficient { get; set; }
 
-            [JsonProperty("sold_amount")]
+            [JsonProperty("sales")]
             public int SoldAmount { get; set; }
         }
     }

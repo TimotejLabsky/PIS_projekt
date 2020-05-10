@@ -42,9 +42,9 @@ namespace Pis.Projekt.Api.Responses
             public string Currency => "EUR";
 
             [JsonProperty("delta_sales")]
-            public decimal SaleCoeficient { get; set; }
+            public decimal SaleCoefficient { get; set; }
 
-            [JsonProperty("sold_amount")]
+            [JsonProperty("sales")]
             public int SoldAmount { get; set; }
         }
     }

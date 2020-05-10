@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import {Product} from "../../../model/product-model";
-import {Observable} from "rxjs";
 import {TaskService} from "../../../services/task.service";
 import {AuthStore} from "../../../store/auth.store";
 import { Task } from 'src/app/model/task-model';

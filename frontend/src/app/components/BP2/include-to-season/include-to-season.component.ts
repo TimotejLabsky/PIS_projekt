@@ -5,6 +5,7 @@ import {Product} from "../../../model/product-model";
 import {SelectionModel} from "@angular/cdk/collections";
 import { Task } from 'src/app/model/task-model';
 import {TaskStore} from "../../../store/task.store";
+import {Router} from "@angular/router";
 
 
 @Component({
@@ -22,7 +23,8 @@ export class IncludeToSeasonComponent implements OnInit {
   selection = new SelectionModel<Product>(true, []);
 
 
-  constructor(private taskStore: TaskStore, private authStore: AuthStore) {
+  constructor(private taskStore: TaskStore, private taskService: TaskService,
+              private router: Router) {
     this.loading = true;
     this.initComplete(this.taskStore.getTask());
   }

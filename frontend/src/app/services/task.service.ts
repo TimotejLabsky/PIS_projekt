@@ -3,6 +3,7 @@ import {User} from "../model/user-model";
 import {Task, TaskType} from "../model/task-model";
 import {Product} from "../model/product-model";
 import {Observable, of} from "rxjs";
+import {delay} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,8 @@ export class TaskService {
   constructor() { }
 
   getTask(user: User): Observable<Task>{
-    return of({taskType: TaskType.advertisement_picking, guid: '0', products: this.mockData, scheduledOn: new Date()});
+    return of({taskType: TaskType.price_update, guid: '0', products: this.mockData, scheduledOn: new Date()}).pipe(
+      delay(2000)
+    );
   }
 }

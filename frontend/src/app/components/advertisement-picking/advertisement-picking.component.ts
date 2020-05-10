@@ -17,7 +17,12 @@ export class AdvertisementPickingComponent implements OnInit {
   actual_season: string = "20.20.2020-25.20.2020";
 
   constructor(private taskService: TaskService, private authStore: AuthStore) {
-    this.dataSource = new MatTableDataSource(this.taskService.getTask(authStore.getCurrentUser()).products);
+    let products: Product[];
+    this.taskService.getTask(authStore.getCurrentUser()).subscribe(
+      tasks => products = tasks.products
+    )
+
+    this.dataSource = new MatTableDataSource(products);
   }
 
   ngOnInit(): void {

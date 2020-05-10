@@ -17,10 +17,12 @@ export class SalesOptimalizationComponent implements OnInit {
               private authStore: AuthStore,
               private taskService: TaskService) {
 
-    let task = taskService.getTask(authStore.getCurrentUser());
+    let task = null;
 
-    console.log(task);
-    this.router.navigate([task.taskType], {relativeTo: this.activatedRoute});
+    taskService.getTask(authStore.getCurrentUser()).subscribe(
+      task => this.router.navigate([task.taskType], {relativeTo: this.activatedRoute})
+    );
+
 
   }
 

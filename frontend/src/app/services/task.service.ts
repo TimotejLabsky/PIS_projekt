@@ -44,7 +44,7 @@ export class TaskService {
   }
 
   fulfillTask(task: Task){
-    return this.httpClient.post(this.endpoint + '/fulfull')
+    return this.httpClient.post(this.endpoint + '/fulfill', task)
   }
 
 }

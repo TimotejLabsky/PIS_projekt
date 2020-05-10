@@ -2,6 +2,12 @@
   width: 100%;
 }
 
+.mat-spinner {
+  position: relative;
+  margin-left: 50%;
+  margin-right: 50%;
+}
+
 .mat-card{
   width: 80%;
   display: block;

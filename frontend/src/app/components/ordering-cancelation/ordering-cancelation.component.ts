@@ -15,12 +15,17 @@ export class OrderingCancelationComponent implements OnInit {
   //TODO date from to
   actual_season: any = "20.20.2020-25.20.2020";
 
-  dataSource: Observable<Task>;
+  dataSource: Product[];
+  loading: boolean;
 
   constructor(private taskService: TaskService, private authStore: AuthStore) {
-    this.dataSource = this.taskService.getTask(authStore.getCurrentUser());
+    this.loading = true;
+    this.taskService.getTask(authStore.getCurrentUser()).subscribe(
+      task => this.dataSource = task.products,
+      err => console.error(err),
+      () => this.loading = false
+    );
   }
-
   ngOnInit(): void {
   }
 

@@ -5,8 +5,9 @@
       <mat-card-subtitle>{{actual_season}}</mat-card-subtitle>
     </mat-card-header>
 
-    <mat-table [dataSource]="dataSource" class="content-table">
+    <mat-spinner *ngIf="loading === true"></mat-spinner>
 
+    <mat-table [dataSource]="dataSource" class="content-table" *ngIf="loading === false">
       <!-- Name Column -->
       <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef> Názov </mat-header-cell>

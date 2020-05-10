@@ -12,7 +12,20 @@ export class TaskService {
 
   mockData: Product[] = [
     {id: '1', product_id: '1', name: 'tester', week_number: 1, price: 10.2,
-      sales: 1800, delta_sales: 75, currency: 'eur', new_price: 10.2}
+      sales: 1800, delta_sales: 75, currency: 'eur', new_price: 10.2, include_to_ad: null},
+    {id: '1', product_id: '1', name: 'tester', week_number: 1, price: 10.2,
+      sales: 1800, delta_sales: 75, currency: 'eur', new_price: 10.2, include_to_ad: null},
+    {id: '1', product_id: '1', name: 'tester', week_number: 1, price: 10.2,
+      sales: 1800, delta_sales: 75, currency: 'eur', new_price: 10.2, include_to_ad: null},
+    {id: '1', product_id: '1', name: 'tester', week_number: 1, price: 10.2,
+      sales: 1800, delta_sales: 75, currency: 'eur', new_price: 10.2, include_to_ad: null},
+    {id: '1', product_id: '1', name: 'tester', week_number: 1, price: 10.2,
+      sales: 1800, delta_sales: 75, currency: 'eur', new_price: 10.2, include_to_ad: null},
+    {id: '1', product_id: '1', name: 'tester', week_number: 1, price: 10.2,
+      sales: 1800, delta_sales: 75, currency: 'eur', new_price: 10.2, include_to_ad: null},
+    {id: '1', product_id: '1', name: 'tester', week_number: 1, price: 10.2,
+      sales: 1800, delta_sales: 75, currency: 'eur', new_price: 10.2, include_to_ad: null},
+
   ];
 
 

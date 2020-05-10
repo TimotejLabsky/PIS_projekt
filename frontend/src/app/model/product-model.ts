@@ -5,6 +5,7 @@ export interface Product {
   week_number: number;
   price: number;
   sales: number;
+  delta_sales: number;
   currency: string;
   new_price: number;
 }

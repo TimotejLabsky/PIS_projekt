@@ -10,39 +10,8 @@ import {debounce} from "rxjs/operators";
 })
 export class ProductService {
   mockData: Product[] = [
-    {name: 'te', old_price: 5, sales: 500, delta_sales: 25, new_price:5},
-    {name: 'te1', old_price: 51, sales: 10, delta_sales: 25, new_price:5},
-    {name: 'te2', old_price: 25, sales: 800, delta_sales: 25, new_price:5},
-    {name: 'te', old_price: 5, sales: 500, delta_sales: 25, new_price:5},
-    {name: 'te1', old_price: 51, sales: 10, delta_sales: 25, new_price:5},
-    {name: 'te2', old_price: 25, sales: 800, delta_sales: 25, new_price:5},
-    {name: 'te', old_price: 5, sales: 500, delta_sales: 25, new_price:5},
-    {name: 'te1', old_price: 51, sales: 10, delta_sales: 25, new_price:5},
-    {name: 'te2', old_price: 25, sales: 800, delta_sales: 25, new_price:5},
-    {name: 'te', old_price: 5, sales: 500, delta_sales: 25, new_price:5},
-    {name: 'te1', old_price: 51, sales: 10, delta_sales: 25, new_price:5},
-    {name: 'te2', old_price: 25, sales: 800, delta_sales: 25, new_price:5},
-    {name: 'te', old_price: 5, sales: 500, delta_sales: 25, new_price:5},
-    {name: 'te1', old_price: 51, sales: 10, delta_sales: 25, new_price:5},
-    {name: 'te2', old_price: 25, sales: 800, delta_sales: 25, new_price:5},
-    {name: 'te', old_price: 5, sales: 500, delta_sales: 25, new_price:5},
-    {name: 'te1', old_price: 51, sales: 10, delta_sales: 25, new_price:5},
-    {name: 'te2', old_price: 25, sales: 800, delta_sales: 25, new_price:5},
-    {name: 'te', old_price: 5, sales: 500, delta_sales: 25, new_price:5},
-    {name: 'te1', old_price: 51, sales: 10, delta_sales: 25, new_price:5},
-    {name: 'te2', old_price: 25, sales: 800, delta_sales: 25, new_price:5},
-    {name: 'te', old_price: 5, sales: 500, delta_sales: 25, new_price:5},
-    {name: 'te1', old_price: 51, sales: 10, delta_sales: 25, new_price:5},
-    {name: 'te2', old_price: 25, sales: 800, delta_sales: 25, new_price:5},
-    {name: 'te', old_price: 5, sales: 500, delta_sales: 25, new_price:5},
-    {name: 'te1', old_price: 51, sales: 10, delta_sales: 25, new_price:5},
-    {name: 'te2', old_price: 25, sales: 800, delta_sales: 25, new_price:5},
-    {name: 'te', old_price: 5, sales: 500, delta_sales: 25, new_price:5},
-    {name: 'te1', old_price: 51, sales: 10, delta_sales: 25, new_price:5},
-    {name: 'te2', old_price: 25, sales: 800, delta_sales: 25, new_price:5},
-    {name: 'te', old_price: 5, sales: 500, delta_sales: 25, new_price:5},
-    {name: 'te1', old_price: 51, sales: 10, delta_sales: 25, new_price:5},
-    {name: 'te2', old_price: 25, sales: 800, delta_sales: 25, new_price:5},
+    {id: '1', product_id: '1', name: 'tester', week_number: 1, price: 10.2,
+      sales: 1800, delta_sales: 75, currency: 'eur', new_price: 10.2}
   ];
 
   constructor() { }

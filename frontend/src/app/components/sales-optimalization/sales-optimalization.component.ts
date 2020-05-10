@@ -4,7 +4,7 @@ import {AuthenticationService} from "../../services/authentication.service";
 import {connectableObservableDescriptor} from "rxjs/internal/observable/ConnectableObservable";
 import {TaskService} from "../../services/task.service";
 import {AuthStore} from "../../store/auth.store";
-import { Task } from 'src/app/model/task-model';
+import {Task, TaskType} from 'src/app/model/task-model';
 
 @Component({
   selector: 'app-home',
@@ -17,11 +17,13 @@ export class SalesOptimalizationComponent implements OnInit {
   constructor(private router: Router, private activatedRoute: ActivatedRoute,
               private authStore: AuthStore,
               private taskService: TaskService) {
+
     this.loading = true;
+    let tmpTask: Task;
     taskService.getTask(authStore.getCurrentUser()).subscribe(
-      task => this.router.navigate([task.taskType], {relativeTo: this.activatedRoute}),
+      task => tmpTask = task,
       err => console.error(err),
-      () => this.loading = false
+      () => this.initComplete(tmpTask)
     );
 
 
@@ -29,6 +31,15 @@ export class SalesOptimalizationComponent implements OnInit {
 
   ngOnInit(): void {
 
+  }
+
+  private initComplete(task: Task){
+    this.loading = false
+    try {
+      this.router.navigate([task.taskType], {relativeTo: this.activatedRoute})
+    }catch (e) {
+      this.router.navigate([TaskType.nothing], {relativeTo: this.activatedRoute})
+    }
   }
 
 

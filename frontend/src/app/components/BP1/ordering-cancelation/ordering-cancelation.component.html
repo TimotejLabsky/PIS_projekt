@@ -16,15 +16,17 @@
       </ng-container>
 
 
-      <!-- new_price Column -->
       <ng-container matColumnDef="cancel">
-        <mat-header-cell *matHeaderCellDef class="align-right"> Zrušiť objednávanie </mat-header-cell>
-        <mat-cell *matCellDef="let element; let i = index" class="align-right">
-          <mat-form-field>
-            <mat-checkbox [(ngModel)]="dataSource[i].cancel_ordering"></mat-checkbox>
-          </mat-form-field>
+        <mat-header-cell *matHeaderCellDef> Zrušiť objednávanie </mat-header-cell>
+        <mat-cell *matCellDef="let row" class="align-right">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)">
+          </mat-checkbox>
         </mat-cell>
       </ng-container>
+
+
 
       <!-- Header and Row Declarations -->
       <mat-header-row *matHeaderRowDef="columns; sticky: true"></mat-header-row>

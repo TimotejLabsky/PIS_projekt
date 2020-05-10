@@ -39,6 +39,7 @@ namespace Pis.Projekt.Api.Controllers
             }
             catch (InvalidOperationException e)
             {
+                _logger.LogError($"Unable to fulfill task {request.Id}: {request.Name}", e);
                 return NoContent();
             }
         }

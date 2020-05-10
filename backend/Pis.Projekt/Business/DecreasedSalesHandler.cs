@@ -72,7 +72,7 @@ namespace Pis.Projekt.Business
             await Task.CompletedTask;
         }
 
-        private async Task<IEnumerable<PricedProduct>> EvaluatePriceDecreaseRate(
+        private async Task<IEnumerable<TaskProduct>> EvaluatePriceDecreaseRate(
             IEnumerable<TaskProduct> decreasedList)
         {
             var date = await _calendar.GetCurrentDateAsync().ConfigureAwait(false);
@@ -87,10 +87,17 @@ namespace Pis.Projekt.Business
             return output;
         }
 
-        private async Task SelectToAdvertisementCampaign(IEnumerable<PricedProduct> updatedList)
+        private async Task SelectToAdvertisementCampaign(IEnumerable<TaskProduct> updatedList)
         {
-            // var advertisedProducts = await ExecuteUserTask("select-to-ad", updatedList)
-            // .ConfigureAwait(false);
+            var date = await _calendar.GetCurrentDateAsync().ConfigureAwait(false);
+            _logger.LogBusinessCase(BusinessTasks.SelectToAdTask);
+            _logger.LogInput(BusinessTasks.SelectToAdTask,
+                "Produkty so znizenou predajnostou", updatedList);
+            _logger.LogInput(BusinessTasks.SelectToAdTask, "Dnešný dátum", date);
+            var output = await ExecuteUserTask(UserTaskType.AdvertisementPicking, updatedList)
+                .ConfigureAwait(false);
+            _logger.LogOutput(BusinessTasks.SelectToAdTask,
+                "Zoznam produktov zaradenych do reklamnych letakov", output);
         }
 
         /// <param name="endProductsGuids">List of product guids that should not be ordered anymore</param>
@@ -100,10 +107,10 @@ namespace Pis.Projekt.Business
             await _supplier.EndProductStocking(endProductsGuids).ConfigureAwait(false);
         }
 
-        private async Task<IEnumerable<PricedProduct>> ExecuteUserTask(string taskName,
+        private async Task<IEnumerable<TaskProduct>> ExecuteUserTask(string taskName,
             IEnumerable<TaskProduct> products)
         {
-            var awaiter = new TaskCompletionSource<IEnumerable<PricedProduct>>();
+            var awaiter = new TaskCompletionSource<IEnumerable<TaskProduct>>();
 
             async Task TaskFulfilled(ScheduledTaskResult result)
             {

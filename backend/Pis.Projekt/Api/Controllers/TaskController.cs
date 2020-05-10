@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Pis.Projekt.Api.Requests;
 using Pis.Projekt.Api.Responses;
 using Pis.Projekt.Business;
 using Pis.Projekt.Domain.DTOs;
@@ -24,20 +26,20 @@ namespace Pis.Projekt.Api.Controllers
         }
 
         [HttpPost("fulfill/{taskGuid}")]
-        public async Task<IActionResult> ConfirmTaskAsync([FromRoute] Guid taskGuid,
-            [FromBody] IEnumerable<PricedProduct> pricedProducts,
+        public async Task<IActionResult> ConfirmTaskAsync([FromBody] TaskFulfillRequest request,
             CancellationToken token = default)
         {
             try
             {
-                var task = _taskCollection.Find(taskGuid);
-                task.Fulfill(pricedProducts);
-                _taskCollection.Fulfill(taskGuid);
+                var task = _taskCollection.Find(request.Id);
+                var taskProducts = request.Products.Select(p => _mapper.Map<TaskProduct>(p));
+                task.Fulfill(taskProducts);
+                _taskCollection.Fulfill(request.Id);
                 return Ok();
             }
             catch (InvalidOperationException e)
             {
-                return NotFound(taskGuid);
+                return NoContent();
             }
         }
 
@@ -52,7 +54,7 @@ namespace Pis.Projekt.Api.Controllers
             catch (InvalidOperationException e)
             {
                 _logger.LogInformation("Next task does not exist", e);
-                return NotFound();
+                return NoContent();
             }
         }
 

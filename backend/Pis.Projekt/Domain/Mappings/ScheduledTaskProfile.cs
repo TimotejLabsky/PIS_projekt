@@ -1,5 +1,6 @@
 using System.Linq;
 using AutoMapper;
+using Pis.Projekt.Api.Requests;
 using Pis.Projekt.Api.Responses;
 using Pis.Projekt.Business.Scheduling;
 using Pis.Projekt.Domain.DTOs;
@@ -24,6 +25,7 @@ namespace Pis.Projekt.Domain.Mappings
                             SaleCoeficient = p.SaleCoefficient
                         })));
             CreateMap<TaskProduct, PricedProductResponse>();
+            CreateMap<TaskFulfillRequest.TaskProductRequest, TaskProduct>();
         }
     }
 }

@@ -25,7 +25,7 @@ namespace Pis.Projekt.Business.Scheduling
         public IEnumerable<TaskProduct> Products { get; set; }
         public DateTime ScheduledOn { get; set; }
         public string Name { get; set; }
-        public IEnumerable<PricedProduct> Result { get; set; }
+        public IEnumerable<TaskProduct> Result { get; set; }
         public bool IsResolved { get; set; }
         
 
@@ -37,7 +37,7 @@ namespace Pis.Projekt.Business.Scheduling
             }
         }
 
-        public void Fulfill(IEnumerable<PricedProduct> result)
+        public void Fulfill(IEnumerable<TaskProduct> result)
         {
             Result = result;
             OnTaskFulfilled?.Invoke(new ScheduledTaskResult {Products = Result, Name = Name});
@@ -56,6 +56,6 @@ namespace Pis.Projekt.Business.Scheduling
     {
         public int TaskId { get; set; }
         public string Name { get; set; }
-        public IEnumerable<PricedProduct> Products { get; set; }
+        public IEnumerable<TaskProduct> Products { get; set; }
     }
 }

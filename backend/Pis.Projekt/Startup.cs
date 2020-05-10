@@ -134,7 +134,6 @@ namespace Pis.Projekt
             {
                 c.SwaggerDoc("v1",
                     new OpenApiInfo {Title = "Sales Optimization API", Version = "v1"});
-                c.OperationFilter<AuthorizationParameters>();
             });
         }
 
@@ -157,7 +156,6 @@ namespace Pis.Projekt
                 c.RoutePrefix = string.Empty; // Set Swagger UI at apps root
             });
 
-            app.UseMiddleware<AuthorizationMiddleware>();
             app.UseRouting();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
             app.ApplicationServices.GetRequiredService<EntitySeeder>().Seed().Wait();

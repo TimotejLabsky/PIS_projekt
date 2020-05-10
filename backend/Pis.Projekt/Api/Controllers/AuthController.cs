@@ -6,8 +6,7 @@ using Pis.Projekt.Business.Authorization;
 
 namespace Pis.Projekt.Api.Controllers
 {
-    [Microsoft.AspNetCore.Components.Route("auth")]
-    [Controller]
+    [Route("auth")]
     public class AuthController : Controller
     {
         public AuthController(AuthorizationService auth)
@@ -15,7 +14,7 @@ namespace Pis.Projekt.Api.Controllers
             _auth = auth;
         }
 
-        [HttpPost]
+        [HttpPost("login")]
         public async Task<ActionResult<AuthLoginResponse>> LoginAsync(
             [FromBody] AuthLoginRequest request)
         {
@@ -23,10 +22,8 @@ namespace Pis.Projekt.Api.Controllers
             {
                 return Ok(new AuthLoginResponse{User = request.User});
             }
-
             return Unauthorized();
         }
-
 
         private readonly AuthorizationService _auth;
     }

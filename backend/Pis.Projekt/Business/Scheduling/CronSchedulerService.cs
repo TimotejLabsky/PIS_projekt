@@ -44,7 +44,8 @@ namespace Pis.Projekt.Business.Scheduling
         public async Task<DateTime> ScheduleOptimalizationTask(CancellationToken token =
             default)
         {
-            var job = CreateJob<OptimizationJob>(_configuration);
+            var job = CreateJob<OptimizationJob>("optimalization-job",
+                "Weekly optimalization of product prices");
             var trigger = CreateTrigger<OptimizationJob>(job, _configuration);
             var date = await _scheduler.ScheduleJob(job, trigger, token);
             _logger.LogBusinessCase(BusinessTasks.OptimizationSchedulingTask,
@@ -55,8 +56,8 @@ namespace Pis.Projekt.Business.Scheduling
         public async Task ScheduleUserTaskTimeoutJob(ScheduledTask task)
         {
             // create job from scheduled task
-            var job = CreateJob<UserTaskTimeoutEvaluationJob>(new CronSchedulerConfiguration
-                {Name = "user-eval"});
+            var job = CreateJob<UserTaskTimeoutEvaluationJob>("user-eval",
+                "Waiting on user Evaluation or timeout");
             var trigger = CreateOneTimeTrigger<UserTaskTimeoutEvaluationJob>(job, _configuration);
             job.JobDataMap.Add("task", task);
             var date = await _scheduler.ScheduleJob(job, trigger).ConfigureAwait(false);
@@ -64,14 +65,14 @@ namespace Pis.Projekt.Business.Scheduling
                 $"Task: {job.Description} scheduled on {date}");
         }
 
-        private static IJobDetail CreateJob<TJob>(CronSchedulerConfiguration schedule)
+        private static IJobDetail CreateJob<TJob>(string name, string description)
             where TJob : IJob
         {
             var jobType = typeof(TJob);
             return JobBuilder
                 .Create<TJob>()
-                .WithIdentity(schedule.Name)
-                .WithDescription(jobType.Name)
+                .WithIdentity(name)
+                .WithDescription(description)
                 .Build();
         }
 
@@ -81,10 +82,10 @@ namespace Pis.Projekt.Business.Scheduling
         {
             return TriggerBuilder
                 .Create()
-                .WithIdentity($"{schedule.Name}.trigger")
+                .WithIdentity($"{job.Key.Name}.trigger")
                 .ForJob(job)
-                .WithSimpleSchedule(a => a.WithRepeatCount(0)
-                    .WithIntervalInMinutes(30))
+                .WithSimpleSchedule(a => a.WithRepeatCount(2)
+                    .WithInterval(schedule.UserTaskTimeout))
                 .Build();
         }
 
@@ -104,8 +105,8 @@ namespace Pis.Projekt.Business.Scheduling
         private IScheduler _scheduler;
         private readonly ISchedulerFactory _factory;
         private readonly OptimizationJobFactory _jobFactory;
-        private readonly CronSchedulerConfiguration _configuration;
         private readonly ILogger<CronSchedulerService> _logger;
+        private readonly CronSchedulerConfiguration _configuration;
 
         public class CronSchedulerConfiguration
         {
@@ -117,6 +118,8 @@ namespace Pis.Projekt.Business.Scheduling
 
             [ConfigurationProperty("CronExpression", IsRequired = false)]
             public CronExpression CronExpression => new CronExpression(CronExpressionString);
+
+            public TimeSpan UserTaskTimeout { get; set; }
         }
     }
 }

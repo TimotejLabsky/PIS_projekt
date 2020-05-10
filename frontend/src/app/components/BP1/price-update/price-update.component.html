@@ -19,7 +19,7 @@
       <!-- old_price Column -->
       <ng-container matColumnDef="old_price">
         <mat-header-cell *matHeaderCellDef> Predchádzajúca cena </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.price | number : '1.2-2'}} </mat-cell>
+        <mat-cell *matCellDef="let element"> {{element.price | currency:'EUR':true}} </mat-cell>
       </ng-container>
 
       <!-- sales Column -->
@@ -39,7 +39,7 @@
         <mat-header-cell *matHeaderCellDef> Nová cena </mat-header-cell>
         <mat-cell *matCellDef="let element; let i = index">
           <mat-form-field>
-            <input matInput [(ngModel)]="dataSource[i].new_price">
+            <input matInput [ngModel]="dataSource[i].new_price | currency:'EUR':true">
           </mat-form-field>
         </mat-cell>
       </ng-container>

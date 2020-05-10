@@ -18,6 +18,10 @@
   margin: 10px
 }
 
+.mat-checkbox{
+  margin-left: 25%;
+}
+
 .mat-card{
   width: 80%;
   display: block;

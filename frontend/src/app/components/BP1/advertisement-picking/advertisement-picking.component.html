@@ -34,21 +34,25 @@
       </ng-container>
 
 
-      <!-- new_price Column
+      <!-- new_price Column -->
       <ng-container matColumnDef="include">
         <mat-header-cell *matHeaderCellDef> Nová cena </mat-header-cell>
         <mat-cell *matCellDef="let element; let i = index">
             <mat-checkbox></mat-checkbox>
         </mat-cell>
-      </ng-container>-->
+      </ng-container>
 
-      <!-- new_price Column-->
+      <!-- new_price Column
       <ng-container matColumnDef="include">
         <mat-header-cell *matHeaderCellDef> Zaradiť </mat-header-cell>
         <mat-cell *matCellDef="let element">
-          <mat-checkbox></mat-checkbox>
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="($event ? selection.toggle(row) : null); showSelection(row)"
+            [checked]="isSelected(row)"
+          ></mat-checkbox>
         </mat-cell>
-      </ng-container>
+      </ng-container>-->
 
       <!-- Header and Row Declarations -->
       <mat-header-row *matHeaderRowDef="columns; sticky: true"></mat-header-row>

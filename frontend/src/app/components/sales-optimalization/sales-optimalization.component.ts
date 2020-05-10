@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, Router, RouterModule} from "@angular/router";
-import {AuthenticationService} from "../../services/authentication.service";
-import {connectableObservableDescriptor} from "rxjs/internal/observable/ConnectableObservable";
+import {ActivatedRoute, Router} from "@angular/router";
 import {TaskService} from "../../services/task.service";
 import {AuthStore} from "../../store/auth.store";
 import {Task, TaskType} from 'src/app/model/task-model';

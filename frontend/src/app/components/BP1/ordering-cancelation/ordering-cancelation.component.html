@@ -15,11 +15,14 @@
         <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
       </ng-container>
 
+
       <!-- new_price Column -->
       <ng-container matColumnDef="cancel">
         <mat-header-cell *matHeaderCellDef class="align-right"> Zrušiť objednávanie </mat-header-cell>
-        <mat-cell *matCellDef="let element" class="align-right">
-          <mat-checkbox></mat-checkbox>
+        <mat-cell *matCellDef="let element; let i = index" class="align-right">
+          <mat-form-field>
+            <mat-checkbox [(ngModel)]="dataSource[i].cancel_ordering"></mat-checkbox>
+          </mat-form-field>
         </mat-cell>
       </ng-container>
 

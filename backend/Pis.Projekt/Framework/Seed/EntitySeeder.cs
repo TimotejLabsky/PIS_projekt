@@ -23,7 +23,6 @@ namespace Pis.Projekt.Framework.Seed
         public async Task Seed()
         {
             using var scope = _scopeFactory.CreateScope();
-            var productRepository = scope.ServiceProvider.GetRequiredService<IProductRepository>();
             var salesAggregateRepository = scope.ServiceProvider.GetRequiredService<ISalesAggregateRepository>();
             if (_configuration.SeedAtStart)
             {

@@ -9,10 +9,11 @@ namespace Pis.Projekt.Domain.Database.Contexts
         {
             Database.EnsureCreated();
         }
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
             ConfigurePrimaryKeys(modelBuilder);
             ConfigureForeignKeys(modelBuilder);
             ConfigureConsistency(modelBuilder);

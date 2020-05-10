@@ -6,6 +6,9 @@
       "Microsoft.Hosting.Lifetime": "Information"
     }
   },
+  "Database" : {
+    "ConnectionString": "Server=127.0.0.1;Database=pis;Uid=sa;Pwd=P@55word;"
+  },
   "EmailService": {
     "WSDL": {
       "TeamId": "017",

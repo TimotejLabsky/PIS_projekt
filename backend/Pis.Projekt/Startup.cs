@@ -45,7 +45,6 @@ namespace Pis.Projekt
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            
             // reading configuration
             services.Configure<WsdlConfiguration<WsdlEmailClient>>(
                 _configuration.GetSection("EmailService:WSDL"));
@@ -67,29 +66,32 @@ namespace Pis.Projekt
                 _configuration.GetSection("EntitySeederService"));
             services.Configure<CronSchedulerService.CronSchedulerConfiguration>(
                 _configuration.GetSection("CronSchedulerService"));
-            
+
             //validation
             services.AddSingleton<EmailValidationService>();
             services.AddSingleton<ConfigEmailValidation>();
-            
+
             // db layer
-            services.AddDbContext<SalesDbContext>(c => c.UseInMemoryDatabase("sales"));
+            
             services.AddScoped<ISalesAggregateRepository, SalesAggregateRepository>();
             services.AddScoped<IPricedProductRepository, PricedProductRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ProductPersistenceService>();
-            
+            var dbConnectionString = _configuration.GetValue<string>("Database:ConnectionString");
+            services.AddDbContext<SalesDbContext>(c => c.UseSqlServer(dbConnectionString));
+
             // notification pipeline
             services.AddSingleton<NotificationFactory>();
             services.AddSingleton<IOptimizationNotificationService, EmailNotificationService>();
             services
                 .AddSingleton<INotificationClient<IEmailNotification, IEmail>, SmtpClientAdapter>();
-            services.AddSingleton<INotificationClient<IEmailNotification, IEmail>, WsdlEmailClient>();
-            
+            services
+                .AddSingleton<INotificationClient<IEmailNotification, IEmail>, WsdlEmailClient>();
+
             // testing tools
             services.AddSingleton<EntitySeeder>();
             services.AddSingleton<AuthorizationService>();
-            
+
             // business case
             services.AddSingleton<SalesEvaluatorService>();
             services.AddSingleton<WeekCounter>();
@@ -100,27 +102,27 @@ namespace Pis.Projekt
             services.AddSingleton<PriceCalculatorService>();
             services.AddSingleton<UserTaskCollectionService>();
             services.AddSingleton<SalesOptimalizationService>();
-            
+
             // scheduling
             services.AddSingleton<CronSchedulerService>();
             services.AddSingleton<OptimizationJobFactory>();
             services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
-            
+
             // external services
             services.AddSingleton<SupplierService>();
-            
+
             // WSDL adapters
             services.AddSingleton<ITaskClient, WsdlTaskClient>();
             services.AddSingleton<WsdlCalendarService>();
             services.AddSingleton<SmtpClient>();
-            
+
             // WSDL references
             services.AddSingleton<CustomerPortTypeClient>();
             services.AddSingleton<EmailPortTypeClient>();
             services.AddSingleton<CalendarPortTypeClient>();
             services.AddSingleton<TaskListPortTypeClient>();
             services.AddSingleton<ValidatorPortTypeClient>();
-            
+
             // jobs
             services.AddTransient<UserTaskTimeoutEvaluationJob>();
             services.AddTransient<OptimizationJob>();
@@ -141,7 +143,8 @@ namespace Pis.Projekt
                 c.SwaggerDoc("v1",
                     new OpenApiInfo {Title = "Sales Optimization API", Version = "v1"});
             });
-            services.AddSwaggerGenNewtonsoftSupport(); // explicit opt-in - needs to be placed after AddSwaggerGen()
+            services
+                .AddSwaggerGenNewtonsoftSupport(); // explicit opt-in - needs to be placed after AddSwaggerGen()
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

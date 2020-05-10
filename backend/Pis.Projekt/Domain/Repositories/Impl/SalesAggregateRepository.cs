@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Net.Http.Headers;
 using Pis.Projekt.Business;
 using Pis.Projekt.Domain.Database;
 using Pis.Projekt.Domain.Database.Contexts;
@@ -20,14 +19,11 @@ namespace Pis.Projekt.Domain.Repositories.Impl
         AbstractEFRepository<SalesDbContext, Guid, SalesAggregateEntity>, ISalesAggregateRepository,
         IDisposable
     {
-        public SalesAggregateRepository(IServiceScopeFactory scopeFactory, IMapper mapper) : base(
-            scopeFactory)
+        public SalesAggregateRepository(IServiceScopeFactory scopeFactory, WeekCounter counter, IMapper mapper) : base(scopeFactory)
         {
+            _counter = counter;
             _mapper = mapper;
-            _scope = scopeFactory.CreateScope();
-            _counter = _scope.ServiceProvider.GetRequiredService<WeekCounter>();
         }
-
         public async Task<IEnumerable<SalesAggregate>> FetchFromLastWeekAsync(
             CancellationToken token = default)
         {
@@ -81,37 +77,9 @@ namespace Pis.Projekt.Domain.Repositories.Impl
 
         private readonly WeekCounter _counter;
 
-        #region __ Disposable Pattern __
-
-        public void Dispose()
-        {
-            // Dispose of unmanaged resources.
-            Dispose(true);
-            // Suppress finalization.
-            GC.SuppressFinalize(this);
-        }
-
-        // Protected implementation of Dispose pattern.
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposed)
-                return;
-
-            if (disposing)
-            {
-                _scope.Dispose();
-            }
-
-            disposed = true;
-        }
-
-        // Flag: Has Dispose already been called?
-        bool disposed = false;
-
-        #endregion
-
-        private readonly IServiceScope _scope;
         private readonly IMapper _mapper;
         protected override DbSet<SalesAggregateEntity> Entities => DbContext.SaleAggregates;
+
+        
     }
 }

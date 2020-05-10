@@ -8,7 +8,6 @@ using Microsoft.Extensions.Options;
 using Pis.Projekt.Business.Calendar;
 using Pis.Projekt.Business.Notifications;
 using Pis.Projekt.Business.Scheduling;
-using Pis.Projekt.Business.Scheduling.Impl;
 using Pis.Projekt.Domain.DTOs;
 using Pis.Projekt.Framework;
 using Pis.Projekt.System;

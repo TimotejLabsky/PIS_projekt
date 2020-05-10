@@ -24,7 +24,7 @@ namespace Pis.Projekt.Domain.Mappings
                                 Id = p.Id,
                                 Name = p.Product.Name,
                                 ProductId = p.Product.Id,
-                                SaleCoefficient = p.SaleCoefficient
+                                SaleCoefficient = p.SaleCoefficient,
                             })))
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id));
             CreateMap<TaskProduct, PricedProductResponse>();

@@ -41,27 +41,32 @@ namespace Pis.Projekt.Business
             _wsdlConfiguration = wsdlConfiguration.Value;
         }
 
-        public async Task<IEnumerable<PricedProduct>> Handle(
-            IEnumerable<TaskProduct> decreasedList)
+        public async Task<IEnumerable<PricedProduct>> Handle(IEnumerable<TaskProduct> decreasedList)
         {
             _logger.LogBusinessCase(BusinessTasks.DecreasedSalesBranch);
             if (decreasedList.Any())
             {
                 _logger.LogDecisionBlock(BusinessTasks.DecreasedSaleOfAtLeastOneProduct, "Ano");
                 await NotifyMarketing().ConfigureAwait(false);
-                var updatedList =
-                    await EvaluatePriceDecreaseRate(decreasedList)
-                        .ConfigureAwait(false);
-                await SelectToAdvertisementCampaign(updatedList).ConfigureAwait(false);
-                await EndProductStocking(updatedList.Select(s => s.Id))
+                var newPriceList = await EvaluatePriceDecreaseRate(decreasedList)
                     .ConfigureAwait(false);
-                return updatedList;
-            }
-            else
-            {
-                _logger.LogDecisionBlock(BusinessTasks.DecreasedSaleOfAtLeastOneProduct, "Nie");
+                var advertisedList = await SelectToAdvertisementCampaign(decreasedList)
+                    .ConfigureAwait(false);
+                var cancelledList = await EndProductStocking(decreasedList).ConfigureAwait(false);
+
+                foreach (var taskProduct in decreasedList)
+                {
+                    taskProduct.Price = newPriceList.First(p => p.Id == taskProduct.Id).Price;
+                    taskProduct.IsAdvertised =
+                        advertisedList.First(p => p.Id == taskProduct.Id).IsAdvertised;
+                    taskProduct.IsCancelled =
+                        cancelledList.First(p => p.Id == taskProduct.Id).IsCancelled;
+                }
+
+                return decreasedList;
             }
 
+            _logger.LogDecisionBlock(BusinessTasks.DecreasedSaleOfAtLeastOneProduct, "Nie");
             return decreasedList;
         }
 
@@ -87,7 +92,8 @@ namespace Pis.Projekt.Business
             return output;
         }
 
-        private async Task SelectToAdvertisementCampaign(IEnumerable<TaskProduct> updatedList)
+        private async Task<IEnumerable<TaskProduct>> SelectToAdvertisementCampaign(
+            IEnumerable<TaskProduct> updatedList)
         {
             var date = await _calendar.GetCurrentDateAsync().ConfigureAwait(false);
             _logger.LogBusinessCase(BusinessTasks.SelectToAdTask);
@@ -98,13 +104,25 @@ namespace Pis.Projekt.Business
                 .ConfigureAwait(false);
             _logger.LogOutput(BusinessTasks.SelectToAdTask,
                 "Zoznam produktov zaradenych do reklamnych letakov", output);
+            return output;
         }
 
-        /// <param name="endProductsGuids">List of product guids that should not be ordered anymore</param>
-        /// <returns>List od products to be removed from supply order</returns>
-        private async Task EndProductStocking(IEnumerable<Guid> endProductsGuids)
+        private async Task<IEnumerable<TaskProduct>> EndProductStocking(
+            IEnumerable<TaskProduct> decreasedProducts)
         {
-            await _supplier.EndProductStocking(endProductsGuids).ConfigureAwait(false);
+            var date = await _calendar.GetCurrentDateAsync().ConfigureAwait(false);
+            _logger.LogBusinessCase(BusinessTasks.EndStockingTask);
+            _logger.LogInput(BusinessTasks.EndStockingTask,
+                "Produkty so znizenou predajnostou", decreasedProducts);
+            _logger.LogInput(BusinessTasks.EndStockingTask, "Dnešný dátum", date);
+            var output = await ExecuteUserTask(UserTaskType.OrderingCancellation, decreasedProducts)
+                .ConfigureAwait(false);
+            _logger.LogOutput(BusinessTasks.EndStockingTask,
+                "Zoznam produktov zaradenych do reklamnych letakov", output);
+
+            await _supplier.EndProductStocking(output.Select(s => s.Product.Id))
+                .ConfigureAwait(false);
+            return output;
         }
 
         private async Task<IEnumerable<TaskProduct>> ExecuteUserTask(string taskName,

@@ -56,7 +56,7 @@ namespace Pis.Projekt.Business.Scheduling
         public async Task ScheduleUserTaskTimeoutJob(ScheduledTask task)
         {
             // create job from scheduled task
-            var job = CreateJob<UserTaskTimeoutEvaluationJob>("user-eval",
+            var job = CreateJob<UserTaskTimeoutEvaluationJob>($"user-eval-{task.Name}-{task.Id}",
                 "Waiting on user Evaluation or timeout");
             var trigger = CreateOneTimeTrigger<UserTaskTimeoutEvaluationJob>(job, _configuration);
             job.JobDataMap.Add("task", task);

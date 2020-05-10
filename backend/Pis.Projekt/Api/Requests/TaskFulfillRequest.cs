@@ -47,6 +47,12 @@ namespace Pis.Projekt.Api.Requests
 
             [JsonProperty("sales")]
             public int SoldAmount { get; set; }
+            
+            [JsonProperty("include_to_ad")]
+            public bool IsAdvertised { get; set; }
+
+            [JsonProperty("cancel_ordering")]
+            public bool IsCancelled { get; set; }
         }
     }
 }

@@ -92,7 +92,7 @@ namespace Pis.Projekt
             services.AddSingleton<WaiterService>();
             services.AddSingleton<AggregateFetcher>();
             services.AddSingleton<DecreasedSalesHandler>();
-            // services.AddSingleton<IncreasedSalesHandler>();
+            services.AddSingleton<IncreasedSalesHandler>();
             services.AddSingleton<PriceCalculatorService>();
             services.AddSingleton<UserTaskCollectionService>();
             services.AddSingleton<SalesOptimalizationService>();

@@ -45,12 +45,6 @@ namespace Pis.Projekt
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(o => o.AddPolicy("AllowAllCorsPolicy", builder =>
-            {
-                builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-            }));
             
             // reading configuration
             services.Configure<WsdlConfiguration<WsdlEmailClient>>(
@@ -164,7 +158,12 @@ namespace Pis.Projekt
                 c.RoutePrefix = string.Empty; // Set Swagger UI at apps root
             });
 
-            app.UseCors();
+            app.UseCors(c =>
+            {
+                c.AllowAnyOrigin();
+                c.AllowAnyMethod();
+                c.AllowAnyHeader();
+            });
             app.UseRouting();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
             app.ApplicationServices.GetRequiredService<EntitySeeder>().Seed().Wait();

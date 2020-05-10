@@ -15,7 +15,9 @@ namespace Pis.Projekt.Business
         public const string IncreasedSalesBranch = "Vetva pre zvysenie predaja o viac ako 10%";
         public const string DecreasedSalesBranch = "Vetva pre Znizenie predaja o viac ako 20%";
         public const string NotifyMarketing = "Upozornenie Marketingoveho oddelenia";
-
+        public const string CalculateFinalPrice = "Výpočet novej ceny";
+        public const string CreateOrder = "Vytvorenie objednávky";
+        public const string SendOrder = "Objednanie produktov";
         public const string DecreasedSaleOfAtLeastOneProduct =
             "Znížil sa predaj aspoň jedného produktu?";
     }

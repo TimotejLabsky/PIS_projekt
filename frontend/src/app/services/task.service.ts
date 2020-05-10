@@ -21,7 +21,7 @@ export class TaskService {
 
   fulfillTask(task: Task){
     console.log('fulfill');
-    return this.httpClient.post(this.endpoint + '/fulfill', task)
+    return this.httpClient.post(this.endpoint + '/fulfill', task);
   }
 
 }

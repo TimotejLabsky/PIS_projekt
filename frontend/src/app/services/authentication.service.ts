@@ -10,7 +10,7 @@ import {delay, tap} from "rxjs/operators";
   providedIn: 'root'
 })
 export class AuthenticationService {
-  private endpoint: string = base_endpoint + '/auth';
+  private endpoint: string = base_endpoint + '/login';
 
   constructor(private httpClient: HttpClient) {  }
 
@@ -21,10 +21,11 @@ export class AuthenticationService {
       password: string
     }
     */
-    let body = { userName: userName, password: password};
-    /**
-     *  return this.httpClient.post<User>(this.endpoint, body);
-     */
+    let body = { user: userName, password: password};
+
+    return this.httpClient.post<User>(this.endpoint, body).pipe(
+      tap((user: User) => console.log(`authenticate =${body.user}`))
+    );
 
     let user: User = null;
 
@@ -34,7 +35,7 @@ export class AuthenticationService {
 
     return of(user).pipe(
       delay(2000),
-      tap((user: User) => console.log(`authenticate =${body.userName}`))
+      tap((user: User) => console.log(`authenticate =${body.user}`))
     )
   }
 

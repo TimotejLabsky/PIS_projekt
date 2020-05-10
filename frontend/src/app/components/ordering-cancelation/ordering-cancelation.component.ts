@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {Product} from "../../model/product-model";
 import {Observable} from "rxjs";
-import {ProductService} from "../../services/product.service";
+import {TaskService} from "../../services/task.service";
+import {AuthStore} from "../../store/auth.store";
 
 @Component({
   selector: 'app-ordering-cancelation',
@@ -13,10 +14,10 @@ export class OrderingCancelationComponent implements OnInit {
   //TODO date from to
   actual_season: any = "20.20.2020-25.20.2020";
 
-  dataSource: Observable<Product[]>;
+  dataSource: Product[];
 
-  constructor(private productService: ProductService) {
-    this.dataSource = this.productService.getAllProducts();
+  constructor(private taskService: TaskService, private authStore: AuthStore) {
+    this.dataSource = this.taskService.getTask(authStore.getCurrentUser()).products;
   }
 
   ngOnInit(): void {

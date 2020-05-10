@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import {TaskService} from "../../services/task.service";
+import {AuthStore} from "../../store/auth.store";
+import {Product} from "../../model/product-model";
 
 @Component({
   selector: 'app-include-to-season',
@@ -7,10 +10,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class IncludeToSeasonComponent implements OnInit {
   actual_season: any;
-  dataSource: any;
+  dataSource: Product[];
   columns: string[] = ['name', 'old_price', 'sales', 'delta_sales', 'include'];
 
-  constructor() { }
+  constructor(private taskService: TaskService, private authStore: AuthStore) {
+    this.dataSource = this.taskService.getTask(authStore.getCurrentUser()).products;
+  }
 
   ngOnInit(): void {
   }

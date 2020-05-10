@@ -5,26 +5,27 @@ import {base_endpoint} from "../url.constatns";
 import {Observable, of} from "rxjs";
 import {stringify} from "querystring";
 import {delay, tap} from "rxjs/operators";
+import {AuthStore} from "../store/auth.store";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
-  private endpoint: string = base_endpoint + '/auth';
+  private endpoint: string = base_endpoint + '/auth/login';
 
   constructor(private httpClient: HttpClient) {  }
 
-  authenticate(userName: string, password: string): Observable<User>{
-    /*
-    {
-      userName: string
-      password: string
-    }
-    */
+  public login(userName: string, password: string) {
+
+  }
+
+  public authenticate(userName: string, password: string): Observable<User>{
+
     let body = { userName: userName, password: password};
-    /**
-     *  return this.httpClient.post<User>(this.endpoint, body);
-     */
+
+    return this.httpClient.post<User>(this.endpoint, body).pipe(
+      tap((user: User) => console.log(`Authenticate = ${body.userName}`))
+    );
 
     let user: User = null;
 

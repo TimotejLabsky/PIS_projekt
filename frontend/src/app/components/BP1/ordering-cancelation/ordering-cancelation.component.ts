@@ -5,6 +5,7 @@ import {TaskService} from "../../../services/task.service";
 import {AuthStore} from "../../../store/auth.store";
 import { Task } from 'src/app/model/task-model';
 import {TaskLogger} from "protractor/built/taskLogger";
+import {Route, Router} from "@angular/router";
 
 @Component({
   selector: 'app-ordering-cancelation',
@@ -20,7 +21,8 @@ export class OrderingCancelationComponent implements OnInit {
   dataSource: Product[];
   loading: boolean;
 
-  constructor(private taskService: TaskService, private authStore: AuthStore) {
+  constructor(private taskService: TaskService, private authStore: AuthStore,
+              private router: Router) {
     this.loading = true;
     this.taskService.getTask(authStore.getCurrentUser()).subscribe(
       task => this.task = task,
@@ -39,10 +41,11 @@ export class OrderingCancelationComponent implements OnInit {
 
   onSubmit(){
     this.task.products = this.dataSource;
+    console.log('submit')
     this.taskService.fulfillTask(this.task).subscribe(
-      value => console.log(value),
-      error => console.error(error),
-      () => console.log("complete on Submit")
+     value => console.log(value),
+     error => console.error(error),
+     () => this.router.navigate(['sales-optimalization'])
     );
   }
 

@@ -8,16 +8,6 @@
   margin-right: 50%;
 }
 
-.mat-card{
-  width: 50%;
-  display: block;
-  margin-left:auto;
-  margin-right:auto;
-
-  justify-content: center;
-  align-items: center;
-}
-
 .mat-card-title{
   display:inline-block
 }
@@ -28,6 +18,22 @@
   margin: 10px
 }
 
+.mat-card{
+  width: 80%;
+  display: block;
+  margin-left:auto;
+  margin-right:auto;
+
+  justify-content: center;
+  align-items: center;
+}
+
+.login_wrapper{
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 .table_input{
   border-style: solid;
@@ -39,15 +45,4 @@
 .content-table{
   max-height: 800px;
   overflow: auto;
-}
-
-.mat-checkbox{
-  margin-left: 25px;
-  margin-right: 25px;
-
-}
-
-.align-right{
-  display: flex;
-  justify-content: flex-end;
 }

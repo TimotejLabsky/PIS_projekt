@@ -4,6 +4,8 @@ import {Observable} from "rxjs";
 import {TaskService} from "../../../services/task.service";
 import {AuthStore} from "../../../store/auth.store";
 import { Task } from 'src/app/model/task-model';
+import {Router} from "@angular/router";
+import {TaskStore} from "../../../store/task.store";
 
 @Component({
   selector: 'app-price-update',
@@ -20,16 +22,23 @@ export class PriceUpdateComponent implements OnInit {
   //TODO date from to
   actual_season: any = "20.20.2020-25.20.2020";
 
-  constructor(private taskService: TaskService, private authStore: AuthStore) {
+  constructor(private taskService: TaskService, private authStore: AuthStore,
+              private router: Router, private taskStore: TaskStore) {
+
     this.loading = true;
-    this.taskService.getTask(authStore.getCurrentUser()).subscribe(
+    this.initComplete(this.taskStore.getTask());
+
+
+    /*this.taskService.getTask(authStore.getCurrentUser()).subscribe(
       task => this.task = task,
       err => console.error(err),
       () => this.initComplete()
-    );
+    );*/
+
   }
 
-  private initComplete(){
+  private initComplete(task: Task){
+    this.task = task;
     this.dataSource = this.task.products;
     this.loading = false;
   }
@@ -39,6 +48,11 @@ export class PriceUpdateComponent implements OnInit {
 
   onSubmit(){
     this.task.products = this.dataSource;
-    this.taskService.fulfillTask(this.task);
+    console.log('submit')
+    this.taskService.fulfillTask(this.task).subscribe(
+      value => console.log(value),
+      error => console.error(error),
+      () => this.router.navigate(['sales-optimalization'])
+    );
   }
 }

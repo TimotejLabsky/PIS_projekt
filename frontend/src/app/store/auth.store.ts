@@ -16,10 +16,13 @@ export class AuthStore {
     this.$currentUser = this._currentUserSubject.asObservable();
   }
 
-  public login(userName: string, password: string) {
-    this.authenticationService.authenticate(userName, password).subscribe(
+  public login(userName: string, password: string): Observable<User> {
+    let request: Observable<User> = this.authenticationService.authenticate(userName, password);
+    request.subscribe(
       user => this.setUser(user),
-    );
+      err => this.setUser(null)
+    )
+    return request
   }
 
   private setUser(user: User){

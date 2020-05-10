@@ -14,8 +14,7 @@ using Pis.Projekt.Framework.Repositories;
 
 namespace Pis.Projekt.Domain.Repositories.Impl
 {
-    public class SalesAggregateRepository :
-        AbstractEFRepository<SalesDbContext, Guid, SalesAggregateEntity>, ISalesAggregateRepository,
+    public class SalesAggregateRepository : AbstractEFRepository<SalesDbContext, Guid, SalesAggregateEntity>, ISalesAggregateRepository,
         IDisposable
     {
         public SalesAggregateRepository(IServiceScopeFactory scopeFactory, IMapper mapper) : base(scopeFactory)

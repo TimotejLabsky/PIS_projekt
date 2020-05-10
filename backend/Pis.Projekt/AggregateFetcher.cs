@@ -53,6 +53,12 @@ namespace Pis.Projekt
             }
             return (date - firstMonthMonday).Days / 7 + 1;
         }
+        public async Task<Season> FetchSeasonAsync(DateTime currentDate, ISeasonRepository repository)
+        {
+            var season = await repository.FetchSeason(currentDate).ConfigureAwait(false);
+            return season;
+        }
+
         private readonly ILogger<AggregateFetcher> _logger;
         private readonly IMapper _mapper;
     }

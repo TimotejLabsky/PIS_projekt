@@ -29,6 +29,9 @@ namespace Pis.Projekt.Domain.Database
         [Column("currency")]
         [MaxLength(3)]
         public string Currency => "EUR";
+        
+        [Column("created_on")]
+        public DateTime CreatedOn { get; set; }
 
     }
 }

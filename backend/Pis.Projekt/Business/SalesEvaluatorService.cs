@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.Logging;
+using Pis.Projekt.Domain.Database;
 using Pis.Projekt.Domain.DTOs;
 
 namespace Pis.Projekt.Business
@@ -63,6 +65,41 @@ namespace Pis.Projekt.Business
                 DecreasedSales = decreasedSales,
                 SameSales = sameSales
             };
+        }
+
+        public SeasonEvaluationResult EvaluateSeasonSales(IEnumerable<SeasonPricedProduct> allProducts)
+        {
+            var decreasedSales = new List<SeasonTaskProduct>();
+            var sameSales = new List<SeasonPricedProduct>();
+            foreach (var product in allProducts)
+            {
+                if (product.SaleCoefficient <= new decimal(0.8))
+                {
+                    decreasedSales.Add(
+
+                        new SeasonTaskProduct
+                        {
+                            Id = product.Id,
+                            PricedProductEntity = product.PricedProductEntity,
+                            SaleCoefficient = product.SaleCoefficient,
+                            SeasonId = product.SeasonId,
+                            //SoldAmount = product.PricedProductEntity
+                            //SoldAmount = salesAggregate.SoldAmount
+                        }
+                    );
+                }
+                else
+                {
+                    sameSales.Add(product);
+                }
+            }
+
+            return new SeasonEvaluationResult
+            {
+                DecreasedSales = decreasedSales,
+                OtherSales = sameSales
+            };
+
         }
 
         private readonly ILogger<SalesEvaluatorService> _logger;

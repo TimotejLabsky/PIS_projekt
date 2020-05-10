@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import {Product} from "../../../model/product-model";
-import {Observable} from "rxjs";
 import {TaskService} from "../../../services/task.service";
 import {AuthStore} from "../../../store/auth.store";
 import { Task } from 'src/app/model/task-model';
-import {TaskLogger} from "protractor/built/taskLogger";
 import {Route, Router} from "@angular/router";
 import {SelectionModel} from "@angular/cdk/collections";
+import {TaskStore} from "../../../store/task.store";
 
 @Component({
   selector: 'app-ordering-cancelation',
@@ -19,22 +18,19 @@ export class OrderingCancelationComponent implements OnInit {
   actual_season: any = "20.20.2020-25.20.2020";
 
   selection = new SelectionModel<Product>(true, []);
+  loading: boolean;
 
   private task: Task;
   dataSource: Product[];
-  loading: boolean;
 
-  constructor(private taskService: TaskService, private authStore: AuthStore,
-              private router: Router) {
+  constructor(private authStore: AuthStore, private taskStore: TaskStore,
+              private router: Router, private taskService: TaskService) {
     this.loading = true;
-    this.taskService.getTask(authStore.getCurrentUser()).subscribe(
-      task => this.task = task,
-      err => console.error(err),
-      () => this.initComplete()
-    );
+    this.initComplete(this.taskStore.getTask());
   }
 
-  private initComplete(){
+  private initComplete(task: Task){
+    this.task = task;
     this.dataSource = this.task.products;
     this.loading = false;
   }

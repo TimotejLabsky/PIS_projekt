@@ -22,6 +22,7 @@ namespace Pis.Projekt.Business.Scheduling
         }
 
         public Guid Id { get; }
+        public int TaskId { get; }
         public IEnumerable<TaskProduct> Products { get; set; }
         public DateTime ScheduledOn { get; set; }
         public string Name { get; set; }

@@ -60,6 +60,22 @@ namespace Pis.Projekt.Domain.Repositories.Impl
                 .ConfigureAwait(false);
         }
 
+        public override async Task<PricedProductEntity> CreateAsync(PricedProductEntity entity, CancellationToken token = default)
+        {
+            if (DbContext.Exists(entity))
+            {
+                // when entity exist in database context, there is nothing to create...
+                throw new InvalidOperationException("Entity already exists in database context.");
+            }
+
+            DbContext.PricedProducts.Add(entity);
+            // use the following statement so that City won't be inserted
+            DbContext.Entry(entity.Product).State = EntityState.Unchanged;
+            DbContext.SaveChanges();
+            await Task.CompletedTask;
+            return entity;
+        }
+
         private readonly WeekCounter _counter;
 
         public override Task<PricedProductEntity> FindAsync(Guid id, CancellationToken token = default)

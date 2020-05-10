@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FiitEmailService;
 using Microsoft.Extensions.Logging;
@@ -32,20 +33,16 @@ namespace Pis.Projekt.Framework.Email.Impl
         {
             email ??= _configuration.DefaultToAddress;
 
-#if DEBUG
             _logger.LogDevelopment(
                 $"Email sent. Subject: {subject}, To: {email}, Message: {message}");
-            await Task.CompletedTask;
-#else
-             var response = await _client.notifyAsync(TeamId, Password, email, subject, message)
-                 .ConfigureAwait(false);
-            
-             if (!response.success)
-             {
-                 throw new InvalidOperationException(
-                     $"Email {subject} could not be sent to {email}");
-             }
-#endif
+            var response = await _client.notifyAsync(TeamId, Password, email, subject, message)
+                .ConfigureAwait(false);
+
+            if (!response.success)
+            {
+                throw new InvalidOperationException(
+                    $"Email {subject} could not be sent to {email}");
+            }
         }
 
         private string TeamId => _wsdlConfiguration.TeamId;

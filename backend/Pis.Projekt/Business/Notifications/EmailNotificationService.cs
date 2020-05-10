@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pis.Projekt.Business.Notifications.Domain;
 using Pis.Projekt.Business.Notifications.Domain.Impl;
 using Pis.Projekt.Business.Validation;
+using Pis.Projekt.Domain.DTOs;
 
 namespace Pis.Projekt.Business.Notifications
 {
@@ -16,15 +18,17 @@ namespace Pis.Projekt.Business.Notifications
                 userTaskNotificationConfiguration,
             IOptions<NotificationConfiguration<OptimizationFinishedNotification>>
                 optimizationFinishedNotificationConfiguration,
-            IOptions<NotificationConfiguration<OptimizationBegunNotification>> optimizationBegunNotificationConfiguration)
+            IOptions<NotificationConfiguration<OptimizationBegunNotification>>
+                optimizationBegunNotificationConfiguration)
 
         {
             _client = client;
             _logger = logger;
             _userTaskNotificationConfiguration = userTaskNotificationConfiguration;
-            _OptimizationFinishedNotificationConfiguration =
+            _optimizationFinishedNotificationConfiguration =
                 optimizationFinishedNotificationConfiguration;
-            _OptimizationBegunNotificationConfiguration = optimizationBegunNotificationConfiguration;
+            _optimizationBegunNotificationConfiguration =
+                optimizationBegunNotificationConfiguration;
         }
 
         public async Task NotifyAsync<TContent>(IEmailNotification notification)
@@ -33,18 +37,20 @@ namespace Pis.Projekt.Business.Notifications
             await _client.NotifyAsync<TContent>(notification);
         }
 
-        public async Task NotifyOptimizationFinishedAsync(DateTime nextOptimalizationOn)
+        public async Task NotifyOptimizationFinishedAsync(
+            IEnumerable<PricedProduct> modifiedProducts)
         {
             _logger.LogDebug("Notifying about the finished of the optimization");
             await NotifyAsync<OptimizationFinishedNotification>(
-                new OptimizationFinishedNotification(nextOptimalizationOn, _OptimizationFinishedNotificationConfiguration));
+                new OptimizationFinishedNotification(modifiedProducts,
+                    _optimizationFinishedNotificationConfiguration));
         }
 
         public async Task NotifyOptimizationBegunAsync()
         {
             _logger.LogDebug("Notifying about the beginning of the optimization");
             await NotifyAsync<OptimizationBegunNotification>(
-                new OptimizationBegunNotification(_OptimizationBegunNotificationConfiguration));
+                new OptimizationBegunNotification(_optimizationBegunNotificationConfiguration));
         }
 
         public async Task NotifyUserTaskCreatedAsync()
@@ -54,9 +60,10 @@ namespace Pis.Projekt.Business.Notifications
         }
 
         private readonly IOptions<NotificationConfiguration<OptimizationFinishedNotification>>
-            _OptimizationFinishedNotificationConfiguration;
+            _optimizationFinishedNotificationConfiguration;
+
         private readonly IOptions<NotificationConfiguration<OptimizationBegunNotification>>
-            _OptimizationBegunNotificationConfiguration;
+            _optimizationBegunNotificationConfiguration;
 
         private readonly IOptions<NotificationConfiguration<UserTaskRequiredNotification>>
             _userTaskNotificationConfiguration;

@@ -61,11 +61,10 @@ namespace Pis.Projekt.Business
             var newPriceList = increasedList.Concat(decreasedList).ToList();
             var merged = newPriceList.Concat(evaluationResult.SameSales);
             
-            _logger.LogBusinessCase("Persisting new data to storage");
             await productPersistence.PersistProductsAsync(merged, token)
                 .ConfigureAwait(false);
             _logger.LogBusinessCase("Sending notification about finished optimization");
-            await _notificationService.NotifyOptimizationFinishedAsync(DateTime.Now)
+            await _notificationService.NotifyOptimizationFinishedAsync(merged)
                 .ConfigureAwait(false);
         }
 

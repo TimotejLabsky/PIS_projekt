@@ -144,22 +144,15 @@ namespace Pis.Projekt.Business
             _logger.LogTrace(
                 $"Creating user task with {typeof(TaskListPortTypeClient)}");
 
-#if DEBUG
-            _logger.LogDevelopment($"Task: {taskName} added to Task List Service");
-#else
-            //TODO: make this format beautiful
-            var response = await _wsdlTaskList.createTaskAsync(_wsdlConfiguration.TeamId,
-                _wsdlConfiguration.Password,
-                "", true,
-                nameof(ProductSalesDecreasedTask), "descr", DateTime.Now);
-#endif
+            _logger.LogDebug($"Task: {taskName} added to Task List Service");
             var task = new ScheduledTask(Guid.NewGuid(), products, DateTime.Now, taskName);
             task.OnTaskFulfilled += TaskFulfilled;
             task.OnTaskFailed += TaskFailed;
             _logger.LogDevelopment($"Test: Scheduling user evaluation task {task.Id}");
             await _cronScheduler.ScheduleUserTaskTimeoutJob(task).ConfigureAwait(false);
-            _taskCollection.Push(task);
-            await _taskClient.SendAsync(task);
+            var taskID = await _taskClient.SendAsync(task);
+            _taskCollection.Push(task, taskID);
+
             _logger.LogDebug($"{nameof(DecreasedSalesHandler)} is waiting either " +
                              $"on user to fulfil task or on timeout");
             // wait on user result or timeout

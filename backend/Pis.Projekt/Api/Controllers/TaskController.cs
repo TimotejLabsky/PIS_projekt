@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Pis.Projekt.Api.Requests;
 using Pis.Projekt.Api.Responses;
 using Pis.Projekt.Business;
+using Pis.Projekt.Business.Scheduling;
 using Pis.Projekt.Domain.DTOs;
 
 namespace Pis.Projekt.Api.Controllers
@@ -18,11 +18,13 @@ namespace Pis.Projekt.Api.Controllers
     {
         public TaskController(UserTaskCollectionService taskCollection,
             ILogger<TaskController> logger,
-            IMapper mapper)
+            IMapper mapper,
+            ITaskClient client)
         {
             _taskCollection = taskCollection;
             _logger = logger;
             _mapper = mapper;
+            _client = client;
         }
 
         [HttpPost("fulfill")]
@@ -33,8 +35,9 @@ namespace Pis.Projekt.Api.Controllers
             {
                 var task = _taskCollection.Find(request.Id);
                 var taskProducts = request.Products.Select(p => _mapper.Map<TaskProduct>(p));
-                task.Fulfill(taskProducts);
+                task.Key.Fulfill(taskProducts);
                 _taskCollection.Fulfill(request.Id);
+                await _client.SetCompleteAsync(task.Value).ConfigureAwait(false);
                 return Ok();
             }
             catch (InvalidOperationException e)
@@ -69,6 +72,7 @@ namespace Pis.Projekt.Api.Controllers
 
         private readonly UserTaskCollectionService _taskCollection;
         private readonly ILogger<TaskController> _logger;
+        private readonly ITaskClient _client;
         private readonly IMapper _mapper;
     }
 }

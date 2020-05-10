@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Pis.Projekt.Domain.Database;
 using Pis.Projekt.Domain.DTOs;
@@ -29,67 +27,55 @@ namespace Pis.Projekt.Business
         public async Task PersistProductsAsync(IEnumerable<PricedProduct> modifiedProducts,
             CancellationToken token = default)
         {
-            var transaction = (IDbContextTransaction) await _pricedRepository
-                .BeginTransactionAsync(token)
-                .ConfigureAwait(false);
+            _logger.LogBusinessCase(BusinessTasks.PersistenceTask,
+                "Persisting new data to storage");
+            _logger.LogInput(BusinessTasks.PersistenceTask, "Zoznam produktov so zmenenou cenou",
+                modifiedProducts);
+            _logger.LogInput(BusinessTasks.PersistenceTask, "úložisko produktov",
+                _pricedRepository);
 
             var currentWeek = _weekCounter.Current();
-            try
-            {
-                var existingPricedProducts = (await _pricedRepository
-                    .ListAsync(s =>
-                        s.SalesWeek == currentWeek, token: token)).ToList();
-                if (!existingPricedProducts.Any())
-                {
-                    _logger.LogDebug($"Persisting process of {nameof(PricedProductEntity)} " +
-                                     $"for week {currentWeek} started");
-                    foreach (var modified in modifiedProducts)
-                    {
-                        var productEntity = _mapper.Map<ProductEntity>(modified.Product);
-                        var existingPricedProduct = new PricedProductEntity
-                        {
-                            SalesWeek = 0,
-                            Price = modified.Price,
-                            Product = productEntity,
-                            ProductGuid = productEntity.Id
-                        };
 
-                        await _pricedRepository.CreateAsync(existingPricedProduct, token)
-                            .ConfigureAwait(false);
-                        _logger.LogDebug($"{nameof(PricedProductEntity)} " +
-                                         $"with Id: {existingPricedProduct.Id} " +
-                                         $"for week {currentWeek} was stored " +
-                                         "in Database successfully", existingPricedProduct);
-                    }
-                }
-                else
+            var existingPricedProducts = (await _pricedRepository
+                .ListAsync(s =>
+                    s.SalesWeek == currentWeek, token: token)).ToList();
+            if (!existingPricedProducts.Any())
+            {
+                _logger.LogDebug($"Persisting process of {nameof(PricedProductEntity)} " +
+                                 $"for week {currentWeek} started");
+                foreach (var modified in modifiedProducts)
                 {
-                    foreach (var existingPricedProduct in existingPricedProducts)
+                    var productEntity = _mapper.Map<ProductEntity>(modified.Product);
+                    var existingPricedProduct = new PricedProductEntity
                     {
-                        await _pricedRepository.RemoveAsync(existingPricedProduct.Id, token)
-                            .ConfigureAwait(false);
-                        _logger.LogDebug($"Removing existing {nameof(PricedProductEntity)} " +
-                                         $"with Id: {existingPricedProduct.Id} from week {currentWeek}",
-                            existingPricedProduct);
-                    }
-                }
+                        SalesWeek = 0,
+                        Price = modified.Price,
+                        Product = productEntity,
+                        ProductGuid = productEntity.Id
+                    };
 
-                await transaction.CommitAsync(token).ConfigureAwait(false);
-                _logger.LogInformation(
-                    $"{nameof(PricedProductEntity)} has been stored in database for week {currentWeek}");
+                    await _pricedRepository.CreateAsync(existingPricedProduct, token)
+                        .ConfigureAwait(false);
+                    _logger.LogDebug($"{nameof(PricedProductEntity)} " +
+                                     $"with Id: {existingPricedProduct.Id} " +
+                                     $"for week {currentWeek} was stored " +
+                                     "in Database successfully", existingPricedProduct);
+                }
             }
-            catch (Exception e)
+            else
             {
-                _logger.LogError(
-                    $"Database Transaction failed on operation {nameof(PersistProductsAsync)}", e);
-                await transaction.RollbackAsync(token).ConfigureAwait(false);
-                _logger.LogError($"Transaction rollback of {nameof(PersistProductsAsync)} " +
-                                 "was successful");
+                foreach (var existingPricedProduct in existingPricedProducts)
+                {
+                    await _pricedRepository.RemoveAsync(existingPricedProduct.Id, token)
+                        .ConfigureAwait(false);
+                    _logger.LogDebug($"Removing existing {nameof(PricedProductEntity)} " +
+                                     $"with Id: {existingPricedProduct.Id} from week {currentWeek}",
+                        existingPricedProduct);
+                }
             }
-            finally
-            {
-                transaction.Dispose();
-            }
+
+            _logger.LogInformation(
+                $"{nameof(PricedProductEntity)} has been stored in database for week {currentWeek}");
         }
 
         private readonly ILogger<ProductPersistenceService> _logger;

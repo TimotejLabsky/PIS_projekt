@@ -1,9 +1,11 @@
+using System;
+using System.Globalization;
+using System.Threading.Tasks;
 using FiitTaskList;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Pis.Projekt.Framework;
-using Pis.Projekt.System;
 using Task = System.Threading.Tasks.Task;
 
 namespace Pis.Projekt.Business.Scheduling
@@ -19,23 +21,17 @@ namespace Pis.Projekt.Business.Scheduling
             _logger = logger;
         }
 
-        public async Task SendAsync(ScheduledTask scheduledTask)
+        public async Task<int> SendAsync(ScheduledTask scheduledTask)
         {
             var serializedTask = JsonConvert.SerializeObject(scheduledTask, Formatting.Indented);
             _logger.LogDebug($"Sending scheduled task to Task List {serializedTask}");
-#if DEBUG
-            _logger.LogDevelopment("Task sent to WsdlTaskService. " +
-                                   $"Name: {scheduledTask.Name}, " +
-                                   $"ScheduledOn: {scheduledTask.ScheduledOn}", scheduledTask);
-            await Task.CompletedTask;
-#else
-            // await _client.createTaskAsync(_configuration.TeamId, _configuration.Password,
-            //     nameof(WsdlTaskClient), true, scheduledTask.Name, serializedTask,
-            //     // TODO: this probably should be due date
-            //     scheduledTask.ScheduledOn);
-#endif
+            var response = await _client.createTaskAsync(_configuration.TeamId,
+                _configuration.Password,
+                nameof(WsdlTaskClient), true, scheduledTask.Name, serializedTask,
+                DateTime.ParseExact(scheduledTask.ScheduledOn.ToString("yyyy-MM-dd HH:mm:ss"),
+                    "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
+            return response.task_id;
         }
-
 
         // ReSharper disable once NotAccessedField.Local - Used for production
         private readonly WsdlConfiguration<WsdlTaskClient> _configuration;
@@ -43,5 +39,11 @@ namespace Pis.Projekt.Business.Scheduling
         // ReSharper disable once NotAccessedField.Local - Used for production
         private readonly TaskListPortTypeClient _client;
         private readonly ILogger<WsdlTaskClient> _logger;
+
+        public async Task SetCompleteAsync(int id)
+        {
+            await _client.setCompletenessAsync(id, _configuration.TeamId, _configuration.Password,
+                1).ConfigureAwait(false);
+        }
     }
 }

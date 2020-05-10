@@ -35,15 +35,16 @@ namespace Pis.Projekt.Domain.Database.Contexts
                 .HasOne(o => o.Product)
                 .WithMany()
                 .HasForeignKey(k => k.ProductGuid);
+            
             modelBuilder.Entity<SalesAggregateEntity>()
                 .HasOne(o => o.Product)
                 .WithMany()
                 .HasForeignKey(k => k.ProductGuid);
+            
         }
 
         private void ConfigureConsistency(ModelBuilder modelBuilder)
         {
-            // TODO
         }
 
         public DbSet<PricedProductEntity> PricedProducts { get; set; }

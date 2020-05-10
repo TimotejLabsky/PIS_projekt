@@ -20,7 +20,7 @@ namespace Pis.Projekt.Business
         {
             _logger.LogBusinessCase(BusinessTasks.WaitingTask);
             _token = new CancellationToken();
-            var hoursToWait = TimeSpan.FromHours(_configuration.WaitingHrsPeriod);
+            var hoursToWait = TimeSpan.FromMinutes(_configuration.WaitingHrsPeriod);
             await Task.Delay(hoursToWait, _token.Value)
                 .ContinueWith(OnWaitingEnded);
         }

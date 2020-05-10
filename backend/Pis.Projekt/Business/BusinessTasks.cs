@@ -20,5 +20,6 @@ namespace Pis.Projekt.Business
         public const string SendOrder = "Objednanie produktov";
         public const string DecreasedSaleOfAtLeastOneProduct =
             "Znížil sa predaj aspoň jedného produktu?";
+        public const string PersistenceTask = "Zmena cien v centrálnom systéme";
     }
 }

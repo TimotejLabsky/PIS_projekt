@@ -8,7 +8,7 @@ namespace Pis.Projekt.Api.Requests
     public class TaskFulfillRequest
     {
         [JsonProperty("guid")]
-        public Guid Id { get; }
+        public Guid Id { get; set; }
 
         [JsonProperty("taskType")]
         public string Name { get; set; }

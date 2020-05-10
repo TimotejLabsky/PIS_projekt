@@ -4,10 +4,11 @@ using Newtonsoft.Json;
 
 namespace Pis.Projekt.Api.Responses
 {
+    [JsonObject]
     public class NextTaskResponse
     {
         [JsonProperty("guid")]
-        public Guid Id { get; }
+        public Guid Id { get; set; }
 
         [JsonProperty("taskType")]
         public string Name { get; set; }

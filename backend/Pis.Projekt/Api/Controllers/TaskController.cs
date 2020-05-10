@@ -39,7 +39,7 @@ namespace Pis.Projekt.Api.Controllers
             }
             catch (InvalidOperationException e)
             {
-                _logger.LogError($"Unable to fulfill task {request.Id}: {request.Name}", e);
+                _logger.LogError($"Unable to fulfill task {request.Id}: {request.Name}. Failed on: {e}");
                 return NoContent();
             }
         }
@@ -49,8 +49,9 @@ namespace Pis.Projekt.Api.Controllers
         {
             try
             {
-                var task = _mapper.Map<NextTaskResponse>(_taskCollection.GetNext());
-                return Ok(task);
+                var next = _taskCollection.GetNext();
+                var responseTask = _mapper.Map<NextTaskResponse>(next);
+                return Ok(responseTask);
             }
             catch (InvalidOperationException e)
             {

@@ -1,10 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Product} from "../../model/product-model";
+import {Product} from "../../../model/product-model";
 import {Observable} from "rxjs";
 import {map} from 'rxjs/operators';
 import { MatTableDataSource } from "@angular/material/table";
-import {TaskService} from "../../services/task.service";
-import {AuthStore} from "../../store/auth.store";
+import {TaskService} from "../../../services/task.service";
+import {AuthStore} from "../../../store/auth.store";
 
 @Component({
   selector: 'app-advertisement-picking',

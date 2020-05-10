@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Pis.Projekt.Domain.DTOs;
 
 namespace Pis.Projekt.Business
 {
@@ -18,10 +19,11 @@ namespace Pis.Projekt.Business
             return Task.CompletedTask;
         }
         
-        // public void SendOrder(ProductOrder order)
-        // {
-            // _logger.LogInformation($"Supplier received order of ptoducts: {order}");
-        // }
+        public Task SendOrder(ProductOrder order)
+        {
+            _logger.LogInformation($"Supplier received order of products: {order}");
+            return Task.CompletedTask;
+        }
 
         private readonly ILogger<SupplierService> _logger;
     }

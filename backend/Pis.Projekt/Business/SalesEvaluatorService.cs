@@ -16,19 +16,22 @@ namespace Pis.Projekt.Business
         {
             _logger.LogBusinessCase(BusinessTasks.SaleEvaluationTask);
             var decreasedSales = new List<PricedProduct>();
-            var increasedSales = new List<PricedProduct>();
+            var increasedSales = new List<KeyValuePair<PricedProduct,int>>();
 
             foreach (var salesAggregate in allProducts)
             {
                 if (salesAggregate.SaleCoefficient >= new decimal(1.1))
                 {
-                    increasedSales.Add(new PricedProduct
-                    {
-                        Id = salesAggregate.ProductGuid,
-                        Price = salesAggregate.Price,
-                        Product = salesAggregate.Product,
-                        SalesWeek = salesAggregate.WeekNumber
-                    });
+                    increasedSales.Add(new KeyValuePair<PricedProduct, int>
+                    (
+                        new PricedProduct
+                        {
+                            Id = salesAggregate.ProductGuid,
+                            Price = salesAggregate.Price,
+                            Product = salesAggregate.Product,
+                            SalesWeek = salesAggregate.WeekNumber
+                        },salesAggregate.SoldAmount
+                    ));
                 }
                 
                 if (salesAggregate.SaleCoefficient <= new decimal(0.8))

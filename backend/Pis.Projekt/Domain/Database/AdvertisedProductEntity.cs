@@ -5,7 +5,6 @@ using Pis.Projekt.Framework.Repositories;
 
 namespace Pis.Projekt.Domain.Database
 {
-    [Table("advertised_products")]
     public class AdvertisedProductEntity : IEntity<Guid>
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

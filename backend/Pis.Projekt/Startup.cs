@@ -80,6 +80,7 @@ namespace Pis.Projekt
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ISeasonRepository, SeasonRepository>();
             services.AddScoped<AdvertisedRepository>();
+            services.AddScoped<SeasonalProductRepository>();
             services.AddScoped<ProductPersistenceService>();
             var dbConnectionString = _configuration.GetValue<string>("Database:ConnectionString");
             services.AddDbContext<SalesDbContext>(c => c.UseSqlServer(dbConnectionString));

@@ -11,8 +11,6 @@ namespace Pis.Projekt.Domain.DTOs
     {
         [JsonProperty("guid")]
         public Guid Guid { get; set; }
-        [JsonProperty("task_type")]
-        public UserTaskType Type { get; set; }
         [JsonProperty("sales")]
         public IEnumerable<SalesAggregate> Sales { get; set; }
         

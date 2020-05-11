@@ -9,6 +9,7 @@ using Pis.Projekt.Business.Notifications;
 using Pis.Projekt.Domain.Database;
 using Pis.Projekt.Domain.DTOs;
 using Pis.Projekt.Domain.Repositories;
+using Pis.Projekt.Domain.Repositories.Impl;
 
 // ReSharper disable All
 
@@ -99,11 +100,12 @@ namespace Pis.Projekt.Business
             //TODO 
             //TODO 
             // notify applied changes... each store
-            
+
             // external call store to check supplies in storage
         }
 
-        private IEnumerable<TaskProduct> DecreaseProductsPrices(IEnumerable<TaskProduct> seasonalProducts)
+        private IEnumerable<TaskProduct> DecreaseProductsPrices(
+            IEnumerable<TaskProduct> seasonalProducts)
         {
             foreach (var product in seasonalProducts)
             {
@@ -116,7 +118,8 @@ namespace Pis.Projekt.Business
         private async Task<IEnumerable<TaskProduct>> pickSeasonProducts(Season season,
             IEnumerable<TaskProduct> allProducts)
         {
-            var result =  await _taskManager.ExecuteUserTask(UserTaskType.IncludeToSeason, allProducts)
+            var result = await _taskManager
+                .ExecuteUserTask(UserTaskType.IncludeToSeason, allProducts)
                 .ConfigureAwait(false);
             return result.Where(s => s.IsSeasonal == true);
         }
@@ -135,16 +138,24 @@ namespace Pis.Projekt.Business
         {
             using var scope = _scopeFactory.CreateScope();
             var repo = scope.ServiceProvider.GetRequiredService<IPricedProductRepository>();
+            var repoSeasonal =
+                scope.ServiceProvider.GetRequiredService<SeasonalProductRepository>();
 
             foreach (var product in seasonalProducts)
             {
+                var guid = Guid.NewGuid();
                 await repo.CreateAsync(new PricedProductEntity
                 {
-                Id = Guid.NewGuid(),
-                Price = product.Price,
-                Product = _mapper.Map<ProductEntity>(product.Product),
-                ProductGuid = product.Product.Id,
-                SalesWeek = ++product.SalesWeek,
+                    Id = guid,
+                    Price = product.Price,
+                    Product = _mapper.Map<ProductEntity>(product.Product),
+                    ProductGuid = product.Product.Id,
+                    SalesWeek = ++product.SalesWeek,
+                }).ConfigureAwait(false);
+
+                await repoSeasonal.CreateAsync(new SeasonalProductEntity
+                {
+                    PricedProductGuid = guid
                 }).ConfigureAwait(false);
             }
         }

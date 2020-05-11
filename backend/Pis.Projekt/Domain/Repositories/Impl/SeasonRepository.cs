@@ -21,11 +21,11 @@ namespace Pis.Projekt.Domain.Repositories.Impl
             _mapper = mapper;
         }
 
-
         public async Task<Season> FetchSeason(DateTime currentDate,
             CancellationToken token = default)
         {
-            var seasons = await ListAsync(p => currentDate.Date.CompareTo(p.StartAt) <0 , null, true, token)
+            var seasons = await ListAsync(p => currentDate.Date.CompareTo(p.StartAt) < 0, null,
+                    true, token)
                 .ConfigureAwait(false);
             return _mapper.Map<Season>(seasons.OrderBy(p => p.StartAt).First());
         }

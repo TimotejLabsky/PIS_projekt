@@ -5,7 +5,6 @@ using Pis.Projekt.Framework.Repositories;
 
 namespace Pis.Projekt.Domain.Database
 {
-    [Table("sales_aggregates")]
     public class SalesAggregateEntity : IEntity<Guid>
     {
         /// <summary>

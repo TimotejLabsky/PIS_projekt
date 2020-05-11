@@ -5,15 +5,13 @@ using Pis.Projekt.Framework.Repositories;
 
 namespace Pis.Projekt.Domain.Database
 {
-    public class ProductEntity: IEntity<Guid>
+    public class SeasonalProductEntity : IEntity<Guid>
     {
-        [Column("id")]
-        [Required]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-        
-        [Column("name")]
-        [Required]
-        [MaxLength(128)]
-        public string Name { get; set; }
+
+        [Column("priced_product_guid")]
+        public Guid PricedProductGuid { get; set; }
     }
 }

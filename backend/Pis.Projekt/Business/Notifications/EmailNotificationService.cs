@@ -70,6 +70,12 @@ namespace Pis.Projekt.Business.Notifications
                 new UpdatedSeasonNotification(pickedProducts, _seasonalConfig));
         }
 
+        public async Task NotifyStoreChangedPrices(string store)
+        {
+            await NotifyAsync<SeasonalPriceChangedNotification>(
+                new SeasonalPriceChangedNotification(store)).ConfigureAwait(false);
+        }
+
         private readonly IOptions<NotificationConfiguration<OptimizationFinishedNotification>>
             _optimizationFinishedNotificationConfiguration;
 
@@ -123,5 +129,21 @@ namespace Pis.Projekt.Business.Notifications
 
         public override string Message => "Prices of seasonal Products were modified\n" +
         $"Products: \n{ProductsJson}";
+    }
+    
+    public class SeasonalPriceChangedNotification : IEmailNotification
+    {
+        public SeasonalPriceChangedNotification(string storeEmail)
+        {
+            NotificationType = "seasonal-prices-changed";
+            ToMailAddress = new MailAddress(storeEmail);
+        }
+
+        public string NotificationType { get; set; }
+        public IEmail Content => this;
+        public MailAddress ToMailAddress { get; }
+        public string Subject => NotificationType;
+
+        public virtual string Message => $"Seasonal Products have new prices";
     }
 }

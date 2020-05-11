@@ -11,5 +11,6 @@ namespace Pis.Projekt.Business.Notifications
         Task NotifyOptimizationBegunAsync();
         Task NotifyUserTaskCreatedAsync();
         Task NotifyUpdatedSeasonPrices(IEnumerable<TaskProduct> pickedProducts);
+        Task NotifyStoreChangedPrices(string store);
     }
 }

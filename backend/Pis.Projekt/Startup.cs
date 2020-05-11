@@ -68,10 +68,12 @@ namespace Pis.Projekt
                 _configuration.GetSection("EntitySeederService"));
             services.Configure<CronSchedulerService.CronSchedulerConfiguration>(
                 _configuration.GetSection("CronSchedulerService"));
-
+            services.Configure<StoreConfiguration>(
+                _configuration.GetSection("Stores"));
             //validation
             services.AddSingleton<EmailValidationService>();
             services.AddSingleton<ConfigEmailValidation>();
+            services.AddSingleton<StoreService>();
 
             // db layer
 

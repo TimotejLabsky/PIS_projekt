@@ -116,8 +116,9 @@ namespace Pis.Projekt.Business
         private async Task<IEnumerable<TaskProduct>> pickSeasonProducts(Season season,
             IEnumerable<TaskProduct> allProducts)
         {
-            return await _taskManager.ExecuteUserTask(UserTaskType.IncludeToSeason, allProducts)
+            var result =  await _taskManager.ExecuteUserTask(UserTaskType.IncludeToSeason, allProducts)
                 .ConfigureAwait(false);
+            return result.Where(s => s.IsSeasonal == true);
         }
 
         private IEnumerable<TaskProduct> AdjustPrices(IEnumerable<TaskProduct> products)

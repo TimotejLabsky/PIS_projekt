@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Pis.Projekt.Business.Calendar;
 using Pis.Projekt.Business.Notifications;
 using Pis.Projekt.Domain.Database;
@@ -25,7 +26,7 @@ namespace Pis.Projekt.Business
             PriceCalculatorService calculatorService,
             IMapper mapper,
             UserTaskManager taskManager,
-            WaiterService waiter)
+            WaiterService waiter, ILogger<SeasonService> logger)
         {
             _calendar = calendar;
             _evaluator = evaluator;
@@ -36,6 +37,7 @@ namespace Pis.Projekt.Business
             _mapper = mapper;
             _taskManager = taskManager;
             _waiter = waiter;
+            _logger = logger;
         }
 
         public async Task Handle()
@@ -45,10 +47,13 @@ namespace Pis.Projekt.Business
                 scope.ServiceProvider.GetRequiredService<ISeasonRepository>();
             var productRepository =
                 scope.ServiceProvider.GetRequiredService<ISalesAggregateRepository>();
+            
             var currentDate = await _calendar.GetCurrentDateAsync().ConfigureAwait(false);
 
             var season = await _fetcher.FetchSeasonAsync(currentDate, seasonRepository);
 
+            _logger.LogBusinessCase(BusinessTasks.FetchAllProducts);
+            _logger.LogInput(BusinessTasks.FetchAllProducts, "Aktualna sezona", season);
             var aggregates = await productRepository.FetchFromLastWeekAsync(0)
                 .ConfigureAwait(false);
             //TODO look at this
@@ -61,24 +66,49 @@ namespace Pis.Projekt.Business
                 IsSeasonal = false,
                 Product = a.Product
             });
+            _logger.LogOutput(BusinessTasks.FetchAllProducts, "Vsetky produkty", allProducts);
+
             // human task for picking new products for this season
+            _logger.LogBusinessCase(BusinessTasks.PickSeasonProducts);
+            _logger.LogInput(BusinessTasks.PickSeasonProducts, "Aktualna sezona", season);
+            _logger.LogInput(BusinessTasks.PickSeasonProducts, "Vsetky produkty", allProducts);
+
             var pickedProducts =
                 await pickSeasonProducts(season, allProducts).ConfigureAwait(false);
-
+            
+            _logger.LogOutput(BusinessTasks.PickSeasonProducts, "Zoznam sezonnych produktov", pickedProducts);
             //lower the prices by 10%
+            
+            _logger.LogBusinessCase(BusinessTasks.AdjustPrices);
+            _logger.LogInput(BusinessTasks.AdjustPrices, "Zoznam sezonnych produktov", pickedProducts);
             pickedProducts = AdjustPrices(pickedProducts);
+            _logger.LogOutput(BusinessTasks.AdjustPrices, "Upraveny zoznam sezonnych produktov", pickedProducts);
 
             //nofify advertisment 
+            _logger.LogBusinessCase(BusinessTasks.NotifyUpdatedSeasonPrices);
+            _logger.LogInput(BusinessTasks.NotifyUpdatedSeasonPrices, "Zoznam sezonnych produktov", pickedProducts);
             await _notificationService.NotifyUpdatedSeasonPrices(pickedProducts);
 
+            _logger.LogBusinessCase(BusinessTasks.EvaluateSeasonSales);
+            _logger.LogInput(BusinessTasks.EvaluateSeasonSales, "Zoznam sezonnych produktov", pickedProducts);
             var result = _evaluator.EvaluateSeasonSales(pickedProducts);
+            _logger.LogOutput(BusinessTasks.EvaluateSeasonSales, "Zoznam produktov so zníženou predajnosťou", result.DecreasedSales);
+            _logger.LogOutput(BusinessTasks.EvaluateSeasonSales, "Ostatne produkty", result.OtherSales);
 
             // Exclusion gate
             var gateProducts = result.OtherSales;
             if (result.DecreasedSales.Any())
             {
+                _logger.LogDecisionBlock("Znizila sa predajnost produktu o viac ako 20%", "Ano");
+
                 // branch Ano
+                _logger.LogBusinessCase(BusinessTasks.DecreaseSeasonalProductsPrices);
+                _logger.LogInput(BusinessTasks.DecreaseSeasonalProductsPrices, "Zoznam sezonnych produktov s predajnostou znizenou o 20%", pickedProducts);
                 var modifiedProducts = DecreaseProductsPrices(pickedProducts);
+                _logger.LogOutput(BusinessTasks.DecreaseSeasonalProductsPrices, "Upraveny zoznam sezonnych produktov s predajnostou znizenou o 20% so znizenou cenou o 50%", pickedProducts);
+
+                _logger.LogBusinessCase(BusinessTasks.NotifyUpdatedSeasonPrices);
+                _logger.LogInput(BusinessTasks.NotifyUpdatedSeasonPrices, "Upraveny zoznam sezonnych produktov s predajnostou znizenou o 20% so znizenou cenou o 50%", pickedProducts);
                 await _notificationService.NotifyUpdatedSeasonPrices(pickedProducts);
                 gateProducts = modifiedProducts;
             }
@@ -169,6 +199,7 @@ namespace Pis.Projekt.Business
         private readonly AggregateFetcher _fetcher;
         private readonly WaiterService _waiter;
         private readonly IMapper _mapper;
+        private readonly ILogger<SeasonService> _logger;
     }
 
     public static class DecimalExtensions

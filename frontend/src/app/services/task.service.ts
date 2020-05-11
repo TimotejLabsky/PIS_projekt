@@ -19,6 +19,7 @@ export class TaskService {
   }
 
   fulfillTask(task: Task): Observable<any>{
+    task.products.forEach(t => console.log(t.new_price));
     return this.httpClient.post<any>(this.endpoint + '/fulfill', task);
   }
 

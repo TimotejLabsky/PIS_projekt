@@ -4,7 +4,6 @@ import {TaskService} from "../../services/task.service";
 import {AuthStore} from "../../store/auth.store";
 import {Task, TaskType} from 'src/app/model/task-model';
 import {TaskStore} from "../../store/task.store";
-import {interval, Subscription} from "rxjs";
 
 @Component({
   selector: 'app-home',

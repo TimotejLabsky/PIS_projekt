@@ -7,6 +7,7 @@ import {AdvertisementPickingComponent} from "./components/BP1/advertisement-pick
 import {AuthGuard} from "./authGuard";
 import {SalesOptimalizationComponent} from "./components/sales-optimalization/sales-optimalization.component";
 import {NoTaskComponent} from "./components/no-task/no-task.component";
+import {IncludeToSeasonComponent} from "./components/BP2/include-to-season/include-to-season.component";
 
 
 const routes: Routes = [
@@ -17,6 +18,7 @@ const routes: Routes = [
       { path: 'price-update', component: PriceUpdateComponent, canActivate: [AuthGuard]},
       { path: 'ordering-cancellation', component: OrderingCancelationComponent, canActivate: [AuthGuard]},
       { path: 'advertisement-picking', component: AdvertisementPickingComponent, canActivate: [AuthGuard]},
+      { path: 'not_implemented_yet', component: IncludeToSeasonComponent, canActivate: [AuthGuard]},
       { path: '**', component: NoTaskComponent, canActivate: [AuthGuard]}
 
     ] },

@@ -55,7 +55,10 @@ namespace Pis.Projekt
         }
         public async Task<Season> FetchSeasonAsync(DateTime currentDate, ISeasonRepository repository)
         {
+            _logger.LogBusinessCase(BusinessTasks.FetchLastSeason);
+            _logger.LogInput(BusinessTasks.FetchLastSeason, "Dnešný dátum", currentDate);
             var season = await repository.FetchSeason(currentDate).ConfigureAwait(false);
+            _logger.LogOutput(BusinessTasks.FetchLastSeason, "Aktualna sezona", season);
             return season;
         }
 

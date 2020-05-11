@@ -71,7 +71,7 @@ namespace Pis.Projekt.Framework.Seed
 
                 for (var i = 0; i < _configuration.SeasonCount; i++)
                 {
-                    var startAt = new DateTime(2010, 1, 1, 0, 0, 0);
+                    var startAt = new DateTime(2019, 1, 1, 0, 0, 0);
                     startAt = startAt.Add(TimeSpan.FromDays(i * 30 * 3));
                     await seasonRepository.CreateAsync(new SeasonEntity
                         {

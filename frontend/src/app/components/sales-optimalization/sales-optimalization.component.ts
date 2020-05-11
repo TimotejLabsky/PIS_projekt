@@ -40,7 +40,6 @@ export class SalesOptimalizationComponent implements OnInit {
     this.loading = false
     try {
       this.router.navigate([task.taskType], {relativeTo: this.activatedRoute});
-
     }catch (e) {
       this.router.navigate([TaskType.nothing], {relativeTo: this.activatedRoute});
 

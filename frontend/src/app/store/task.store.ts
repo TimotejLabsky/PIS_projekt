@@ -24,7 +24,8 @@ export class TaskStore {
   public loadTask(){
     this.taskService.getTask(this.authStore.getCurrentUser()).subscribe(
       task => this._currentTaskSubject.next(task),
-      error => console.error(error)
+      error => console.error(error),
+      () => console.log(this._currentTaskSubject.value)
     )
   }
 }

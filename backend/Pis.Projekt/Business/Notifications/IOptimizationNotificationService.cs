@@ -10,5 +10,6 @@ namespace Pis.Projekt.Business.Notifications
         Task NotifyOptimizationFinishedAsync(IEnumerable<PricedProduct> nextOptimalizationOn);
         Task NotifyOptimizationBegunAsync();
         Task NotifyUserTaskCreatedAsync();
+        Task NotifyUpdatedSeasonPrices(IEnumerable<TaskProduct> pickedProducts);
     }
 }

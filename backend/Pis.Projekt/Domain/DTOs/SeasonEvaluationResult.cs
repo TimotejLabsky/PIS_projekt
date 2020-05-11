@@ -8,7 +8,7 @@ namespace Pis.Projekt.Domain.DTOs
         /// <summary>
         /// List od products where sales DECREASED by 20% or more
         /// </summary>
-        public IEnumerable<SeasonTaskProduct> DecreasedSales { get; set; }
-        public IEnumerable<SeasonPricedProduct> OtherSales { get; set; }
+        public IEnumerable<TaskProduct> DecreasedSales { get; set; }
+        public IEnumerable<TaskProduct> OtherSales { get; set; }
     }
 }

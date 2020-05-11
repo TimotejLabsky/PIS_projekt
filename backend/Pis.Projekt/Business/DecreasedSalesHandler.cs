@@ -24,22 +24,18 @@ namespace Pis.Projekt.Business
     public class DecreasedSalesHandler
     {
         public DecreasedSalesHandler(SupplierService supplier,
-            UserTaskCollectionService taskCollection,
-            ITaskClient taskClient,
-            CronSchedulerService cronScheduler,
             ILogger<DecreasedSalesHandler> logger,
             IOptimizationNotificationService notificationService,
             WsdlCalendarService calendar,
-            IServiceScopeFactory scopeFactory)
+            IServiceScopeFactory scopeFactory,
+            UserTaskManager taskManager)
         {
             _supplier = supplier;
-            _taskCollection = taskCollection;
-            _taskClient = taskClient;
-            _cronScheduler = cronScheduler;
             _logger = logger;
             _notificationService = notificationService;
             _calendar = calendar;
             _scopeFactory = scopeFactory;
+            _taskManager = taskManager;
         }
 
         public async Task<IEnumerable<PricedProduct>> Handle(IEnumerable<TaskProduct> decreasedList)
@@ -87,7 +83,7 @@ namespace Pis.Projekt.Business
             _logger.LogInput(BusinessTasks.SaleDecreaseEvaluationTask,
                 "Produkty so znizenou predajnostou", decreasedList);
             _logger.LogInput(BusinessTasks.SaleDecreaseEvaluationTask, "Dnešný dátum", date);
-            var output = await ExecuteUserTask(UserTaskType.PriceUpdate, decreasedList)
+            var output = await _taskManager.ExecuteUserTask(UserTaskType.PriceUpdate, decreasedList)
                 .ConfigureAwait(false);
             _logger.LogOutput(BusinessTasks.SaleDecreaseEvaluationTask,
                 "Zoznam produktov so zníženou predajnosťou a zmenenými cenami", output);
@@ -101,7 +97,7 @@ namespace Pis.Projekt.Business
             _logger.LogBusinessCase(BusinessTasks.SelectToAdTask);
             _logger.LogInput(BusinessTasks.SelectToAdTask,
                 "Produkty so znizenou predajnostou", updatedList);
-            var output = await ExecuteUserTask(UserTaskType.AdvertisementPicking, updatedList)
+            var output = await _taskManager.ExecuteUserTask(UserTaskType.AdvertisementPicking, updatedList)
                 .ConfigureAwait(false);
             var onlyAdvertised = output.Where(o => o.IsAdvertised);
             _logger.LogOutput(BusinessTasks.SelectToAdTask,
@@ -132,7 +128,7 @@ namespace Pis.Projekt.Business
             _logger.LogBusinessCase(BusinessTasks.EndStockingTask);
             _logger.LogInput(BusinessTasks.EndStockingTask,
                 "Zoznam produktov so zníženou predajnosťou", decreasedProducts);
-            var output = await ExecuteUserTask(UserTaskType.OrderingCancellation, decreasedProducts)
+            var output = await _taskManager.ExecuteUserTask(UserTaskType.OrderingCancellation, decreasedProducts)
                 .ConfigureAwait(false);
             var cancelled = output.Where(s => s.IsCancelled);
 
@@ -144,61 +140,12 @@ namespace Pis.Projekt.Business
             return cancelled;
         }
 
-        private async Task<IEnumerable<TaskProduct>> ExecuteUserTask(string taskName,
-            IEnumerable<TaskProduct> products)
-        {
-            var awaiter = new TaskCompletionSource<IEnumerable<TaskProduct>>();
-
-            async Task TaskFulfilled(ScheduledTaskResult result)
-            {
-                _logger.LogDevelopment($"Task {result.Name} has been fulfilled");
-                awaiter.SetResult(result.Products);
-            }
-
-            async Task TaskFailed(ScheduledTask failedTask)
-            {
-                _logger.LogDevelopment($"Task {failedTask.Name} has failed to be fulfilled");
-                failedTask.IsFailed = true;
-                var ex = new UserTaskNotFulfilledException(failedTask);
-                awaiter.SetException(ex);
-                throw ex;
-            }
-
-            _logger.LogTrace(
-                $"Creating user task with {typeof(TaskListPortTypeClient)}");
-
-            _logger.LogDebug($"Task: {taskName} added to Task List Service");
-            var task = new ScheduledTask(Guid.NewGuid(), products, DateTime.Now, taskName);
-            task.OnTaskFulfilled += TaskFulfilled;
-            task.OnTaskFailed += TaskFailed;
-            _logger.LogDevelopment($"Test: Scheduling user evaluation task {task.Id}");
-            await _cronScheduler.ScheduleUserTaskTimeoutJob(task).ConfigureAwait(false);
-            var taskID = await _taskClient.SendAsync(task);
-            _taskCollection.Push(task, taskID);
-
-            _logger.LogDebug($"{nameof(DecreasedSalesHandler)} is waiting either " +
-                             $"on user to fulfil task or on timeout");
-            // wait on user result or timeout
-            var result =  awaiter.Task.ContinueWith(t =>
-            {
-                if (t.IsFaulted)
-                {
-                    throw t.Exception;
-                }
-                
-                return t.Result; 
-            }).Result;
-            return result;
-        }
-
         private readonly IOptimizationNotificationService _notificationService;
-        private readonly UserTaskCollectionService _taskCollection;
         private readonly ILogger<DecreasedSalesHandler> _logger;
-        private readonly CronSchedulerService _cronScheduler;
-        private readonly WsdlCalendarService _calendar;
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly WsdlCalendarService _calendar;
+        private readonly UserTaskManager _taskManager;
         private readonly SupplierService _supplier;
-        private readonly ITaskClient _taskClient;
     }
 
     public class UserTaskNotFulfilledException : Exception

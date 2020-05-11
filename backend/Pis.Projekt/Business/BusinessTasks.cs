@@ -21,5 +21,6 @@ namespace Pis.Projekt.Business
         public const string DecreasedSaleOfAtLeastOneProduct =
             "Znížil sa predaj aspoň jedného produktu?";
         public const string PersistenceTask = "Zmena cien v centrálnom systéme";
+        public const string WaitingTaskSeasonStart = "Zaciatok sezony";
     }
 }

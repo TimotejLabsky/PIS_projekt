@@ -20,10 +20,23 @@ namespace Pis.Projekt.Business
         {
             _logger.LogBusinessCase(BusinessTasks.WaitingTask);
             _token = new CancellationToken();
+            // TODO: Production change to .From Hours(..)
             var hoursToWait = TimeSpan.FromMinutes(_configuration.WaitingHrsPeriod);
             await Task.Delay(hoursToWait, _token.Value)
                 .ContinueWith(OnWaitingEnded);
         }
+        
+        
+        public async Task WaitSeasonStartAsync()
+        {
+            _logger.LogBusinessCase(BusinessTasks.WaitingTaskSeasonStart);
+            _token = new CancellationToken();
+            // TODO: Production change to .From Hours(..)
+            var hoursToWait = TimeSpan.FromMinutes(_configuration.SeasonStartWaitingHrs);
+            await Task.Delay(hoursToWait, _token.Value)
+                .ContinueWith(OnWaitingEnded);
+        }
+        
 
         public void Abort()
         {
@@ -44,6 +57,7 @@ namespace Pis.Projekt.Business
         public class WaiterConfiguration
         {
             public int WaitingHrsPeriod { get; set; }
+            public int SeasonStartWaitingHrs { get; set; }
         }
     }
 }

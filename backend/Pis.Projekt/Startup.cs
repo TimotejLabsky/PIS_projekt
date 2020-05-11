@@ -62,6 +62,8 @@ namespace Pis.Projekt
                 _configuration.GetSection("NotificationService:OptimizationBegunNotification"));
             services.Configure<NotificationConfiguration<OptimizationFinishedNotification>>(
                 _configuration.GetSection("NotificationService:OptimizationFinishedNotification"));
+            services.Configure<NotificationConfiguration<SeasonProductsPickedNotification>>(
+                _configuration.GetSection("NotificationService:SeasonProductsPickedNotification"));
             services.Configure<EntitySeederConfiguration>(
                 _configuration.GetSection("EntitySeederService"));
             services.Configure<CronSchedulerService.CronSchedulerConfiguration>(
@@ -72,10 +74,11 @@ namespace Pis.Projekt
             services.AddSingleton<ConfigEmailValidation>();
 
             // db layer
-            
+
             services.AddScoped<ISalesAggregateRepository, SalesAggregateRepository>();
             services.AddScoped<IPricedProductRepository, PricedProductRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ISeasonRepository, SeasonRepository>();
             services.AddScoped<AdvertisedRepository>();
             services.AddScoped<ProductPersistenceService>();
             var dbConnectionString = _configuration.GetValue<string>("Database:ConnectionString");
@@ -94,15 +97,16 @@ namespace Pis.Projekt
             services.AddSingleton<AuthorizationService>();
 
             // business case
+            services.AddScoped<WaiterService>();
             services.AddSingleton<SalesEvaluatorService>();
             services.AddSingleton<WeekCounter>();
-            services.AddSingleton<WaiterService>();
             services.AddSingleton<AggregateFetcher>();
             services.AddSingleton<DecreasedSalesHandler>();
             services.AddSingleton<IncreasedSalesHandler>();
             services.AddSingleton<PriceCalculatorService>();
             services.AddSingleton<UserTaskCollectionService>();
             services.AddSingleton<SalesOptimalizationService>();
+            services.AddScoped<SeasonService>();
 
             // scheduling
             services.AddSingleton<CronSchedulerService>();
@@ -113,6 +117,7 @@ namespace Pis.Projekt
             services.AddSingleton<SupplierService>();
 
             // WSDL adapters
+            services.AddSingleton<UserTaskManager>();
             services.AddSingleton<ITaskClient, WsdlTaskClient>();
             services.AddSingleton<WsdlCalendarService>();
             services.AddSingleton<SmtpClient>();

@@ -192,7 +192,7 @@ namespace Pis.Projekt
             app.ApplicationServices.GetRequiredService<EntitySeeder>().Seed().Wait();
             var scheduler = app.ApplicationServices.GetRequiredService<CronSchedulerService>();
             scheduler.StartAsync(default).Wait();
-            // scheduler.ScheduleNextOptimalizationTask().Wait();
+            scheduler.ScheduleOptimalizationTask().Wait();
         }
 
         private readonly IConfiguration _configuration;

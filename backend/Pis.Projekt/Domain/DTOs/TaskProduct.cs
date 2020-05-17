@@ -6,5 +6,6 @@ namespace Pis.Projekt.Domain.DTOs
         public decimal SaleCoefficient { get; set; }
         public bool IsAdvertised { get; set; }
         public bool IsCancelled { get; set; }
+        public bool IsSeasonal { get; set; }
     }
 }

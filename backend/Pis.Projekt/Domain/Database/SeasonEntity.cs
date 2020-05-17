@@ -4,7 +4,6 @@ using Pis.Projekt.Framework.Repositories;
 
 namespace Pis.Projekt.Domain.Database
 {
-    [Table("seasons")]
     public class SeasonEntity : IEntity<Guid>
     {
         [Column("id")]

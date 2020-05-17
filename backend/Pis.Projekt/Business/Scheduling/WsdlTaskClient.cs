@@ -24,13 +24,18 @@ namespace Pis.Projekt.Business.Scheduling
         public async Task<int> SendAsync(ScheduledTask scheduledTask)
         {
             var serializedTask = JsonConvert.SerializeObject(scheduledTask, Formatting.Indented);
-            _logger.LogDebug($"Sending scheduled task to Task List {serializedTask}");
+            _logger.LogBusinessCase("WSDL TaskListService task added",
+                $"Sending scheduled task to Task List {serializedTask}");
+#if DEBUG
+            return 12;
+#else
             var response = await _client.createTaskAsync(_configuration.TeamId,
                 _configuration.Password,
                 nameof(WsdlTaskClient), true, scheduledTask.Name, serializedTask,
                 DateTime.ParseExact(scheduledTask.ScheduledOn.ToString("yyyy-MM-dd HH:mm:ss"),
                     "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
             return response.task_id;
+#endif
         }
 
         // ReSharper disable once NotAccessedField.Local - Used for production
@@ -42,8 +47,13 @@ namespace Pis.Projekt.Business.Scheduling
 
         public async Task SetCompleteAsync(int id)
         {
-            await _client.setCompletenessAsync(id, _configuration.TeamId, _configuration.Password,
+#if DEBUG
+            _logger.LogBusinessCase("WSDL TaskListService task fulfilled", "");
+            await Task.CompletedTask;
+#else
+         await _client.setCompletenessAsync(id, _configuration.TeamId, _configuration.Password,
                 1).ConfigureAwait(false);
+#endif
         }
     }
 }

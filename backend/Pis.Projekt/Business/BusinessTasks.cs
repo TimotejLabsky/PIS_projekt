@@ -21,5 +21,13 @@ namespace Pis.Projekt.Business
         public const string DecreasedSaleOfAtLeastOneProduct =
             "Znížil sa predaj aspoň jedného produktu?";
         public const string PersistenceTask = "Zmena cien v centrálnom systéme";
+        public const string WaitingTaskSeasonStart = "Zaciatok sezony";
+        public const string FetchLastSeason = "Nacitanie sezony";
+        public const string FetchAllProducts = "Nacitanie vsetkych produktov";
+        public const string PickSeasonProducts = "Upravenie zoznamu sezonnych produktov";
+        public const string AdjustPrices = "Znizenie ceny o 10%";
+        public const string NotifyUpdatedSeasonPrices = "Zaslanie produktov do reklamneho oddelenia";
+        public const string EvaluateSeasonSales = "Vyhodnotenie predajnosti produktov";
+        public const string DecreaseSeasonalProductsPrices = "Znizenie ceny o 50%";
     }
 }

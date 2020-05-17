@@ -2,6 +2,7 @@ using System;
 using System.Net.Mail;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Pis.Projekt.Business.Scheduling;
 using Pis.Projekt.Domain.DTOs;
 
 namespace Pis.Projekt.Business.Notifications.Domain.Impl
@@ -15,14 +16,12 @@ namespace Pis.Projekt.Business.Notifications.Domain.Impl
         }
 
         public string NotificationType { get; set; }
-        public UserTask UserTask { get; set; }
-
         public MailAddress ToMailAddress =>
             new MailAddress(_configuration.ToAddress);
 
-        public string Subject => $"{typeof(Type)}: User Task Required";
-        public string Message => JsonConvert.SerializeObject(UserTask);
-        public IEmail Content => this;
+        public string Subject => $"Optimalization User Task Required";
+        public string Message => "";
         private readonly NotificationConfiguration<UserTaskRequiredNotification> _configuration;
+        public IEmail Content => this;
     }
 }

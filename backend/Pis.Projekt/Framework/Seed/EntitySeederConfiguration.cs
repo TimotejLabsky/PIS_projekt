@@ -16,5 +16,6 @@ namespace Pis.Projekt.Framework.Seed
         
         public double SalesCoefMin { get; set; }
         public double SalesCoefMax { get; set; }
+        public int SeasonCount { get; set; }
     }
 }

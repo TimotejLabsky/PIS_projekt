@@ -18,10 +18,18 @@ namespace Pis.Projekt.Business
             {
                 messageBuilder.Append($"\nMessage: {message}");
             }
-            
-            logger.LogWarning(messageBuilder.ToString(), data);
+
+            if (data != null)
+            {
+                var dataAsJson = JsonConvert.SerializeObject(data, Formatting.Indented);
+                logger.LogWarning(messageBuilder + $"\nData: {dataAsJson}");
+            }
+            else
+            {
+                logger.LogWarning(messageBuilder.ToString());
+            }
         }
-        
+
         public static void LogInput<TLogger>(this ILogger<TLogger> logger,
             string taskName,
             string inputName,
@@ -37,7 +45,7 @@ namespace Pis.Projekt.Business
             logger.LogWarning($"Business - Task: {taskName} - Input\n" +
                               $"{inputName}: {data}");
         }
-        
+
         public static void LogOutput<TLogger>(this ILogger<TLogger> logger,
             string taskName,
             string outputName,
@@ -48,11 +56,11 @@ namespace Pis.Projekt.Business
                 var dataAsJson = JsonConvert.SerializeObject(data, Formatting.Indented);
                 data = dataAsJson;
             }
-            
+
             logger.LogWarning($"Business - Task: {taskName} - Output\n" +
                               $"{outputName}: {data}");
         }
-        
+
         public static void LogDecisionBlock<TLogger>(this ILogger<TLogger> logger,
             string decision,
             string answer)

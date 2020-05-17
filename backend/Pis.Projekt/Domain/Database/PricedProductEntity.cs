@@ -5,7 +5,6 @@ using Pis.Projekt.Framework.Repositories;
 
 namespace Pis.Projekt.Domain.Database
 {
-    [Table("priced_products")]
     public class PricedProductEntity: IEntity<Guid>
     {
         [Column("id")]

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Pis.Projekt.Api.Responses;
 using Pis.Projekt.Business;
+using Pis.Projekt.Domain.DTOs;
 using Pis.Projekt.Domain.Repositories;
 
 namespace Pis.Projekt.Api.Controllers
@@ -16,12 +17,14 @@ namespace Pis.Projekt.Api.Controllers
         public PriceController(SalesOptimalizationService optimizer,
             IPricedProductRepository pricedProductRepository,
             IMapper mapper,
-            ILogger<PriceController> logger)
+            ILogger<PriceController> logger,
+            SeasonService seasonService)
         {
             _optimizer = optimizer;
             _pricedProductRepository = pricedProductRepository;
             _mapper = mapper;
             _logger = logger;
+            _seasonService = seasonService;
         }
 
         [HttpGet("{week}")]
@@ -41,10 +44,20 @@ namespace Pis.Projekt.Api.Controllers
             _logger.LogDebug("Manual Optimization process started via Restful API call has ended");
             return Ok();
         }
+        
+        [HttpGet("season")]
+        public async Task<IActionResult> HandleSeason()
+        {
+            _logger.LogDebug("Manual Seasonal process has started via Restful API call");
+            await _seasonService.Handle().ConfigureAwait(false);
+            _logger.LogDebug("Manual Seasonal process started via Restful API call has ended");
+            return Ok();
+        }
 
         private readonly IPricedProductRepository _pricedProductRepository;
         private readonly SalesOptimalizationService _optimizer;
         private readonly ILogger<PriceController> _logger;
+        private readonly SeasonService _seasonService;
         private readonly IMapper _mapper;
     }
 }

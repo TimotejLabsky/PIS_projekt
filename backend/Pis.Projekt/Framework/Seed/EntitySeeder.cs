@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pis.Projekt.Domain.Database;
 using Pis.Projekt.Domain.Repositories;
+using Pis.Projekt.Domain.Repositories.Impl;
 
 namespace Pis.Projekt.Framework.Seed
 {
@@ -19,14 +20,23 @@ namespace Pis.Projekt.Framework.Seed
             _scopeFactory = scopeFactory;
             _configuration = configuration.Value;
         }
-        
+
         public async Task Seed()
         {
-            using var scope = _scopeFactory.CreateScope();
-            var salesAggregateRepository = scope.ServiceProvider.GetRequiredService<ISalesAggregateRepository>();
             if (_configuration.SeedAtStart)
             {
+                // arramge
+                using var scope = _scopeFactory.CreateScope();
+                var seasonRepository =
+                    scope.ServiceProvider.GetRequiredService<ISeasonRepository>();
+                var salesAggregateRepository =
+                    scope.ServiceProvider.GetRequiredService<ISalesAggregateRepository>();
+                // act
+
                 _logger.LogDebug($"Seeding of entities by {nameof(EntitySeeder)} has started");
+
+                #region -- Seed Sale Aggregates --
+
                 var weekAmount = _configuration.WeekAmount;
                 var products = _configuration.ProductNames;
                 var minValue = _configuration.PriceMin;
@@ -36,7 +46,8 @@ namespace Pis.Projekt.Framework.Seed
                 var salesCoefMax = _configuration.SalesCoefMax;
 
                 using var saleAggregateEnumerator =
-                    CreateSaleAggregates(weekAmount, products, minValue, maxValue,salesCoefMin, salesCoefMax).GetEnumerator();
+                    CreateSaleAggregates(weekAmount, products, minValue, maxValue, salesCoefMin,
+                        salesCoefMax).GetEnumerator();
                 while (saleAggregateEnumerator.MoveNext())
                 {
                     var salesAggregate = saleAggregateEnumerator.Current;
@@ -46,6 +57,31 @@ namespace Pis.Projekt.Framework.Seed
                             .ConfigureAwait(false);
                     }
                 }
+
+                #endregion
+
+                //
+                // var weekAmount = _configuration.WeekAmount;
+                // var products = _configuration.ProductNames;
+                // var minValue = _configuration.PriceMin;
+                // var maxValue = _configuration.PriceMax;
+                //
+                // var salesCoefMin = _configuration.SalesCoefMin;
+                // var salesCoefMax = _configuration.SalesCoefMax;
+
+                for (var i = 0; i < _configuration.SeasonCount; i++)
+                {
+                    var startAt = new DateTime(2019, 1, 1, 0, 0, 0);
+                    startAt = startAt.Add(TimeSpan.FromDays(i * 30 * 3));
+                    await seasonRepository.CreateAsync(new SeasonEntity
+                        {
+                            Id = Guid.NewGuid(),
+                            StartAt = startAt,
+                            EndAt = startAt.Add(TimeSpan.FromDays(30 * 3))
+                        })
+                        .ConfigureAwait(false);
+                }
+
                 _logger.LogDebug($"Seeding of entities by {nameof(EntitySeeder)} has finished");
             }
             else
@@ -70,8 +106,12 @@ namespace Pis.Projekt.Framework.Seed
             }
         }
 
-        private IEnumerable<SalesAggregateEntity> CreateSaleAggregates(uint weekAmount, IEnumerable<string> products,
-            double minValue, double maxValue, double salesCoefMin, double salesCoefMax)
+        private IEnumerable<SalesAggregateEntity> CreateSaleAggregates(uint weekAmount,
+            IEnumerable<string> products,
+            double minValue,
+            double maxValue,
+            double salesCoefMin,
+            double salesCoefMax)
         {
             using var productEnumerator = CreateProducts(products).GetEnumerator();
             while (productEnumerator.MoveNext())
@@ -88,12 +128,12 @@ namespace Pis.Projekt.Framework.Seed
                                                 minValue),
                             Product = product,
                             ProductGuid = product.Id,
-                            SaleCoefficient = new decimal(new Random().NextDouble() * (salesCoefMax - salesCoefMin) +
-                                                          salesCoefMin),
+                            SaleCoefficient = new decimal(
+                                new Random().NextDouble() * (salesCoefMax - salesCoefMin) +
+                                salesCoefMin),
                             WeekNumber = i,
                             //TODO change it if you have time and mood
-                            SoldAmount = new Random().Next(50,500),
-
+                            SoldAmount = new Random().Next(50, 500),
                         };
                         _logger.LogDebug(
                             $"{nameof(EntitySeeder)} created {nameof(SalesAggregateEntity)}" +

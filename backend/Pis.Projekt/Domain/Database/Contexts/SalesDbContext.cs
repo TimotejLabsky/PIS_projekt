@@ -13,11 +13,11 @@ namespace Pis.Projekt.Domain.Database.Contexts
         {
             Database.EnsureCreated();
         }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
+
             ConfigurePrimaryKeys(modelBuilder);
             ConfigureForeignKeys(modelBuilder);
             ConfigureConsistency(modelBuilder);
@@ -31,12 +31,8 @@ namespace Pis.Projekt.Domain.Database.Contexts
                 .HasKey(p => p.Id);
             modelBuilder.Entity<ProductEntity>()
                 .HasKey(p => p.Id);
-            
-            modelBuilder.Entity<SeasonPricedProductEntity>()
-                .HasKey(p => p.Id);
             modelBuilder.Entity<Season>()
-                .HasKey(p=> p.Id);
-
+                .HasKey(p => p.Id);
             modelBuilder.Entity<PricedProduct>()
                 .Property(p => p.CreatedOn)
                 .HasValueGenerator<DateTimeGenerator>();
@@ -48,16 +44,17 @@ namespace Pis.Projekt.Domain.Database.Contexts
                 .HasOne(o => o.Product)
                 .WithMany()
                 .HasForeignKey(k => k.ProductGuid);
-            
+
             modelBuilder.Entity<SalesAggregateEntity>()
                 .HasOne(o => o.Product)
                 .WithMany()
                 .HasForeignKey(k => k.ProductGuid);
-
-            modelBuilder.Entity<SeasonPricedProductEntity>()
-                .HasOne(o => o.PricedProductEntity)
-                .WithMany()
-                .HasForeignKey(k => k.PricedProductEntityId);
+            modelBuilder.Entity<SalesAggregateEntity>().ToTable("sales_aggregates");
+            modelBuilder.Entity<PricedProductEntity>().ToTable("priced_products");
+            modelBuilder.Entity<AdvertisedProductEntity>().ToTable("advertised_products");
+            modelBuilder.Entity<SeasonEntity>().ToTable("seasons");
+            modelBuilder.Entity<ProductEntity>().ToTable("products");
+            modelBuilder.Entity<SeasonalProductEntity>().ToTable("seasonal_products");
         }
 
         private void ConfigureConsistency(ModelBuilder modelBuilder)
@@ -66,12 +63,12 @@ namespace Pis.Projekt.Domain.Database.Contexts
 
         public DbSet<PricedProductEntity> PricedProducts { get; set; }
         public DbSet<SalesAggregateEntity> SaleAggregates { get; set; }
-        
+
         public DbSet<SeasonEntity> Seasons { get; set; }
-        
-        public DbSet<SeasonPricedProductEntity> SeasonPricedProducts { get; set; }
+
         public DbSet<ProductEntity> Products { get; set; }
         public DbSet<AdvertisedProductEntity> Advertised { get; set; }
+        public DbSet<SeasonalProductEntity> SeasonalProducts { get; set; }
 
         public class DateTimeGenerator : ValueGenerator<DateTime>
         {

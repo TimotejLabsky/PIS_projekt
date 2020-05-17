@@ -67,26 +67,15 @@ namespace Pis.Projekt.Business
             };
         }
 
-        public SeasonEvaluationResult EvaluateSeasonSales(IEnumerable<SeasonPricedProduct> allProducts)
+        public SeasonEvaluationResult EvaluateSeasonSales(IEnumerable<TaskProduct> allProducts)
         {
-            var decreasedSales = new List<SeasonTaskProduct>();
-            var sameSales = new List<SeasonPricedProduct>();
+            var decreasedSales = new List<TaskProduct>();
+            var sameSales = new List<TaskProduct>();
             foreach (var product in allProducts)
             {
                 if (product.SaleCoefficient <= new decimal(0.8))
                 {
-                    decreasedSales.Add(
-
-                        new SeasonTaskProduct
-                        {
-                            Id = product.Id,
-                            PricedProductEntity = product.PricedProductEntity,
-                            SaleCoefficient = product.SaleCoefficient,
-                            SeasonId = product.SeasonId,
-                            //SoldAmount = product.PricedProductEntity
-                            //SoldAmount = salesAggregate.SoldAmount
-                        }
-                    );
+                    decreasedSales.Add(product);
                 }
                 else
                 {

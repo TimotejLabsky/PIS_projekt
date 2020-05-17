@@ -29,6 +29,7 @@ using Pis.Projekt.Domain.Repositories.Impl;
 using Pis.Projekt.Framework;
 using Pis.Projekt.Framework.Email.Impl;
 using Pis.Projekt.Framework.Seed;
+using Pis.Projekt.System;
 using Quartz;
 using Quartz.Impl;
 
@@ -70,6 +71,8 @@ namespace Pis.Projekt
                 _configuration.GetSection("CronSchedulerService"));
             services.Configure<StoreConfiguration>(
                 _configuration.GetSection("Stores"));
+            services.Configure<DatabaseWipe.DatabaseWipeConfiguration>(
+                _configuration.GetSection("DatabaseWipe"));
             //validation
             services.AddSingleton<EmailValidationService>();
             services.AddSingleton<ConfigEmailValidation>();
@@ -97,6 +100,7 @@ namespace Pis.Projekt
 
             // testing tools
             services.AddSingleton<EntitySeeder>();
+            services.AddSingleton<DatabaseWipe>();
             services.AddSingleton<AuthorizationService>();
 
             // business case
@@ -184,6 +188,7 @@ namespace Pis.Projekt
             app.UseRouting();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
             app.ApplicationServices.GetRequiredService<ConfigEmailValidation>().Validate().Wait();
+            app.ApplicationServices.GetRequiredService<DatabaseWipe>().Wipe().Wait();
             app.ApplicationServices.GetRequiredService<EntitySeeder>().Seed().Wait();
             var scheduler = app.ApplicationServices.GetRequiredService<CronSchedulerService>();
             scheduler.StartAsync(default).Wait();

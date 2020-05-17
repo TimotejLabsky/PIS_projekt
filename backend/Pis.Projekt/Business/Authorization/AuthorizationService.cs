@@ -46,8 +46,7 @@ namespace Pis.Projekt.Business.Authorization
 
             return false;
         }
-
-
+        
         private readonly FiitCustomerService.CustomerPortTypeClient _client;
         private readonly ILogger<AuthorizationService> _logger;
     }

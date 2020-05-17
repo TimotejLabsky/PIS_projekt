@@ -1,0 +1,65 @@
+<div class="login_wrapper">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Zaradenie do reklamného letáku</mat-card-title>
+      <mat-card-subtitle>{{actual_season}}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-spinner *ngIf="loading === true"></mat-spinner>
+
+    <mat-table [dataSource]="dataSource" class="content-table" *ngIf="loading === false">
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef> Názov </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+      </ng-container>
+
+      <!-- old_price Column -->
+      <ng-container matColumnDef="old_price">
+        <mat-header-cell *matHeaderCellDef> Predchádzajúca cena </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.price | currency:'EUR' }} </mat-cell>
+      </ng-container>
+
+      <!-- sales Column -->
+      <ng-container matColumnDef="sales">
+        <mat-header-cell *matHeaderCellDef> Predajnosť </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.sales | number : '1.2-2'}} </mat-cell>
+      </ng-container>
+
+      <!-- delta_sales Column -->
+      <ng-container matColumnDef="delta_sales">
+        <mat-header-cell *matHeaderCellDef>  Δ Predajnosť </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.delta_sales | number : '1.2-2'}} </mat-cell>
+      </ng-container>
+
+
+      <ng-container matColumnDef="include">
+        <mat-header-cell *matHeaderCellDef> Pridať do reklamneho letaku </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)">
+          </mat-checkbox>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Header and Row Declarations -->
+      <mat-header-row *matHeaderRowDef="columns; sticky: true"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columns;"></mat-row>
+
+    </mat-table>
+
+    <mat-card-actions align="end">
+      <mat-form-field>
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium">
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="onSubmit()">Potvrdiť</button>
+
+
+    </mat-card-actions>
+
+  </mat-card>
+</div>

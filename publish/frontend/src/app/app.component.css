@@ -1,0 +1,7 @@
+.body{
+  background: lightgray;
+}
+
+.space_out{
+  flex: 1 1 auto;
+}

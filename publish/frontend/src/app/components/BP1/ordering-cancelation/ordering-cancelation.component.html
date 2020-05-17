@@ -1,0 +1,42 @@
+<div class="login_wrapper">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Zrušenie objednávania produktu</mat-card-title>
+      <mat-card-subtitle>{{actual_season}}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-spinner *ngIf="loading === true"></mat-spinner>
+
+    <mat-table [dataSource]="dataSource" class="content-table" *ngIf="loading === false">
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef> Názov </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+      </ng-container>
+
+
+      <ng-container matColumnDef="cancel">
+        <mat-header-cell *matHeaderCellDef> Zrušiť objednávanie </mat-header-cell>
+        <mat-cell *matCellDef="let row" class="align-right">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)">
+          </mat-checkbox>
+        </mat-cell>
+      </ng-container>
+
+
+
+      <!-- Header and Row Declarations -->
+      <mat-header-row *matHeaderRowDef="columns; sticky: true"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columns;"></mat-row>
+
+    </mat-table>
+
+    <mat-card-actions align="end">
+      <button mat-raised-button color="primary" (click)="onSubmit()">Potvrdiť</button>
+    </mat-card-actions>
+
+  </mat-card>
+</div>
